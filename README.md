@@ -469,5 +469,12 @@ Then refresh: https://192.168.0.246:9443 and create an admin account
 <img width="1307" height="863" alt="image" src="https://github.com/user-attachments/assets/06bbe7e7-7ac4-45c1-83c8-3200467eeb4c" />
 
 
+6. Connect Portainer to your local Docker environment
+
+Clicking “Get Started” connects Portainer to your local Docker environment, allowing it to manage the Docker Engine running on the server. Once connected, Portainer provides a centralized web interface for viewing and managing containers, images, networks, volumes, and Compose stacks without using terminal commands for every operation.
+
+<img width="867" height="420" alt="image" src="https://github.com/user-attachments/assets/b3fdbb9c-8b9d-41d5-8d25-cd1a5f183203" />
+
+<img width="1909" height="589" alt="image" src="https://github.com/user-attachments/assets/2cdc669e-1e0d-4f2f-8b53-85b6b39dfd10" />
 
 
