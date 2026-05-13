@@ -663,3 +663,21 @@ ssh -i $env:USERPROFILE\.ssh\ubuntu-server piroman@192.168.0.246
 
 <img width="1060" height="514" alt="image" src="https://github.com/user-attachments/assets/d759eb5a-4ae6-48da-abe2-322d8911edcf" />
 
+
+#### What Happens During Login Now
+
+```mermaid
+flowchart TD
+    A[Windows Private Key] --> B[SSH Authentication]
+    B --> C[Ubuntu checks authorized_keys]
+    C --> D[Access granted]
+```
+
+#### Important Security Difference
+
+| Old Method                       | New Method                       |
+| -------------------------------- | -------------------------------- |
+| Password sent for authentication | Cryptographic key authentication |
+| Vulnerable to brute force        | Much more secure                 |
+| Manual password typing           | Automatic authentication         |
+| Common beginner setup            | Professional standard            |
