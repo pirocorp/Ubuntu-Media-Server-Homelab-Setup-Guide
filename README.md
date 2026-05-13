@@ -301,3 +301,18 @@ docker ps
 ```
 If no permission error appears, Docker is configured correctly.
 
+
+### Important Concept
+
+On Linux, almost everything important is a service. Examples: Docker, SSH, Samba, Cockpit, Plex, Databases. And all are managed similarly with:
+
+```bash
+systemctl
+```
+
+
+
+
+
+
+
