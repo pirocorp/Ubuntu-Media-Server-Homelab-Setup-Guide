@@ -81,7 +81,21 @@ NTFS HDDs
 - Disable:
   - Fast Boot (optional)
 
-#### 4 — Install Ubuntu Server
+#### 4. Install Ubuntu Server
+
+- Tutorials, shell commands, Docker/YAML assume US layout
+
+| Setting              | Value                      |
+| -------------------- | -------------------------- |
+| Layout               | English (US)               |
+| Variant              | English (US)               |
+| Installation         | Ubuntu Server (minimized)  |
+
+| File System      | FAT32          |
+| Write Mode       | ISO Image Mode |
+
+
+
 
 
 
