@@ -685,9 +685,38 @@ flowchart TD
 ### Implement Storage Architecture
 
 
+```mermaid
+flowchart TD
+    A[Detecmermaidt NTFS Drives] --> B[Create Mount Structure]
+    B --> C[Configure Persistent Mounts]
+    C --> D[Set Permissions]
+    D --> E[Configure Samba]
+    E --> F[Validate Windows Access]
+    F --> G[Use In Docker Containers]
+```
 
+#### Domain-oriented storage architecture
 
+- Each physical drive has a defined responsibility
+- Each mount point represents a storage domain
+- Applications consume storage through stable paths
 
+```mermaid
+flowchart TD
+    A[Storage Domain] --> B[Independent Mount Point]
+    B --> C[Independent Backup Strategy]
+    B --> D[Independent Docker Bind Mounts]
+    B --> E[Independent Samba Share]
+```
 
+1. Step 1 — Connect Your External Drives
+
+Shut down the server cleanly first:
+
+```bash
+sudo shutdown now
+```
+
+2. 
 
 
