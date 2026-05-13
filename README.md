@@ -59,7 +59,6 @@ NTFS HDDs
 | Photos      | `/mnt/media/photos`      |
 
 
-
 ## Steps
 
 ### Prepare For Ubuntu Server Installation
@@ -681,3 +680,14 @@ flowchart TD
 | Vulnerable to brute force        | Much more secure                 |
 | Manual password typing           | Automatic authentication         |
 | Common beginner setup            | Professional standard            |
+
+
+### Implement Storage Architecture
+
+
+
+
+
+
+
+
