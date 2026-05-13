@@ -421,4 +421,17 @@ docker compose -f /srv/docker/portainer/compose.yml config
 
 4. Run the Docker container
 
+```bash
+cd /srv/docker/portainer
+docker compose up -d
+```
+
+<img width="1115" height="799" alt="image" src="https://github.com/user-attachments/assets/44737ddc-4841-469a-bf7f-055fda1466b3" />
+
+
+
+
+
+
+
 
