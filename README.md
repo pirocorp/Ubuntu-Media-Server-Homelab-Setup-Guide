@@ -294,12 +294,16 @@ sudo usermod -aG docker piroman
 | `hello-world` container      | Docker test image             | Confirms Docker is installed and working correctly                       |
 | `usermod -aG docker piroman` | Adds user to Docker group     | Allows `piroman` to use Docker without typing `sudo` every time          |
 
+<img width="1115" height="818" alt="image" src="https://github.com/user-attachments/assets/a7e294b4-ffa8-4a46-82cd-94e38ec98a94" />
+
 Log out of SSH and reconnect. After reconnecting, test:
 
 ```bash
 docker ps
 ```
 If no permission error appears, Docker is configured correctly.
+
+<img width="1115" height="647" alt="image" src="https://github.com/user-attachments/assets/ab14dec1-56b7-4c3a-8291-355d3239f002" />
 
 
 ### Important Concept
