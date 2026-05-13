@@ -597,7 +597,17 @@ docker compose up -d
 <img width="1115" height="495" alt="image" src="https://github.com/user-attachments/assets/b4573bde-2759-4106-b9f9-f33ba7fb3f75" />
 
 
+### SSH key authentication
 
+Switching from password-based SSH authentication to SSH keys significantly improves security and convenience. SSH keys are resistant to brute-force attacks, cannot be guessed like passwords, and allow secure authentication without sending your password over the network. They are the standard authentication method used in professional Linux, cloud, and DevOps environments.
 
+#### Goal
+
+```mermaid
+flowchart TD
+    A[Windows PC] --> B[SSH Private Key]
+    B --> C[Ubuntu Server]
+    C --> D[Authorized Public Key]
+```
 
 
