@@ -647,4 +647,19 @@ nano ~/.ssh/authorized_keys
 
 Then paste the output that was copied from Windows into the Ubuntu Server `~/.ssh/authorized_keys` file
 
+3. Limit access to that file only for the current user. SSH requires strict permissions for security.
+
+```bash
+chmod 600 ~/.ssh/authorized_keys
+```
+
+4. Test SSH Keys
+
+From Windows PowerShell, execute the following command. Now, you should connect without a Linux account password, possibly with an SSH key passphrase if you set one during key creation
+
+```bash
+ssh -i $env:USERPROFILE\.ssh\ubuntu-server piroman@192.168.0.246
+```
+
+<img width="1060" height="514" alt="image" src="https://github.com/user-attachments/assets/d759eb5a-4ae6-48da-abe2-322d8911edcf" />
 
