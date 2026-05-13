@@ -18,3 +18,23 @@ Build a headless Ubuntu Server homelab/media server with:
 - Cockpit web UI
 - Portainer
 - Lazydocker
+
+## Architecture
+
+```text
+NVMe SSD (ext4)
+├── Ubuntu Server
+├── Docker
+├── Docker volumes
+├── Databases
+├── Plex metadata
+└── Configs
+
+NTFS HDDs
+├── Movies
+├── TV
+├── Music
+├── Books
+├── Photos
+└── Downloads
+```
