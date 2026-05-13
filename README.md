@@ -951,6 +951,63 @@ testparm
 
 <img width="1060" height="913" alt="image" src="https://github.com/user-attachments/assets/067b519c-92ba-4a56-9411-6b2ae4d6a658" />
 
-
 <img width="1060" height="913" alt="image" src="https://github.com/user-attachments/assets/f9931ff1-5ad7-4390-92c0-0fcef4a464e7" />
+
+5. Step 5 - Create Samba User Password
+
+```bash
+# This creates the Samba authentication account for: piroman
+sudo smbpasswd -a piroman
+```
+<img width="728" height="100" alt="image" src="https://github.com/user-attachments/assets/da48e63f-25c0-4128-89ed-4513093c1ab1" />
+
+
+6. Step 6 — Restart Samba
+
+```bash
+sudo systemctl restart smbd
+```
+
+7. Step 7 — Verify Samba Running
+
+```bash
+sudo systemctl status smbd
+```
+<img width="1060" height="590" alt="image" src="https://github.com/user-attachments/assets/d11cbb72-b0b9-4828-af72-b6c5626cd584" />
+
+
+8. Step 8 — Open Samba In Firewall
+
+You already did this earlier with:
+
+```bash
+sudo ufw allow Samba
+```
+
+
+9. Step 9 — Access From Windows
+
+
+In Windows Explorer:
+
+```
+\\192.168.0.246
+```
+
+or 
+
+```
+\\piroman-server
+```
+
+With IP works, with name not (for now).
+
+<img width="1017" height="263" alt="image" src="https://github.com/user-attachments/assets/3743e748-1d9b-4c7e-84ec-635e455b3a70" />
+
+<img width="510" height="156" alt="image" src="https://github.com/user-attachments/assets/57e0a5ae-584e-42d7-9369-63dc5c754c4c" />
+
+
+
+
+
 
