@@ -130,7 +130,12 @@ That enables:
 | Import SSH key                         |        |
 
 
+### Connect through SSH to Ubuntu Server
 
+```bash
+ssh piroman@192.168.0.246
+```
 
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/24cd03b0-5b50-4ffa-8c18-b05d2e1409d8" />
 
 
