@@ -138,4 +138,59 @@ ssh piroman@192.168.0.246
 
 <img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/24cd03b0-5b50-4ffa-8c18-b05d2e1409d8" />
 
+### Initial System Update
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/c01112ed-4c05-47b1-9a39-e4108a667327" />
+
+### Remove no longer required packages
+
+```bash
+sudo apt autoremove -y
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/1534a926-455f-4f37-88da-b1df2ba8b0cf" />
+
+
+### Install Essential Packages
+
+```bash
+sudo apt install -y \
+curl \
+git \
+htop \
+btop \
+tmux \
+nano \
+ncdu \
+ufw \
+smartmontools \
+ca-certificates \
+gnupg \
+samba \
+ntfs-3g \
+cockpit
+```
+
+| Package           | Purpose                            | Why You Need It                                  |
+| ----------------- | ---------------------------------- | ------------------------------------------------ |
+| `curl`            | Command-line downloader/API client | Download scripts, test APIs, fetch files         |
+| `git`             | Version control system             | Clone GitHub repos and manage configs            |
+| `htop`            | Interactive process monitor        | View CPU/RAM/processes easily                    |
+| `btop`            | Advanced terminal resource monitor | Beautiful real-time monitoring dashboard         |
+| `tmux`            | Persistent terminal sessions       | Keep sessions running after SSH disconnects      |
+| `nano`            | Terminal text editor               | Easy editing of config files                     |
+| `ncdu`            | Disk usage analyzer                | Find large folders/files quickly                 |
+| `ufw`             | Simple firewall manager            | Secure the server with manageable firewall rules |
+| `smartmontools`   | Disk health monitoring             | Check SSD/HDD SMART health status                |
+| `ca-certificates` | SSL certificate bundle             | Required for secure HTTPS connections            |
+| `gnupg`           | GPG key management                 | Needed for trusted repositories like Docker      |
+| `samba`           | Windows file sharing               | Share folders between Ubuntu and Windows         |
+| `ntfs-3g`         | NTFS filesystem support            | Read/write Windows NTFS drives                   |
+| `cockpit`         | Web management interface           | Manage server from browser                       |
+
 
