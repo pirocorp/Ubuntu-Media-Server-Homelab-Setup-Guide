@@ -684,10 +684,9 @@ flowchart TD
 
 ### Implement Storage Architecture
 
-
 ```mermaid
 flowchart TD
-    A[Detecmermaidt NTFS Drives] --> B[Create Mount Structure]
+    A[Detect NTFS Drives] --> B[Create Mount Structure]
     B --> C[Configure Persistent Mounts]
     C --> D[Set Permissions]
     D --> E[Configure Samba]
