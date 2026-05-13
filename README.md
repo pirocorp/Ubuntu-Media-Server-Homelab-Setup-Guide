@@ -741,5 +741,71 @@ lsblk -f
 
 <img width="1060" height="514" alt="image" src="https://github.com/user-attachments/assets/69f50912-9331-4b67-a141-1776a46493ed" />
 
+##### Current Drive Mapping
+
+| Domain      | Device | Label  | Filesystem |
+| ----------- | ------ | ------ | ---------- |
+| `/mnt/iac`  | `sda2` | `IAC`  | NTFS       |
+| `/mnt/lp`   | `sdb2` | `LP`   | NTFS       |
+| `/mnt/data` | `sdc2` | `DATA` | NTFS       |
+| `/mnt/ia`   | `sdd2` | `IA`   | NTFS       |
+| `/mnt/comp` | `sdf2` | `COMP` | NTFS       |
+
+
+3. Step 3 — Create Mount Points
+
+```bash
+# Create mount points for domain-oriented storage drives
+sudo mkdir -p /mnt/iac
+sudo mkdir -p /mnt/lp
+sudo mkdir -p /mnt/data
+sudo mkdir -p /mnt/ia
+sudo mkdir -p /mnt/comp
+```
+<img width="1060" height="514" alt="image" src="https://github.com/user-attachments/assets/e63063f6-f62f-4169-9b02-9943d2aa4bb4" />
+
+
+4. Step 4 — Install NTFS Driver Support
+
+```bash
+sudo apt install ntfs-3g -y
+```
+
+<img width="1060" height="514" alt="image" src="https://github.com/user-attachments/assets/debb323b-c214-4c9e-927e-d4469405d6b7" />
+
+
+5. Step 5 — Configure Persistent Mounts
+
+Persistent mounts allow Linux to automatically mount storage drives during every system boot without requiring manual intervention. This is configured through the `/etc/fstab` file, where each drive is identified by its UUID — a stable, unique identifier that does not change between reboots. Using persistent mounts ensures that all storage domains are immediately available to Docker containers, Samba shares, media servers, and other services after the server starts.
+
+```bash
+sudo nano /etc/fstab
+```
+
+Current fstab
+
+The current `/etc/fstab` file contains the default filesystem configuration created during Ubuntu installation. It defines the main Linux system partition (/), the EFI boot partition (/boot/efi), and the swap file used for virtual memory. These entries ensure the operating system and boot components are automatically mounted and available during every system startup.
+
+<img width="1060" height="514" alt="image" src="https://github.com/user-attachments/assets/c34a4d13-0433-4344-8da5-a6bb5a3afe88" />
+
+Extended fstab
+
+The extended `/etc/fstab` configuration now includes persistent NTFS domain drive mounts, allowing all storage drives to be automatically mounted and consistently available after every system reboot.
+
+<img width="1060" height="780" alt="image" src="https://github.com/user-attachments/assets/dd379940-2f98-464a-83f7-1bf36e1c4be8" />
+
+| Mount Point | UUID in `lsblk -f` | UUID in `fstab`    | Status |
+| ----------- | ------------------ | ------------------ | ------ |
+| `/mnt/iac`  | `6A3AD04D3AD017C1` | `6A3AD04D3AD017C1` | ✅      |
+| `/mnt/lp`   | `8CEEDEBAEEDE9BB0` | `8CEEDEBAEEDE9BB0` | ✅      |
+| `/mnt/data` | `A4D09E95D09E6D74` | `A4D09E95D09E6D74` | ✅      |
+| `/mnt/ia`   | `7698C86698C82689` | `7698C86698C82689` | ✅      |
+| `/mnt/comp` | `D6E66FCAE66FA987` | `D6E66FCAE66FA987` | ✅      |
+
+
+
+
+
+
 
 
