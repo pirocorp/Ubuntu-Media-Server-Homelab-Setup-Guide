@@ -477,3 +477,19 @@ Clicking “Get Started” connects Portainer to your local Docker environment, 
 <img width="1909" height="589" alt="image" src="https://github.com/user-attachments/assets/2cdc669e-1e0d-4f2f-8b53-85b6b39dfd10" />
 
 
+### Current Infrastructure
+
+| Component              | Status  |
+| ---------------------- | ------  |
+| Ubuntu Server          | ✅      |
+| SSH                    | ✅      |
+| UFW Firewall           | ✅      |
+| Cockpit                | ✅      |
+| Docker                 | ✅      |
+| Docker Compose         | ✅      |
+| Portainer              | ✅      |
+| Infrastructure-as-Code | ✅      |
+
+
+
+
