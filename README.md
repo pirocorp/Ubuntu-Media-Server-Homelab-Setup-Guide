@@ -263,7 +263,8 @@ Open this in your Windows browser: https://192.168.0.246:9090
 
 <img width="937" height="131" alt="image" src="https://github.com/user-attachments/assets/c7b22f6a-6df2-4f35-9ce2-56689083250e" />
 
-<img width="952" height="796" alt="image" src="https://github.com/user-attachments/assets/5d0c04fc-f0df-45e4-bb0d-9b75e3011ca5" />
+<img width="951" height="727" alt="image" src="https://github.com/user-attachments/assets/997d3e22-b845-413a-a8a0-f678afd82fb5" />
+
 
 
 
