@@ -1042,3 +1042,8 @@ flowchart TD
     B --> E[Plex]
     B --> F[Kavita]
 ```
+
+| Component     | Solves                                       |
+| ------------- | -------------------------------------------- |
+| DNS           | “Where is this service?”                     |
+| Reverse Proxy | “Which backend should receive this request?” |
