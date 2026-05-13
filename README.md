@@ -968,7 +968,6 @@ Append this at the bottom:
 testparm
 ```
 
-
 <img width="1060" height="913" alt="image" src="https://github.com/user-attachments/assets/067b519c-92ba-4a56-9411-6b2ae4d6a658" />
 
 <img width="1060" height="913" alt="image" src="https://github.com/user-attachments/assets/f9931ff1-5ad7-4390-92c0-0fcef4a464e7" />
@@ -1026,11 +1025,28 @@ With IP works, with name not (for now).
 
 <img width="510" height="156" alt="image" src="https://github.com/user-attachments/assets/57e0a5ae-584e-42d7-9369-63dc5c754c4c" />
 
-Drives where successfully maped in Windows
+Drives that were successfully mapped in Windows
 
 <img width="268" height="238" alt="image" src="https://github.com/user-attachments/assets/9fd8004b-bd95-4996-8142-cf4c3a6192dc" />
 
 
+### DNS and Reverse Proxy
 
+Nginx Proxy Manager becomes the centralized ingress layer for all services.
 
+```mermaid
+flowchart TD
+    A[Internet / LAN] --> B[Nginx Proxy Manager]
+    B --> C[Portainer]
+    B --> D[Plex]
+    B --> E[Immich]
+    B --> F[Kavita]
+    B --> G[Stash]
+    B --> H[AdGuard Home]
+```
 
+```mermaid
+flowchart TD
+    A[DNS Name] --> B[Reverse Proxy]
+    B --> C[Internal Service]
+```
