@@ -396,6 +396,15 @@ services:
       - /srv/docker/portainer/data:/data
 ```
 
+What Happens After Reboot
+
+```mermaid
+flowchart TD
+    A[Ubuntu boots] --> B[Docker service starts]
+    B --> C[Docker reads restart policies]
+    C --> D[Portainer container starts automatically]
+```
+
 <img width="1115" height="647" alt="image" src="https://github.com/user-attachments/assets/1940dcbc-9771-447d-b17d-49511ae7efd7" />
 
 
@@ -409,3 +418,7 @@ docker compose -f /srv/docker/portainer/compose.yml config
 <img width="1115" height="647" alt="image" src="https://github.com/user-attachments/assets/938e41f5-c3f6-4b5f-9e78-6b52695dce17" />
 
 <img width="1115" height="799" alt="image" src="https://github.com/user-attachments/assets/cdecaa30-c7d5-43c8-b8d2-15cc8e3239bd" />
+
+4. Run the Docker container
+
+
