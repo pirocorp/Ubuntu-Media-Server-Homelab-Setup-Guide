@@ -78,7 +78,7 @@ NTFS HDDs
   - UEFI boot
   - AHCI mode for SATA
  
-- Enable:
+- Disable:
   - Fast Boot (optional)
 
 #### 4 — Install Ubuntu Server
