@@ -1036,17 +1036,9 @@ Nginx Proxy Manager becomes the centralized ingress layer for all services.
 
 ```mermaid
 flowchart TD
-    A[Internet / LAN] --> B[Nginx Proxy Manager]
+    A[AdGuard Home DNS] --> B[Nginx Proxy Manager]
     B --> C[Portainer]
-    B --> D[Plex]
-    B --> E[Immich]
+    B --> D[Immich]
+    B --> E[Plex]
     B --> F[Kavita]
-    B --> G[Stash]
-    B --> H[AdGuard Home]
-```
-
-```mermaid
-flowchart TD
-    A[DNS Name] --> B[Reverse Proxy]
-    B --> C[Internal Service]
 ```
