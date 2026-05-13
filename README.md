@@ -792,7 +792,7 @@ Extended fstab
 
 The extended `/etc/fstab` configuration now includes persistent NTFS domain drive mounts, allowing all storage drives to be automatically mounted and consistently available after every system reboot.
 
-<img width="1060" height="780" alt="image" src="https://github.com/user-attachments/assets/dd379940-2f98-464a-83f7-1bf36e1c4be8" />
+<img width="1060" height="666" alt="image" src="https://github.com/user-attachments/assets/938d54be-d3c0-40c5-87ce-2749b61af540" />
 
 | Mount Point | UUID in `lsblk -f` | UUID in `fstab`    | Status |
 | ----------- | ------------------ | ------------------ | ------ |
