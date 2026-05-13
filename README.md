@@ -462,8 +462,11 @@ cd /srv/docker/portainer
 docker compose restart
 ```
 
+<img width="1117" height="151" alt="image" src="https://github.com/user-attachments/assets/81bd6c0c-f53d-4946-af04-2f45ee57742f" />
+
 Then refresh: https://192.168.0.246:9443 and create an admin account
 
+<img width="1307" height="863" alt="image" src="https://github.com/user-attachments/assets/06bbe7e7-7ac4-45c1-83c8-3200467eeb4c" />
 
 
 
