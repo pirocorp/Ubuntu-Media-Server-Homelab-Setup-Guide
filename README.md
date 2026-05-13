@@ -196,3 +196,52 @@ cockpit
 <img width="1112" height="628" alt="image" src="https://github.com/user-attachments/assets/b4360f30-6322-4629-8daa-4aed9f9616b7" />
 
 
+### Configure Firewall
+
+#### First check current firewall status:
+
+```bash
+sudo ufw status
+```
+
+<img width="1112" height="628" alt="image" src="https://github.com/user-attachments/assets/7fc7dd47-25cf-424d-8254-879f99d07902" />
+
+#### Run the following commands to enable those services
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow Samba
+sudo ufw allow 9090/tcp
+```
+
+| Rule       | Purpose                     |
+| ---------- | --------------------------- |
+| `OpenSSH`  | Allows SSH remote access    |
+| `Samba`    | Allows Windows file sharing |
+| `9090/tcp` | Allows Cockpit web UI       |
+
+
+<img width="1112" height="628" alt="image" src="https://github.com/user-attachments/assets/b3d13ae2-676a-4253-9200-41d75923e4a6" />
+
+#### Enable firewall
+
+```bash
+sudo ufw enable
+```
+
+<img width="1112" height="628" alt="image" src="https://github.com/user-attachments/assets/9c754d4d-0f3a-4f1f-a7d1-a827e56c52bc" />
+
+#### Verify firewall status
+
+```bash
+sudo ufw status verbose
+```
+
+<img width="1112" height="628" alt="image" src="https://github.com/user-attachments/assets/fe9f6f88-9f57-459c-ab48-c532b56e9367" />
+
+
+
+
+
+
+
