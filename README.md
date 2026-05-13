@@ -38,3 +38,54 @@ NTFS HDDs
 ├── Photos
 └── Downloads
 ```
+
+## Steps
+
+### Prepare For Ubuntu Server Installation
+
+#### 1. Prepare Bootable USB Flash Drive
+
+- Download the latest [Ubuntu Server LTS](https://ubuntu.com/download/server?utm_source=chatgpt.com)
+- USB Writing Tool (Windows) [Rufus](https://rufus.ie/?utm_source=chatgpt.com)
+
+<img width="466" height="582" alt="image" src="https://github.com/user-attachments/assets/d2d3511d-ebbe-4bd3-b59c-d2e1a3e4a662" /> 
+
+<img width="559" height="283" alt="image" src="https://github.com/user-attachments/assets/05beed4f-5617-45cc-ab62-1d3d5ad6cc62" />
+
+
+
+#### 2. Create Bootable USB
+
+##### Recommended Settings
+
+- Boot Selection: Ubuntu Server ISO
+- Partition Scheme: GPT / if no UEFI support MBR
+- File System: Leave default. (FAT32)
+- Choose: ISO Mode (recommended)
+
+#### 3. BIOS Preparation
+
+- Enable:
+  - UEFI boot
+  - AHCI mode for SATA
+ 
+- Enable:
+  - Fast Boot (optional)
+
+#### 4 — Install Ubuntu Server
+
+
+
+
+Use:
+- Ubuntu Server LTS
+- Minimal installation
+- Install OpenSSH server
+
+Do NOT install:
+- Desktop environment
+- Extra unnecessary packages
+
+
+
+
