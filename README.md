@@ -708,14 +708,38 @@ flowchart TD
     B --> E[Independent Samba Share]
 ```
 
+
+#### Goal
+
+```
+Physical Drive
+    ↓
+UUID
+    ↓
+Mount Point
+    ↓
+Persistent Mount
+    ↓
+Samba Share
+    ↓
+Docker Bind Mount
+```
+
 1. Step 1 — Connect Your External Drives
 
-Shut down the server cleanly first:
+Shut down the server and connect the external drives.
 
 ```bash
 sudo shutdown now
 ```
 
-2. 
+2. Step 2 — Detect Drives
+
+```bash
+lsblk -f
+``` 
+
+<img width="1060" height="514" alt="image" src="https://github.com/user-attachments/assets/69f50912-9331-4b67-a141-1776a46493ed" />
+
 
 
