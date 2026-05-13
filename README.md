@@ -491,5 +491,50 @@ Clicking “Get Started” connects Portainer to your local Docker environment, 
 | Infrastructure-as-Code | ✅      |
 
 
+### Docker folder architecture
 
+Before deploying containers, it is recommended to create a standardized Docker folder architecture. Organizing applications into dedicated directories provides predictable file paths, simplifies maintenance, and keeps infrastructure clean and scalable. 
+
+This approach makes backups easier because each application’s configuration and persistent data are stored in known locations. It also simplifies migrations to another server, since entire application folders can be copied directly. In addition, structured directories lead to cleaner Docker Compose files and promote infrastructure consistency across all deployed services, which becomes increasingly important as the homelab grows.
+
+
+#### Structure
+
+```
+/srv/docker
+├── portainer
+├── plex
+├── immich
+├── kavita
+├── stash
+├── adguard
+└── nginx-proxy-manager
+```
+
+Each application should have its own isolated directory containing its Docker Compose file, configuration files, and persistent data. This structure keeps services separate, making management, troubleshooting, backups, and upgrades significantly easier. By following the principle of “one project = one directory,” every application becomes self-contained and portable, keeping the infrastructure organized, scalable, and easier to maintain over time.
+
+
+##### Create Base Structure
+
+```bash
+mkdir -p /srv/docker/{plex,immich,kavita,adguard,nginx-proxy-manager}
+```
+
+##### Verify Structure
+
+1. Install `tree` if missing:
+
+```bash
+sudo apt install tree -y
+```
+
+<img width="1115" height="799" alt="image" src="https://github.com/user-attachments/assets/49e00e5b-4f79-47db-a339-ab964a52b1b4" />
+
+2. Execute `three` Command 
+
+```bash
+tree /srv/docker
+```
+
+<img width="1115" height="799" alt="image" src="https://github.com/user-attachments/assets/c6e55822-037c-487f-a5c6-9ab97eb09447" />
 
