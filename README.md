@@ -259,3 +259,15 @@ Open this in your Windows browser: https://192.168.0.246:9090
 <img width="948" height="867" alt="image" src="https://github.com/user-attachments/assets/86b04fd6-2e1e-4142-a70d-15c4a0a26f45" />
 
 
+#### Turn on administrative access in Cockpit
+
+<img width="937" height="131" alt="image" src="https://github.com/user-attachments/assets/c7b22f6a-6df2-4f35-9ce2-56689083250e" />
+
+<img width="952" height="796" alt="image" src="https://github.com/user-attachments/assets/5d0c04fc-f0df-45e4-bb0d-9b75e3011ca5" />
+
+
+
+
+
+
+
