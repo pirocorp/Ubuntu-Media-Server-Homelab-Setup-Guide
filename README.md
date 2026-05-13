@@ -855,3 +855,102 @@ Mount points confirmation
 | `/mnt/data` | 7.3T | 39%   | ✅      |
 | `/mnt/ia`   | 3.7T | 85%   | ✅      |
 | `/mnt/comp` | 3.7T | 28%   | ✅      |
+
+
+
+### Samba network shares
+
+Samba network shares allow Linux directories to be shared over the network using the SMB protocol, making them accessible from Windows systems through File Explorer, like standard network drives. This enables the Ubuntu server to function similarly to a NAS by providing centralized storage access for media, backups, and shared files across the local network.
+
+
+Step 1 — Install Samba
+
+Samba enables Linux systems to share files and folders over the network using the SMB protocol, allowing Windows devices to access them like standard network drives.
+
+```bash
+sudo apt install samba -y
+```
+
+<img width="1060" height="590" alt="image" src="https://github.com/user-attachments/assets/f7fa0306-7ee4-473e-ab46-ea0d8c134593" />
+
+Step 2 — Backup Existing Samba Config
+
+```bash
+sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.backup
+```
+
+<img width="1063" height="133" alt="image" src="https://github.com/user-attachments/assets/6195523f-d955-4708-92b1-666af21686c8" />
+
+Step 3 — Open Samba Configuration
+
+```bash
+sudo nano /etc/samba/smb.conf
+```
+
+<img width="1060" height="590" alt="image" src="https://github.com/user-attachments/assets/9b4c595f-b604-44c3-b6cc-5a300ea1b066" />
+
+
+Step 4 — Add Your Domain Shares
+
+Append this at the bottom:
+
+```ini
+
+[iac]
+   path = /mnt/iac
+   browseable = yes
+   writable = yes
+   guest ok = no
+   valid users = piroman
+
+[lp]
+   path = /mnt/lp
+   browseable = yes
+   writable = yes
+   guest ok = no
+   valid users = piroman
+
+[data]
+   path = /mnt/data
+   browseable = yes
+   writable = yes
+   guest ok = no
+   valid users = piroman
+
+[ia]
+   path = /mnt/ia
+   browseable = yes
+   writable = yes
+   guest ok = no
+   valid users = piroman
+
+[comp]
+   path = /mnt/comp
+   browseable = yes
+   writable = yes
+   guest ok = no
+   valid users = piroman
+```
+
+<img width="1060" height="913" alt="image" src="https://github.com/user-attachments/assets/3a5a2955-55c1-4323-aa19-4738884b3612" />
+
+| Option          | Purpose                      |
+| --------------- | ---------------------------- |
+| `path`          | Linux directory being shared |
+| `browseable`    | visible on network           |
+| `writable`      | allows write access          |
+| `guest ok = no` | requires authentication      |
+| `valid users`   | allowed Samba users          |
+
+
+```bash
+# Validate the configuration safely
+testparm
+```
+
+
+<img width="1060" height="913" alt="image" src="https://github.com/user-attachments/assets/067b519c-92ba-4a56-9411-6b2ae4d6a658" />
+
+
+<img width="1060" height="913" alt="image" src="https://github.com/user-attachments/assets/f9931ff1-5ad7-4390-92c0-0fcef4a464e7" />
+
