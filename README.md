@@ -1006,6 +1006,9 @@ With IP works, with name not (for now).
 
 <img width="510" height="156" alt="image" src="https://github.com/user-attachments/assets/57e0a5ae-584e-42d7-9369-63dc5c754c4c" />
 
+Drives where successfully maped in Windows
+
+<img width="268" height="238" alt="image" src="https://github.com/user-attachments/assets/9fd8004b-bd95-4996-8142-cf4c3a6192dc" />
 
 
 
