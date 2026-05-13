@@ -437,6 +437,32 @@ docker ps
 
 <img width="1115" height="799" alt="image" src="https://github.com/user-attachments/assets/20106668-53c0-44ec-8afa-20825f71f1c8" />
 
+Open the following URI: https://192.168.0.246:9443
+
+If you see that your instance timed out, just restart the container.
+
+<img width="1055" height="250" alt="image" src="https://github.com/user-attachments/assets/318efe57-94cd-4b10-b780-01b17f64595e" />
+
+Why This Happens. On first boot:
+
+```mermaid
+flowchart TD
+    A[Portainer starts first time] --> B[Waits for admin creation]
+    B --> C[Timeout expires]
+    C --> D[Locks setup for security]
+    D --> E[Requires restart]
+```
+
+**Portainer waits for the initial admin setup for only a limited time.**
+
+5a. Restart the container.
+
+```bash
+cd /srv/docker/portainer
+docker compose restart
+```
+
+Then refresh: https://192.168.0.246:9443 and create an admin account
 
 
 
