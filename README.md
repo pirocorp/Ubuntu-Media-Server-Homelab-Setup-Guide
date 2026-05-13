@@ -546,7 +546,26 @@ Portainer container writes some internal application data with elevated permissi
 sudo tree /srv/docker
 ```
 
+This temporarily grants root privileges and allows viewing all directories.
+
 <img width="1115" height="799" alt="image" src="https://github.com/user-attachments/assets/10bf3b26-4fe5-446b-ac4a-066152de9bca" />
+
+### Important Concept
+
+Linux file permissions are an important part of container isolation in Docker environments. Containers often create files and directories owned by the root user or by internal service accounts to protect application data and maintain security boundaries between services. As a result, normal users may not always have permission to access certain container-managed files directly, which is expected behavior and helps prevent accidental modification of critical application data.
+
+```bash
+flowchart TD
+    A[Docker Container] --> B[Creates files]
+    B --> C[Files owned by root]
+    C --> D[Normal user may not access]
+```
+
+
+
+
+
+
 
 
 
