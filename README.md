@@ -786,6 +786,8 @@ Current fstab
 
 The current `/etc/fstab` file contains the default filesystem configuration created during Ubuntu installation. It defines the main Linux system partition (/), the EFI boot partition (/boot/efi), and the swap file used for virtual memory. These entries ensure the operating system and boot components are automatically mounted and available during every system startup.
 
+The /etc/fstab file defines which storage devices Linux should automatically mount during boot. By adding our NTFS drives to fstab, we created persistent mounts that survive reboots and always appear in the same locations, such as /mnt/iac, /mnt/lp, /mnt/data, /mnt/ia, and /mnt/comp. Each entry uses the drive UUID instead of device names like /dev/sda2, making the configuration more reliable even if drive ordering changes.
+
 <img width="1060" height="514" alt="image" src="https://github.com/user-attachments/assets/c34a4d13-0433-4344-8da5-a6bb5a3afe88" />
 
 Extended fstab
@@ -801,6 +803,24 @@ The extended `/etc/fstab` configuration now includes persistent NTFS domain driv
 | `/mnt/data` | `A4D09E95D09E6D74` | `A4D09E95D09E6D74` | ✅      |
 | `/mnt/ia`   | `7698C86698C82689` | `7698C86698C82689` | ✅      |
 | `/mnt/comp` | `D6E66FCAE66FA987` | `D6E66FCAE66FA987` | ✅      |
+
+Initially, the NTFS drives were mounted with `umask=0022`, which made Samba shares appear read-only to Windows. This was solved by changing the mount option to `umask=0000`, which allows full read/write access through Samba while still mapping ownership to the piroman Linux user (`uid=1000`, `gid=1000`). After reloading the mounts and restarting Samba, the shares became fully writable from Windows.
+
+| Property   | Example Value | Purpose                                                                                        |
+| ---------- | ------------- | ---------------------------------------------------------------------------------------------- |
+| `uid`      | `1000`        | Sets the Linux owner user ID for all files on the NTFS drive                                   |
+| `gid`      | `1000`        | Sets the Linux group ID for all files on the NTFS drive                                        |
+| `umask`    | `0022`        | Removes write permissions for group/others, resulting in mostly read-only access through Samba |
+| `umask`    | `0000`        | Allows full read/write permissions for all users accessing the mounted NTFS drive              |
+| `nofail`   | `nofail`      | Prevents boot failure if the drive is disconnected or unavailable                              |
+| `defaults` | `defaults`    | Applies standard Linux mount behavior                                                          |
+| `ntfs-3g`  | `ntfs-3g`     | Linux NTFS driver providing NTFS read/write support                                            |
+
+Example final mount configuration:
+
+`UUID=A4D09E95D09E6D74 /mnt/data ntfs-3g defaults,uid=1000,gid=1000,umask=0000,nofail 0 0`
+
+This configuration gives Linux and Samba stable ownership, persistent mounting, and full Windows read/write compatibility for the shared NTFS drives.
 
 
 6. Step 6 - Test the mount configuration safely before rebooting.
