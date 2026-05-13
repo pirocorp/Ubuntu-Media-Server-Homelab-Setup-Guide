@@ -583,7 +583,18 @@ According to the screenshot, the current Portainer LTS line is: **2.39.2 LTS**
 
 So instead of: `image: portainer/portainer-ce:lts` it should be pinned: `image: portainer/portainer-ce:2.39.2` or even `image: portainer/portainer-ce:2.39.2-alpine` if you intentionally want the Alpine variant.
 
+1. Pin the correct version in the YAML file
 
+<img width="1115" height="495" alt="image" src="https://github.com/user-attachments/assets/d15c9e18-c1c0-4bd8-95b7-09fa523a8ab7" />
+
+2. Restart the container
+
+```bash
+cd /srv/docker/portainer
+docker compose up -d
+```
+
+<img width="1115" height="495" alt="image" src="https://github.com/user-attachments/assets/b4573bde-2759-4106-b9f9-f33ba7fb3f75" />
 
 
 
