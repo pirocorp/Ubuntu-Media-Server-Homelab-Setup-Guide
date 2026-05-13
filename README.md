@@ -193,4 +193,6 @@ cockpit
 | `ntfs-3g`         | NTFS filesystem support            | Read/write Windows NTFS drives                   |
 | `cockpit`         | Web management interface           | Manage server from browser                       |
 
+<img width="1112" height="628" alt="image" src="https://github.com/user-attachments/assets/b4360f30-6322-4629-8daa-4aed9f9616b7" />
+
 
