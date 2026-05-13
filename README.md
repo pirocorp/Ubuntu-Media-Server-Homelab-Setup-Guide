@@ -39,6 +39,27 @@ NTFS HDDs
 └── Downloads
 ```
 
+## Applications, Services, Media Persistence storage
+
+| Purpose       | Storage Type   |
+| ------------- | -------------- |
+| App configs   | Docker volumes |
+| Media library | Bind mounts    |
+| Photos/videos | Bind mounts    |
+| Databases     | Docker volumes |
+
+## Storage Strategy
+
+| Data Type   | Recommended              |
+| ----------- | ------------------------ |
+| App configs | `/srv/docker/appname`    |
+| Media       | `/mnt/media`             |
+| Downloads   | `/mnt/downloads`         |
+| Databases   | `/srv/docker/appname/db` |
+| Photos      | `/mnt/media/photos`      |
+
+
+
 ## Steps
 
 ### Prepare For Ubuntu Server Installation
@@ -315,8 +336,76 @@ systemctl
 ```
 
 
+### Install Portainer
+
+Portainer becomes your graphical Docker management UI. You’ll be able to:
+
+- Start/Stop Containers
+- View logs
+- Manage stacks
+- Update containers
+- Inspect networks/volumes
+- Deploy compose files visually
+
+#### Create Docker-managed persistent storage volume for Portainer
+
+A Docker-managed persistent storage volume is permanent storage that is separate from the container itself. It keeps application data safe even if containers are updated, recreated, restarted, or deleted, ensuring settings, databases, and configurations persist independently of the running container.
+
+A Docker container is the running application instance itself — temporary and replaceable — while a Docker volume is persistent storage that holds the application’s important data, such as configurations, databases, and files. Containers can be recreated at any time, but volumes preserve the data independently, so nothing important is lost.
+
+Docker stores volumes here by default: `/var/lib/docker/volumes/`, Portainer volume specifically: `/var/lib/docker/volumes/portainer_data/`.
+
+1. Create Portainer Directory
+
+```bash
+sudo mkdir -p /srv/docker/portainer
+```
+
+<img width="1115" height="647" alt="image" src="https://github.com/user-attachments/assets/a62871b2-2581-407a-8e93-fc877918ab66" />
 
 
+2. Give Your User Ownership
+
+```bash
+sudo chown -R piroman:piroman /srv/docker
+```
+
+<img width="1115" height="647" alt="image" src="https://github.com/user-attachments/assets/ff6a1e84-c38e-4af2-ad03-58a4b8b899be" />
+
+This allows Docker containers and your user to manage files cleanly.
+
+3. Create Compose File
+
+```bash
+nano /srv/docker/portainer/compose.yml
+```
+
+```yaml
+services:
+  portainer:
+    image: portainer/portainer-ce:lts
+    container_name: portainer
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+      - "9443:9443"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/docker/portainer/data:/data
+```
+
+<img width="1115" height="647" alt="image" src="https://github.com/user-attachments/assets/1940dcbc-9771-447d-b17d-49511ae7efd7" />
 
 
+4. Check and validate the YAML
+   
+```bash
+cat /srv/docker/portainer/compose.yml
+docker compose -f /srv/docker/portainer/compose.yml config
+```
 
+<img width="1115" height="647" alt="image" src="https://github.com/user-attachments/assets/938e41f5-c3f6-4b5f-9e78-6b52695dce17" />
+
+<img width="1115" height="799" alt="image" src="https://github.com/user-attachments/assets/cdecaa30-c7d5-43c8-b8d2-15cc8e3239bd" />
