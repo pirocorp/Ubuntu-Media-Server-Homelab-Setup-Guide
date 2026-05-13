@@ -239,9 +239,23 @@ sudo ufw status verbose
 
 <img width="1112" height="628" alt="image" src="https://github.com/user-attachments/assets/fe9f6f88-9f57-459c-ab48-c532b56e9367" />
 
+Current state:
+
+| Service          | Status             |
+| ---------------- | ------------------ |
+| SSH              | Allowed            |
+| Samba            | Allowed            |
+| Cockpit (9090)   | Allowed            |
+| Incoming traffic | Blocked by default |
+| Outgoing traffic | Allowed            |
 
 
+#### Cockpit web management
 
+Open this in your Windows browser: https://192.168.0.246:9090
 
+<img width="962" height="1032" alt="image" src="https://github.com/user-attachments/assets/c32aee7a-251c-4754-9536-d76f80eea52d" />
+
+<img width="948" height="867" alt="image" src="https://github.com/user-attachments/assets/86b04fd6-2e1e-4142-a70d-15c4a0a26f45" />
 
 
