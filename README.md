@@ -538,3 +538,16 @@ tree /srv/docker
 
 <img width="1115" height="799" alt="image" src="https://github.com/user-attachments/assets/c6e55822-037c-487f-a5c6-9ab97eb09447" />
 
+##### Why This Happens
+
+Portainer container writes some internal application data with elevated permissions for security and isolation. If You Want To Inspect Everything
+
+```bash
+sudo tree /srv/docker
+```
+
+<img width="1115" height="799" alt="image" src="https://github.com/user-attachments/assets/10bf3b26-4fe5-446b-ac4a-066152de9bca" />
+
+
+
+
