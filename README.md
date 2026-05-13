@@ -48,6 +48,15 @@ NTFS HDDs
 - Download the latest [Ubuntu Server LTS](https://ubuntu.com/download/server?utm_source=chatgpt.com)
 - USB Writing Tool (Windows) [Rufus](https://rufus.ie/?utm_source=chatgpt.com)
 
+#### 2. Create Bootable USB
+
+##### Recommended Settings
+
+- Boot Selection: Ubuntu Server ISO
+- Partition Scheme: GPT / if no UEFI support MBR
+- File System: Leave default. (FAT32)
+- Choose: ISO Mode (recommended)
+
 | Setting          | Value          |
 | ---------------- | -------------- |
 | Ubuntu ISO       | 26.04 LTS      |
@@ -60,17 +69,6 @@ NTFS HDDs
 <img width="466" height="582" alt="image" src="https://github.com/user-attachments/assets/d2d3511d-ebbe-4bd3-b59c-d2e1a3e4a662" /> 
 
 <img width="559" height="283" alt="image" src="https://github.com/user-attachments/assets/05beed4f-5617-45cc-ab62-1d3d5ad6cc62" />
-
-
-
-#### 2. Create Bootable USB
-
-##### Recommended Settings
-
-- Boot Selection: Ubuntu Server ISO
-- Partition Scheme: GPT / if no UEFI support MBR
-- File System: Leave default. (FAT32)
-- Choose: ISO Mode (recommended)
 
 #### 3. BIOS Preparation
 
@@ -90,24 +88,48 @@ NTFS HDDs
 | Layout               | English (US)               |
 | Variant              | English (US)               |
 | Installation         | Ubuntu Server (minimized)  |
-
-| File System      | FAT32          |
-| Write Mode       | ISO Image Mode |
-
-
-
-
+| Proxy                | Blank                      |
+| Use entire disk      | Selected                   |
+| Mirror               | Default                    |
+| LVM                  | Disable LVM                |
+| Encryption (LUKS)    | Leave OFF                  |
 
 
+##### Final Disk Layout
 
-Use:
-- Ubuntu Server LTS
-- Minimal installation
-- Install OpenSSH server
+| Mount       | Type  | Size    |
+| ----------- | ----- | ------- |
+| `/`         | ext4  | ~1.8 TB |
+| `/boot/efi` | FAT32 | 1 GB    |
 
-Do NOT install:
-- Desktop environment
-- Extra unnecessary packages
+##### Linux host
+
+| Field       | Value                       |
+| ----------- | --------------------------- |
+| Your name   | `Piroman`                   |
+| Server name | `piroman-server`            |
+| Username    | `piroman`                   |
+
+##### ENABLE OpenSSH server
+
+That enables:
+
+- Remote terminal access
+- Windows SSH access
+- Future Docker management
+- Cockpit/Portainer workflow
+
+##### Ubuntu PRO - Skip it
+
+##### SSH Configuration
+
+| Option                                 | Status |
+| -------------------------------------- | ------ |
+| Install OpenSSH server                 | ✅     |
+| Allow password authentication over SSH | ✅     |
+| Import SSH key                         |        |
+
+
 
 
 
