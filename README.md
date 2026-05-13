@@ -266,9 +266,38 @@ Open this in your Windows browser: https://192.168.0.246:9090
 <img width="951" height="727" alt="image" src="https://github.com/user-attachments/assets/997d3e22-b845-413a-a8a0-f678afd82fb5" />
 
 
+#### Install Docker
 
+```bash
+# Install Docker Engine + Docker Compose
+sudo apt install docker.io docker-compose-v2 -y
 
+# Enable Docker at startup - Linux equivalent of Windows Services + Startup Type
+sudo systemctl enable docker
 
+# Start Docker now
+sudo systemctl start docker
 
+# Verify Docker works
+sudo docker run hello-world
 
+# Allow your user to run Docker without sudo
+sudo usermod -aG docker piroman
+```
+
+| Package / Component          | Purpose                       | Why You Need It                                                          |
+| ---------------------------- | ----------------------------- | ------------------------------------------------------------------------ |
+| `docker.io`                  | Docker Engine                 | Runs containers (Plex, Immich, Kavita, Portainer, etc.)                  |
+| `docker-compose-v2`          | Docker Compose plugin         | Lets you define and start multi-container apps using `compose.yml` files |
+| `systemctl enable docker`    | Startup service configuration | Makes Docker automatically start after every reboot                      |
+| `systemctl start docker`     | Starts Docker service now     | Immediately launches the Docker daemon without rebooting                 |
+| `hello-world` container      | Docker test image             | Confirms Docker is installed and working correctly                       |
+| `usermod -aG docker piroman` | Adds user to Docker group     | Allows `piroman` to use Docker without typing `sudo` every time          |
+
+Log out of SSH and reconnect. After reconnecting, test:
+
+```bash
+docker ps
+```
+If no permission error appears, Docker is configured correctly.
 
