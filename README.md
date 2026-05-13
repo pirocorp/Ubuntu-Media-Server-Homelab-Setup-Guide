@@ -550,18 +550,38 @@ This temporarily grants root privileges and allows viewing all directories.
 
 <img width="1115" height="799" alt="image" src="https://github.com/user-attachments/assets/10bf3b26-4fe5-446b-ac4a-066152de9bca" />
 
-### Important Concept
+### Important Concept - Linux file permissions and Docker
 
 Linux file permissions are an important part of container isolation in Docker environments. Containers often create files and directories owned by the root user or by internal service accounts to protect application data and maintain security boundaries between services. As a result, normal users may not always have permission to access certain container-managed files directly, which is expected behavior and helps prevent accidental modification of critical application data.
 
-```bash
+```mermaid
 flowchart TD
     A[Docker Container] --> B[Creates files]
     B --> C[Files owned by root]
     C --> D[Normal user may not access]
 ```
 
+### Important Concept - Why Floating Tags Can Be Risky
 
+Using floating Docker image tags such as `latest`, `lts`, or `stable` can be risky because they do not point to a fixed application version. Over time, these tags may automatically reference newer releases containing configuration changes, database migrations, removed features, or breaking changes. As a result, running updates or redeploying containers can unexpectedly alter a working environment without any explicit version change in the Compose file. Pinning exact versions provides predictable, reproducible, and more stable infrastructure management.
+
+#### Typical Upgrade Workflow
+
+```mermaid
+flowchart TD
+    A[Read release notes] --> B[Update compose.yml version]
+    B --> C[docker compose pull]
+    C --> D[docker compose up -d]
+    D --> E[Test]
+```
+
+#### Pin the current LTS version
+
+According to the screenshot, the current Portainer LTS line is: **2.39.2 LTS**
+
+<img width="1186" height="358" alt="image" src="https://github.com/user-attachments/assets/219baa40-a3be-48d4-8660-f25f0c0d9a9e" />
+
+So instead of: `image: portainer/portainer-ce:lts` it should be pinned: `image: portainer/portainer-ce:2.39.2` or even `image: portainer/portainer-ce:2.39.2-alpine` if you intentionally want the Alpine variant.
 
 
 
