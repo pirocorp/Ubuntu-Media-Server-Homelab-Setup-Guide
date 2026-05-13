@@ -611,3 +611,40 @@ flowchart TD
 ```
 
 
+1. Step 1 — Generate SSH Key on Windows
+
+```powershell
+ssh-keygen -t ed25519 -C "piroman-windows"
+```
+
+<img width="1103" height="514" alt="image" src="https://github.com/user-attachments/assets/f0b0828d-2e59-4a46-97e7-3f201860e725" />
+
+
+`C:\Users\YOUR_USER\.ssh\`
+
+<img width="740" height="235" alt="image" src="https://github.com/user-attachments/assets/94606d7d-01fd-460a-9685-ac855935513f" />
+
+2. Step 2 — Copy the public key
+
+In Windows PowerShell, execute the following command and copy the full output 
+
+```powershell
+type $env:USERPROFILE\.ssh\ubuntu-server.pub
+```
+
+Then in Ubuntu 
+
+```bash
+# Create the .ssh directory if it does not already exist
+mkdir -p ~/.ssh
+
+# Set secure permissions so only the current user can access the directory
+chmod 700 ~/.ssh
+
+# Open the authorized_keys file to add allowed public SSH keys
+nano ~/.ssh/authorized_keys
+```
+
+Then paste the output that was copied from Windows into the Ubuntu Server `~/.ssh/authorized_keys` file
+
+
