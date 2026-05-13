@@ -803,9 +803,55 @@ The extended `/etc/fstab` configuration now includes persistent NTFS domain driv
 | `/mnt/comp` | `D6E66FCAE66FA987` | `D6E66FCAE66FA987` | ✅      |
 
 
+6. Step 6 - Test the mount configuration safely before rebooting.
+
+The `sudo mount -a` command instructs Linux to immediately mount all filesystems defined in `/etc/fstab`, allowing the configuration to be tested without rebooting the server.
+
+```bash
+# “Attempt to mount everything defined inside /etc/fstab right now.”
+sudo mount -a
+```
+<img width="1060" height="780" alt="image" src="https://github.com/user-attachments/assets/d2c65b9e-739c-4f4a-8a36-d69583e4e00f" />
 
 
+7. Step 7 - Clean NTFS dirty flags
 
+The `ntfsfix` utility is used to safely clear NTFS dirty or hibernation flags left by Windows, allowing the drives to be mounted normally in Linux with full read-write access.
 
+```bash
+sudo ntfsfix /dev/sda2
+sudo ntfsfix /dev/sdb2
+sudo ntfsfix /dev/sdc2
+sudo ntfsfix /dev/sdd2
+sudo ntfsfix /dev/sdf2
+```
 
+<img width="1060" height="1032" alt="image" src="https://github.com/user-attachments/assets/c9e31f3d-d3e9-419b-b970-981854fba5ff" />
 
+8. Step 8 - Test the mount configuration **again** before rebooting.
+
+```bash
+sudo mount -a
+```
+
+<img width="1060" height="590" alt="image" src="https://github.com/user-attachments/assets/de899950-2575-4d17-bd3a-61bea631904f" />
+
+9. Step 9 - Verify that drives are mounted correctly.
+
+The df -h command displays all currently mounted filesystems, their storage usage, available free space, and mount locations in a human-readable format, such as GB and TB.
+
+```bash
+df -h
+```
+
+<img width="1060" height="590" alt="image" src="https://github.com/user-attachments/assets/1d7952af-3588-4590-83e8-7a71b1633894" />
+
+Mount points confirmation
+
+| Mount Point | Size | Usage | Status |
+| ----------- | ---- | ----- | ------ |
+| `/mnt/iac`  | 3.7T | 49%   | ✅      |
+| `/mnt/lp`   | 7.3T | 50%   | ✅      |
+| `/mnt/data` | 7.3T | 39%   | ✅      |
+| `/mnt/ia`   | 3.7T | 85%   | ✅      |
+| `/mnt/comp` | 3.7T | 28%   | ✅      |
