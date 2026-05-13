@@ -48,6 +48,15 @@ NTFS HDDs
 - Download the latest [Ubuntu Server LTS](https://ubuntu.com/download/server?utm_source=chatgpt.com)
 - USB Writing Tool (Windows) [Rufus](https://rufus.ie/?utm_source=chatgpt.com)
 
+| Setting          | Value          |
+| ---------------- | -------------- |
+| Ubuntu ISO       | 26.04 LTS      |
+| Partition Scheme | GPT            |
+| Target System    | UEFI           |
+| File System      | FAT32          |
+| Write Mode       | ISO Image Mode |
+
+
 <img width="466" height="582" alt="image" src="https://github.com/user-attachments/assets/d2d3511d-ebbe-4bd3-b59c-d2e1a3e4a662" /> 
 
 <img width="559" height="283" alt="image" src="https://github.com/user-attachments/assets/05beed4f-5617-45cc-ab62-1d3d5ad6cc62" />
