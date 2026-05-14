@@ -1670,3 +1670,81 @@ nslookup server.home
 nslookup adguard.home
 ```
 <img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/ff912ecf-15dd-44b1-991f-22f573b51638" />
+
+
+#### Reverse Proxy - Nginx Proxy Manager
+
+#### Goal
+
+| Current               | Future                   |
+| --------------------- | ------------------------ |
+| `portainer.home:9443` | `https://portainer.home` |
+| `server.home:9090`    | `https://server.home`    |
+
+Step 1 — Create NPM Directory
+
+```bash
+sudo mkdir -p /srv/docker/nginx-proxy-manager
+cd /srv/docker/nginx-proxy-manager
+```
+
+Step 2 — Create Docker Compose File
+
+```bash
+nano compose.yml
+```
+
+```yaml
+services:
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/b5008eb7-498c-4ce0-898d-4477075479ea" />
+
+
+Step 3 - AdGuard UI - Change port
+
+AdGuard UI currently uses port 80. Change the `compose.yaml` file to expose 3000 and to redirect it to 80 internally.
+
+```yaml
+- "3000:80/tcp"
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/749a057c-9c22-4577-aa4f-0087dde35df3" />
+
+Recreate Container
+
+```bash
+docker compose down
+docker compose up -d
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/2e87636d-217a-45c3-9d50-075b991b1f0e" />
+
+Verify 
+
+Open in browser URL: `http://adguard.home:3000`
+
+<img width="883" height="637" alt="image" src="https://github.com/user-attachments/assets/c0c35dca-f7a5-4b58-a033-5e5a876cdb93" />
+
+
+
+
+
+
+
+
+
+
