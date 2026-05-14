@@ -1739,10 +1739,13 @@ Open in browser URL: `http://adguard.home:3000`
 
 <img width="883" height="637" alt="image" src="https://github.com/user-attachments/assets/c0c35dca-f7a5-4b58-a033-5e5a876cdb93" />
 
+Verify Port 80 Is Free
 
+```bash
+sudo ss -tulpn | grep :80
+```
 
-
-
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/91d37d25-9cf6-4da6-a1fd-9e15fca602ae" />
 
 
 
