@@ -1493,7 +1493,7 @@ Change Windows DNS To `AdGuard`. Click: `Edit` next to: `DNS server assignment`.
 
 ##### After Saving
 
-Run in PowerShell:
+Run in Windows PowerShell:
 
 ```powershell
 nslookup google.com
@@ -1505,10 +1505,70 @@ The Windows machine is now successfully using `AdGuard Home` for DNS resolution.
 
 <img width="960" height="1032" alt="image" src="https://github.com/user-attachments/assets/08509639-357e-4251-8cf3-10473c347a42" />
 
+###### What The Dashboard Shows
+
+| Section             | Meaning                                |
+| ------------------- | -------------------------------------- |
+| DNS Requests        | Total DNS queries processed            |
+| Active Clients      | Devices using AdGuard Home             |
+| Top Queried Domains | Most requested domains                 |
+| Processing Time     | DNS response latency                   |
+| Blocked Domains     | Ads/trackers blocked                   |
+| Upstream Servers    | External DNS providers used by AdGuard |
 
 
 
+#### Configure upstream DNS providers
+
+An upstream DNS provider is an external DNS service that resolves Internet domain names on behalf of your local DNS server. In this architecture, AdGuard Home receives DNS requests from devices on the network, applies filtering and local rules, and then forwards unresolved internet queries to upstream DNS providers such as Cloudflare, Quad9, or Google DNS to obtain the final IP addresses.
+
+Custom upstream DNS providers are configured in AdGuard Home to control how internet domain requests are resolved after local filtering and DNS policies are applied. This allows AdGuard Home to forward DNS queries to trusted providers such as Quad9 or Cloudflare, improving privacy, security, reliability, and performance while enabling features like encrypted DNS, malware protection, and centralized network-wide DNS management.
+
+Step 1 — Open DNS Settings
+
+<img width="934" height="438" alt="image" src="https://github.com/user-attachments/assets/94af5103-63ac-4808-81f9-dcb05fb5dd70" />
+
+Step 2 — Configure Upstream DNS Servers
+
+<img width="796" height="716" alt="image" src="https://github.com/user-attachments/assets/4a6ceeaf-b1fd-4809-837b-a644737b9356" />
+
+| Priority  | Provider   | Protocol       |
+| --------- | ---------- | -------------- |
+| Primary   | Quad9      | DNS-over-HTTPS |
+| Secondary | Cloudflare | DNS-over-HTTPS |
 
 
+| Feature              | Result                                    |
+| -------------------- | ----------------------------------------- |
+| Encryption           | DNS traffic protected from ISP inspection |
+| Redundancy           | Fallback upstream if one provider fails   |
+| Malware protection   | Quad9 threat intelligence filtering       |
+| Centralization       | All client DNS routed through AdGuard     |
+| Policy enforcement   | DNS filtering controlled centrally        |
+| Future local domains | Infrastructure-ready DNS layer            |
 
+Apply / Save
+
+<img width="794" height="244" alt="image" src="https://github.com/user-attachments/assets/24084cee-d347-4d2a-b90a-f8aec8d4d62d" />
+
+Run in Windows PowerShell:
+
+```powershell
+nslookup google.com
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/93a94667-a3a2-414a-b422-c8840580d71b" />
+
+The next logical infrastructure stages are:
+
+| Priority | Component             | Purpose                                 |
+| -------- | --------------------- | --------------------------------------- |
+| 1        | DNS Filtering Lists   | Ad/tracker blocking                     |
+| 2        | Local `.home` Domains | Internal service names                  |
+| 3        | Nginx Proxy Manager   | Reverse proxy routing                   |
+| 4        | HTTPS Certificates    | Secure local services                   |
+| 5        | Service Publishing    | `portainer.home`, `jellyfin.home`, etc. |
+
+
+#### DNS filtering lists
 
