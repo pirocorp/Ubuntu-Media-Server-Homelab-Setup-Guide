@@ -1282,6 +1282,130 @@ docker compose up -d
 <img width="1918" height="474" alt="image" src="https://github.com/user-attachments/assets/5ae79a59-dbab-4ae5-8e2e-024f45dd06f3" />
 
 
+#### Initial AdGuard Setup
+
+Open the browser to `http://192.168.0.246:3000`. This launches the AdGuard Home setup wizard.
+
+<img width="825" height="831" alt="image" src="https://github.com/user-attachments/assets/2239320a-7510-4eca-8f7a-c4fc61942f79" />
+
+A blank page usually indicates that the `AdGuard Home` container is still initializing and the web setup interface is not yet fully ready to serve requests.
+
+
+##### First Verify Container Logs
+
+```bash
+docker logs adguard-home
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/e5ff8b49-8f89-477e-8753-f5084eeeac55" />
+
+The logs show that `AdGuard Home` started successfully, and the setup web interface is listening on `0.0.0.0:3000`, which means the service itself is healthy. The important line is, `AdGuard Home` is available at: `http://127.0.0.1:3000`.
+
+##### Also, Verify Port Mapping
+
+```bash
+docker ps
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/b231fa82-bf34-47de-a628-9422db6845c9" />
+
+This output confirms the issue. `AdGuard Home` currently has no published host ports mapped.
+
+Nothing in the PORTS column. That means the container is running internally, but its ports are not exposed to your network host, which explains the blank page in the browser. Most Likely Cause: 
+
+The `compose.yml` file was probably:
+
+  - indented incorrectly
+  - saved with formatting issues
+  - or the ports: section is outside the service block
+
+
+##### Verify Your Compose File
+
+```bash
+cat compose.yml
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/f463b10b-db4c-4606-a052-52cd06aee83c" />
+
+
+##### Working Theory
+
+The container was created before port mappings became available. Recreate The Container Cleanly
+
+```bash
+# Delete current container
+docker compose down
+
+# Then verify container removal
+docker ps -a
+
+# Then Rebuild Fresh
+docker compose up -d
+
+# Then Verify Ports
+docker ps
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/b4c61e4a-9b3b-4a7c-81a6-f3599c8c13d8" />
+
+Now we found the next conflicting port `68/udp`. The error: `failed to bind host port 0.0.0.0:68/udp` means another service is already using DHCP client port `68`.
+
+This is normal on Ubuntu because:
+
+  - NetworkManager
+  - `systemd-networkd`
+  - DHCP client services
+
+commonly used it.
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/e39cf656-9de8-4004-9806-85f3ca552bf5" />
+
+###### Important Observation
+
+NOT currently using `AdGuard Home` as a DHCP server. The ISP router still handles DHCP. Therefore, ports `67` and `68` are unnecessary right now.
+
+###### Solution
+
+Remove these lines from compose.yml:
+
+```yaml
+- "67:67/udp"
+- "68:68/udp"
+```
+
+The ports section should become:
+
+```yaml
+ports:
+  - "53:53/tcp"
+  - "53:53/udp"
+  - "3000:3000/tcp"
+  - "80:80/tcp"
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/55a3aa07-7340-46b6-ad1d-5ca358a6bc3a" />
+
+
+Then Recreate Container
+
+```bash
+docker compose down
+docker compose up -d
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/478a8194-25ca-429a-b311-9bd1fc471cfa" />
+
+Validate port 3000 is open.
+
+```bash
+docker ps -a
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/03a379bf-4988-4826-b796-37542dd05d67" />
+
+<img width="960" height="1032" alt="image" src="https://github.com/user-attachments/assets/8cfdc460-1bf2-45f2-9eeb-f55ba051715e" />
+
 
 
 
