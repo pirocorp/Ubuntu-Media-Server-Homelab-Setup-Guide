@@ -1711,6 +1711,13 @@ services:
       - ./letsencrypt:/etc/letsencrypt
 ```
 
+| Port  | Purpose                            |
+| ----- | ---------------------------------- |
+| `80`  | HTTP traffic for proxied services  |
+| `443` | HTTPS traffic for proxied services |
+| `81`  | NPM administration web interface   |
+
+
 <img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/b5008eb7-498c-4ce0-898d-4477075479ea" />
 
 
@@ -1746,6 +1753,173 @@ sudo ss -tulpn | grep :80
 ```
 
 <img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/91d37d25-9cf6-4da6-a1fd-9e15fca602ae" />
+
+
+Step 4 — Start Container
+
+```bash
+docker compose up -d
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/790d52c2-5b5e-438d-aa63-958ad1db1db3" />
+
+
+Step 5 — Verify Container
+
+```bash
+docker ps
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/82529134-7b58-45a8-a3cb-0e83e1b0f666" />
+
+| Service             | Status  |
+| ------------------- | ------- |
+| Nginx Proxy Manager | Running |
+| Port 80             | Bound   |
+| Port 81             | Bound   |
+| Port 443            | Bound   |
+
+
+Step 6 — Open NPM Web Interface
+
+Open in browser URL: `http://192.168.0.246:81`
+
+<img width="810" height="615" alt="image" src="https://github.com/user-attachments/assets/a8ccebd1-c589-456a-8358-d20fc8e03bda" />
+
+Login with:
+
+| Field    | Value               |
+| -------- | ------------------- |
+| Email    | `admin@example.com` |
+| Password | `changeme`          |
+
+Then change them afterward.
+
+<img width="914" height="271" alt="image" src="https://github.com/user-attachments/assets/268557ac-7cd6-41c1-8739-d700e624be19" />
+
+
+Step 7 — Create Your First Proxy Host
+
+<img width="401" height="487" alt="image" src="https://github.com/user-attachments/assets/3cbc0fd5-d771-49cf-ae45-54ca41d0c11e" />
+
+<img width="927" height="590" alt="image" src="https://github.com/user-attachments/assets/3792cfe6-1028-4bb7-9b4f-0c25582c2552" />
+
+
+Step 8 - Create Server Home Host
+
+| Field               | Value           |
+| ------------------- | --------------- |
+| Domain Names        | `server.home`   |
+| Scheme              | `https`         |
+| Forward Hostname/IP | `192.168.0.246` |
+| Forward Port        | `9090`          |
+
+<img width="431" height="502" alt="image" src="https://github.com/user-attachments/assets/93702016-a7f3-42fd-bc9c-c94171e8f060" />
+
+```
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+
+proxy_http_version 1.1;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+```
+
+<img width="443" height="387" alt="image" src="https://github.com/user-attachments/assets/e70cddeb-63cf-4750-a5d1-94501fac6333" />
+
+
+Step 9 - Proper Cockpit Reverse Proxy Fix
+
+```bash
+# Create Cockpit Config Directory
+sudo mkdir -p /etc/cockpit
+
+# Create Cockpit Proxy Configuration
+sudo nano /etc/cockpit/cockpit.conf
+```
+
+Paste the following configuration.
+
+```
+[WebService]
+Origins = http://server.home https://server.home
+ProtocolHeader = X-Forwarded-Proto
+```
+
+| Setting          | Purpose                                           |
+| ---------------- | ------------------------------------------------- |
+| `Origins`        | Allows Cockpit to trust reverse proxy hostname    |
+| `ProtocolHeader` | Makes Cockpit respect proxy HTTPS/HTTP forwarding |
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/15d40935-9c42-44ee-9c9f-610d9945ad1a" />
+
+
+Restart Cockpit
+
+```bash
+# Restart Cockpit (Service)
+sudo systemctl restart cockpit
+
+# Shows Cockpit Status
+sudo systemctl status cockpit
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/1826a256-5620-4abb-b358-83f016fb81bf" />
+
+
+Add Self-Signed Certificate for HTTPS
+
+```bash
+# Create cert folder
+sudo mkdir -p /srv/docker/nginx-proxy-manager/certs
+
+# Generate Certificate There
+sudo openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+-keyout /srv/docker/nginx-proxy-manager/certs/server.home.key \
+-out /srv/docker/nginx-proxy-manager/certs/server.home.crt
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/78838b45-cb03-4b57-bd66-4d015e21b1ec" />
+
+Import into NPM
+
+Open Certificate Content
+
+```bash
+sudo cat /srv/docker/nginx-proxy-manager/certs/server.home.crt
+```
+
+Copy EVERYTHING from `-----BEGIN CERTIFICATE-----` to `-----END CERTIFICATE-----`
+
+
+Open Private Key
+
+```bash
+sudo cat /srv/docker/nginx-proxy-manager/certs/server.home.key
+```
+
+Copy EVERYTHING from `-----BEGIN PRIVATE KEY-----` to `-----END PRIVATE KEY-----`
+
+Add To NPM
+
+<img width="412" height="406" alt="image" src="https://github.com/user-attachments/assets/982136f2-f5bb-4668-a59d-f2879bf0f31a" />
+
+<img width="851" height="189" alt="image" src="https://github.com/user-attachments/assets/0d18901f-d871-42d0-a47f-4508db95fa4c" />
+
+
+Attach it to the `server.home`
+
+<img width="418" height="315" alt="image" src="https://github.com/user-attachments/assets/283776e5-a10d-4ed7-9361-d8e3160a6dc9" />
+
+<img width="424" height="319" alt="image" src="https://github.com/user-attachments/assets/d9c4d175-669d-495e-baa7-ea899d51c5a8" />
+
+Final Test
+
+Open `https://server.home` in your browser to verify that Cockpit is now successfully accessible through Nginx Proxy Manager using HTTPS. Because the certificate is self-signed, the browser will display a security warning the first time you connect — this is expected in a homelab environment. After accepting the warning, the Cockpit dashboard should load correctly and maintain a persistent login session without redirecting back to the login page.
+
+<img width="947" height="893" alt="image" src="https://github.com/user-attachments/assets/995aaaf2-f9a3-4798-a6b2-01f7c68114d7" />
 
 
 
