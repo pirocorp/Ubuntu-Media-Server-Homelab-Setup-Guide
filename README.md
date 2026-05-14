@@ -1,5 +1,134 @@
 # Ubuntu Media Server Homelab Setup Guide
 
+## Implemented
+
+### Current Homelab Architecture
+
+| Component | Purpose |
+|---|---|
+| Ubuntu Server | Host operating system |
+| Docker | Container runtime |
+| Cockpit | Server administration |
+| Portainer | Container management |
+| AdGuard Home | DNS + network filtering |
+| Nginx Proxy Manager | Reverse proxy + HTTPS |
+| Local DNS (`*.home`) | Internal service discovery |
+
+
+### Current Access URLs
+
+| Service | URL |
+|---|---|
+| Cockpit | `https://server.home` |
+| Portainer | `https://portainer.home` |
+| AdGuard Home | `https://adguard.home` |
+| NPM Admin | `http://npm.home:81` |
+
+
+### Phase 1 — Base Ubuntu Server Setup
+Established the foundation of the homelab environment by installing and configuring the Ubuntu server, enabling remote administration, Docker support, and preparing persistent storage locations for containerized services.
+
+#### Implemented
+- Ubuntu Server installation
+- Static local IP assignment (`192.168.0.246`)
+- Docker & Docker Compose installation
+- `/srv/docker` directory structure
+- Basic server administration with Cockpit
+
+---
+
+### Phase 2 — DNS Infrastructure with AdGuard Home
+Configured centralized local DNS management and network-wide DNS filtering using AdGuard Home.
+
+#### Implemented
+- AdGuard Home deployment in Docker
+- Upstream DNS providers configuration
+- DNS-over-HTTPS upstreams
+- DNS filtering lists:
+  - AdGuard DNS Filter
+  - AdAway
+  - OISD Small
+- Local DNS rewrites:
+  - `server.home`
+  - `portainer.home`
+  - `adguard.home`
+  - `npm.home`
+- Internal domain-based service access
+
+#### Result
+Services can now be accessed via human-readable local domains rather than raw IP addresses.
+
+---
+
+### Phase 3 — Container Management with Portainer
+Deployed centralized Docker container management using Portainer.
+
+#### Implemented
+- Portainer deployment
+- Docker environment integration
+- HTTPS-enabled access through reverse proxy
+- Local DNS integration:
+  - `https://portainer.home`
+
+#### Result
+Centralized graphical container management for the homelab.
+
+---
+
+### Phase 4 — Reverse Proxy Infrastructure with Nginx Proxy Manager
+Implemented centralized reverse proxy routing and HTTPS termination using Nginx Proxy Manager.
+
+#### Implemented
+- NPM deployment
+- Port conflict resolution with AdGuard
+- Reverse proxy configuration
+- SSL certificate management
+- WebSocket support configuration
+- Internal HTTPS routing
+
+#### Reverse Proxied Services
+| Service | URL |
+|---|---|
+| Cockpit | `https://server.home` |
+| Portainer | `https://portainer.home` |
+| AdGuard Home | `https://adguard.home` |
+
+#### Result
+All major services are now accessible securely through centralized HTTPS endpoints.
+
+---
+
+### Phase 5 — Internal SSL Infrastructure
+Created internal HTTPS support using self-signed certificates.
+
+#### Implemented
+- OpenSSL certificate generation
+- Self-signed certificate deployment
+- SSL integration inside NPM
+- HTTPS enforcement
+- HTTP/2 support
+
+#### Result
+Encrypted internal homelab traffic using reusable local certificates.
+
+---
+
+### Phase 6 — Service Integration & Hardening
+Integrated all infrastructure components together into a cohesive homelab platform.
+
+#### Implemented
+- Cockpit trusted origins configuration
+- Reverse proxy websocket handling
+- DNS + reverse proxy integration
+- HTTPS session persistence
+- Internal service routing validation
+
+#### Result
+Stable and production-style internal service architecture.
+
+---
+
+
 ## Goal
 
 Build a headless Ubuntu Server homelab/media server with:
@@ -1919,6 +2048,36 @@ Now that `Cockpit` is working correctly through the reverse proxy, the next step
 Step 11 - Resuing my custom certificate everywhere
 
 <img width="871" height="370" alt="image" src="https://github.com/user-attachments/assets/965535b7-578f-4905-a552-3e22d84cdca7" />
+
+
+Step 12 - Add DNS for NPM UI
+
+Add DNS Rewrite
+
+<img width="789" height="642" alt="image" src="https://github.com/user-attachments/assets/767a94db-84cd-492d-8e51-bc7bbec9489d" />
+
+Keep using NPM admin on port `81` directly, and do not proxy NPM admin through itself.
+
+<img width="951" height="568" alt="image" src="https://github.com/user-attachments/assets/f69b443d-92c7-458e-8d3c-169bdd3cb1a9" />
+
+
+### Current Homelab Setup
+
+| Service   | Access                   |
+| --------- | ------------------------ |
+| Cockpit   | `https://server.home`    |
+| Portainer | `https://portainer.home` |
+| AdGuard   | `https://adguard.home`   |
+| NPM Admin | `http://npm.home:81`     |
+
+
+
+
+
+
+
+
+
 
 
 
