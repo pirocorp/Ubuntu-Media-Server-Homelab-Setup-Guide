@@ -1466,20 +1466,44 @@ Client Devices
    └── Use 192.168.0.246 as DNS
 ```
 
+#### Configure Windows To Use AdGuard DNS
+
+##### Windows DNS Configuration
+
+Currently, Windows is using ISP DNS servers:
+
+```
+195.130.131.1
+195.130.130.1
+```
+
+<img width="1108" height="837" alt="image" src="https://github.com/user-attachments/assets/e87069d6-2ffe-45e4-a1da-4337411eb8ee" />
+
+Change Windows DNS To `AdGuard`. Click: `Edit` next to: `DNS server assignment`.
+
+<img width="525" height="722" alt="image" src="https://github.com/user-attachments/assets/93831427-ab35-407e-8a17-fc53d66f6a67" />
+
+| Setting       | Value                     |
+| ------------- | ------------------------- |
+| Preferred DNS | `192.168.0.246`           |
+| Alternate DNS | ISP DNS (`195.130.131.1`) |
+
+<img width="881" height="903" alt="image" src="https://github.com/user-attachments/assets/60346bb2-474b-485b-a30c-1d0494e25653" />
 
 
+##### After Saving
 
+Run in PowerShell:
 
+```powershell
+nslookup google.com
+```
 
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/7aed6ced-5bb0-4234-9ec4-f204b614b1c0" />
 
+The Windows machine is now successfully using `AdGuard Home` for DNS resolution.
 
-
-
-
-
-
-
-
+<img width="960" height="1032" alt="image" src="https://github.com/user-attachments/assets/08509639-357e-4251-8cf3-10473c347a42" />
 
 
 
