@@ -1816,20 +1816,6 @@ Step 8 - Create Server Home Host
 
 <img width="431" height="502" alt="image" src="https://github.com/user-attachments/assets/93702016-a7f3-42fd-bc9c-c94171e8f060" />
 
-```
-proxy_set_header Host $host;
-proxy_set_header X-Real-IP $remote_addr;
-proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-proxy_set_header X-Forwarded-Proto $scheme;
-
-proxy_http_version 1.1;
-proxy_set_header Upgrade $http_upgrade;
-proxy_set_header Connection "upgrade";
-```
-
-<img width="443" height="387" alt="image" src="https://github.com/user-attachments/assets/e70cddeb-63cf-4750-a5d1-94501fac6333" />
-
-
 Step 9 - Proper Cockpit Reverse Proxy Fix
 
 ```bash
@@ -1922,6 +1908,11 @@ Open `https://server.home` in your browser to verify that Cockpit is now success
 <img width="947" height="893" alt="image" src="https://github.com/user-attachments/assets/995aaaf2-f9a3-4798-a6b2-01f7c68114d7" />
 
 
+Step 10 - Configure AdGuard Home Behind Nginx Proxy Manager
 
+Now that `Cockpit` is working correctly through the reverse proxy, the next step is to configure `AdGuard Home` behind `Nginx Proxy Manager`. This will allow you to access the AdGuard dashboard using a clean local domain such as `https://adguard.home` instead of manually specifying the server IP address and port. Using NPM also centralizes HTTPS management, enables cleaner URLs, and prepares the homelab for additional internal services behind the same reverse proxy infrastructure.
 
+<img width="429" height="508" alt="image" src="https://github.com/user-attachments/assets/e9955320-9b84-4bba-8ce4-7c5caae8761d" />
+
+<img width="884" height="811" alt="image" src="https://github.com/user-attachments/assets/34641714-d0e9-4449-9a77-703ce3509902" />
 
