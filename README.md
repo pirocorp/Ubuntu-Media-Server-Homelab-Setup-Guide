@@ -1588,19 +1588,67 @@ Step 2 — Recommended Starter Lists
 <img width="768" height="523" alt="image" src="https://github.com/user-attachments/assets/0f823cae-d631-4b0e-be5b-b00e23e1ae9c" />
 
 
+#### Local DNS domains
+
+##### Goal
+
+| Current URL                   | Local Domain        | Purpose                         |
+| ----------------------------- | ------------------- | ------------------------------- |
+| `https://192.168.0.246:9090/` | `server.home`       | Server management/dashboard     |
+| `https://192.168.0.246:9443/` | `portainer.home`    | Docker and container management |
+| `http://192.168.0.246/`       | `adguard.home`      | DNS management and filtering    |
 
 
+```
+Client Device
+    ↓
+AdGuard Home DNS
+    ↓
+server.home
+portainer.home
+adguard.home
+    ↓
+Nginx Proxy Manager
+    ↓
+Internal Services
+```
 
 
+##### Important Architectural Concept
+
+AdGuard Home only resolves names → IP addresses. Ports are still required for now because reverse proxy routing is not deployed yet.
+
+| Domain           | Resolves To     |
+| ---------------- | --------------- |
+| `portainer.home` | `192.168.0.246` |
+| `server.home`    | `192.168.0.246` |
+| `adguard.home`   | `192.168.0.246` |
 
 
+| Domain           | Actual URL                    |
+| ---------------- | ----------------------------- |
+| Portainer        | `https://portainer.home:9443` |
+| Server Dashboard | `https://server.home:9090`    |
+| AdGuard          | `http://adguard.home`         |
 
 
+Step 1 — Open DNS Rewrites
 
+Inside AdGuard Home:
 
+<img width="801" height="468" alt="image" src="https://github.com/user-attachments/assets/a71d2209-1824-43da-bd23-5f5ef99d73d2" />
 
+Step 2 — Add First Rewrite
 
+| Domain         | IP              |
+| -------------- | --------------- |
+| `adguard.home` | `192.168.0.246` |
 
+<img width="414" height="480" alt="image" src="https://github.com/user-attachments/assets/9678d172-e2d9-40a7-aa59-2747685ff5e5" />
+
+<img width="754" height="435" alt="image" src="https://github.com/user-attachments/assets/aa1649d7-ade2-40a4-8629-0e032f885515" />
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/97d8071e-1cfe-4ba1-b212-1bff5b1d3bb8" />
 
 
 
