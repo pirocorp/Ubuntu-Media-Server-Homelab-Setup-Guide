@@ -1572,3 +1572,38 @@ The next logical infrastructure stages are:
 
 #### DNS filtering lists
 
+Step 1 — Open Filters
+
+<img width="946" height="635" alt="image" src="https://github.com/user-attachments/assets/ccecfa13-6b35-4556-be29-faae797f0335" />
+
+
+Step 2 — Recommended Starter Lists
+
+| List                     | Purpose                     |
+| ------------------------ | --------------------------- |
+| AdGuard DNS Filter       | General ads & trackers      |
+| OISD Small               | Balanced broad protection   |
+| AdAway Default Blocklist | Mobile-friendly ad blocking |
+
+<img width="768" height="523" alt="image" src="https://github.com/user-attachments/assets/0f823cae-d631-4b0e-be5b-b00e23e1ae9c" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
