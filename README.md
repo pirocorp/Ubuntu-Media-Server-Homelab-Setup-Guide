@@ -2071,16 +2071,157 @@ Keep using NPM admin on port `81` directly, and do not proxy NPM admin through i
 | NPM Admin | `http://npm.home:81`     |
 
 
+### Installing PLEX
+
+Docker Mapping
+
+| Host Path                  | Container Path |
+| -------------------------- | -------------- |
+| `/mnt/data/Plex/Movies`    | `/movies`      |
+| `/mnt/data/Plex/Series`    | `/series`      |
+| `/mnt/data/Plex/Transcode` | `/transcode`   |
 
 
+#### Create Plex Media Directory Structure
+
+```bash
+sudo mkdir -p /mnt/data/Plex/{Movies,Series,Transcode}
+tree /mnt/data/Plex
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/a95a2b0d-e9f5-4b1f-ac0b-12f3fcde281c" />
+
+| Folder      | Purpose                          |
+| ----------- | -------------------------------- |
+| `Movies`    | Plex movie library               |
+| `Series`    | Plex TV series library           |
+| `Transcode` | Plex temporary transcoding cache |
 
 
+#### Ownership
+
+Since your Samba shares already use: `uid=1000,gid=1000` ensure ownership is correct:
+
+```bash
+sudo chown -R 1000:1000 /mnt/data/Plex
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/04bbf8d2-c045-4157-beed-c258c27537c8" />
+
+#### Permision
+
+```bash
+sudo chmod -R 777 /mnt/data/Plex
+```
+Linux permissions control who can read, write, or execute files and folders. Permissions are typically assigned to three groups: the file owner, the owner’s group, and everyone else. Numeric permission values are commonly used, where 7 means full access (read + write + execute), 5 means read + execute, and 0 means no access. In the Plex media folders, 777 was used to grant full read/write access to both the Plex container and Windows users accessing the files via Samba shares.
+
+Linux permissions define who can read, write, or access files and folders. Permissions are assigned to the owner, group, and others using numeric values.
+
+| Value | Permission | Meaning                          |
+| ----- | ---------- | -------------------------------- |
+| `7`   | `rwx`      | Read, write, execute/full access |
+| `6`   | `rw-`      | Read and write                   |
+| `5`   | `r-x`      | Read and execute                 |
+| `4`   | `r--`      | Read only                        |
+| `0`   | `---`      | No access                        |
+
+| Position   | Applies To             |
+| ---------- | ---------------------- |
+| First `7`  | Owner                  |
+| Second `7` | Group                  |
+| Third `7`  | Others (everyone else) |
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/1af98517-7a24-4b1a-8b2c-3f95df835f22" />
+
+#### Deploy Plex
+
+1. Create Plex Stack Directory
+
+```bash
+sudo mkdir -p /srv/docker/plex
+cd /srv/docker/plex
+```
 
 
+2. Create Compose File
+
+```bash
+nano compose.yml
+```
+
+```yaml
+services:
+  plex:
+    image: plexinc/pms-docker:latest
+    container_name: plex
+    restart: unless-stopped
+
+    ports:
+      - "32400:32400"
+
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Brussels
+
+    volumes:
+      - ./config:/config
+      - /mnt/data/Plex/Movies:/movies
+      - /mnt/data/Plex/Series:/series
+      - /mnt/data/Plex/Transcode:/transcode
+
+    network_mode: bridge
+```
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/0dab7734-794e-4bc9-a010-d4bb22e3995a" />
+
+| Mapping            | Purpose                     |
+| ------------------ | --------------------------- |
+| `./config:/config` | Plex settings/database      |
+| `/movies`          | Movie library               |
+| `/series`          | TV series library           |
+| `/transcode`       | Temporary transcoding files |
+
+3. Start Plex
+
+```bash
+docker compose up -d
+```
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/eb3a1517-46da-4d0d-8254-3d518b89454f" />
+
+4. Verify Container
+
+```bash
+docker ps
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/540cf4d0-10b4-49a4-aa77-dfde20dcc334" />
+
+Open URI: `http://192.168.0.246:32400/web`
+
+<img width="875" height="1005" alt="image" src="https://github.com/user-attachments/assets/81ad4058-11bc-4da4-96d4-c90df5d827f2" />
 
 
+5. Claim The Server
 
+Get the Claim Token from [Get Claim Token](https://www.plex.tv/claim/)
 
+Edit compose.yml, adding the claim as an environmental value
 
+```bash
+cd /srv/docker/plex
+nano compose.yml
+```
 
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/948ddfe8-a3bc-41a5-b326-ccad7b3d7d0f" />
+
+Restart docker
+
+```bash
+docker compose down
+docker compose up -d
+```
+
+Open Again the local [PLEX Server](http://192.168.0.246:32400/web)
+
+<img width="960" height="1032" alt="image" src="https://github.com/user-attachments/assets/70e9ae2c-071c-4e04-b1c3-cf4e3f7135c6" />
 
