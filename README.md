@@ -1047,3 +1047,175 @@ flowchart TD
 | ------------- | -------------------------------------------- |
 | DNS           | “Where is this service?”                     |
 | Reverse Proxy | “Which backend should receive this request?” |
+
+
+#### DNS Foundation (AdGuard Home)
+
+1. Create AdGuard Home Directory Structure
+
+Create isolated application directories following the established Docker architecture principle:
+
+```bash
+mkdir -p /srv/docker/adguard-home/{work,conf}
+```
+
+This creates:
+  - work/ → runtime/work data
+  - conf/ → persistent configuration
+
+2. Create AdGuard Home Compose File
+
+Navigate to the application directory:
+
+```bash
+cd /srv/docker/adguard-home
+```
+
+Create the compose file:
+
+```bash
+nano compose.yml
+```
+
+<img width="957" height="628" alt="image" src="https://github.com/user-attachments/assets/e576574e-6307-4a89-91be-aaad9b28e477" />
+
+3. Add AdGuard Home Docker Compose Configuration
+
+```yaml
+services:
+  adguard-home:
+    image: adguard/adguardhome:latest
+    container_name: adguard-home
+    restart: unless-stopped
+
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "68:68/udp"
+      - "3000:3000/tcp"
+      - "80:80/tcp"
+
+    volumes:
+      - ./work:/opt/adguardhome/work
+      - ./conf:/opt/adguardhome/conf
+```
+
+
+<img width="957" height="628" alt="image" src="https://github.com/user-attachments/assets/aefb8111-a869-4404-8310-befe0250798f" />
+
+| Port Mapping    | Protocol | Purpose                                                                                          |
+| --------------- | -------- | ------------------------------------------------------------------------------------------------ |
+| `53:53/tcp`     | TCP      | Standard DNS queries over TCP. Used for larger DNS responses and some advanced DNS operations.   |
+| `53:53/udp`     | UDP      | Main DNS traffic port. Most DNS queries from client devices use UDP.                             |
+| `67:67/udp`     | UDP      | DHCP server port used when AdGuard Home provides automatic IP address assignment on the network. |
+| `68:68/udp`     | UDP      | DHCP client communication port paired with DHCP server operations.                               |
+| `3000:3000/tcp` | TCP      | Initial AdGuard Home setup web interface. Used only during first-time configuration.             |
+| `80:80/tcp`     | TCP      | Main AdGuard Home web management interface after setup completion.                               |
+
+
+###### DNS Ports (53)
+
+Ports `53/tcp` and `53/udp` are the core DNS communication ports used by `AdGuard Home` to process DNS requests from client devices. Most standard DNS queries use UDP, while TCP is used for larger responses and specific DNS operations. Without these ports exposed, `AdGuard Home` cannot function as a network DNS server.
+
+
+###### DHCP Ports (67, 68)
+
+Ports `67/udp` and `68/udp` are used for DHCP communication when `AdGuard Home` acts as a DHCP server, assigning IP addresses to devices on the network. In the current setup, the ISP router still manages DHCP. Hence, these ports are not immediately required but are kept available for possible future migration of DHCP functionality to `AdGuard Home`.
+
+###### Web Interface Ports (3000, 80)
+
+Ports `3000/tcp` and `80/tcp` provide access to the `AdGuard Home` web management interface. Port `3000` is primarily used during the initial setup wizard, while port 80 serves as the main web administration interface after setup completion. These ports allow browser-based configuration and management of DNS settings, filters, and local domain rewrites.
+
+
+4. Validate Compose File
+
+```bash
+docker compose config
+```
+
+This validates:
+
+  - YAML syntax
+  - Docker Compose structure
+  - Configuration correctness
+
+<img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/53046249-8735-4c76-9e81-cab74d915864" />
+
+5. Deploy AdGuard Home
+
+```bash
+docker compose up -d
+```
+This command does the following tasks:
+
+  - Downloads the image
+  - Creates the container
+  - Attaches persistent storage
+  - Starts AdGuard Home
+
+##### Get an error that port 53 is already in use
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/f04b7492-858e-4e78-81e7-96cc649997df" />
+
+
+###### Verify What Uses Port 53
+
+```bash
+# Show which process/service is currently using DNS port 53
+sudo lsof -i :53
+```
+
+Command Not Found 
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/e2a27fa2-6f22-4ca6-886c-8ff8acd55554" />
+
+or 
+
+``` bash
+# Display active network listeners and filter for services using port 53
+sudo ss -tulpn | grep :53
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/50ecff9b-0a00-4921-aa62-2e4d1e3a16e2" />
+
+The `systemd-resolved` process is currently binding port `53`, preventing `AdGuard Home` from starting its DNS server.
+
+`systemd-resolved` is Ubuntu’s built-in local DNS resolver service responsible for handling DNS queries, caching DNS responses, and forwarding DNS requests to external DNS servers configured on the system. By default, it listens on the local DNS port 53, allowing Ubuntu itself to perform domain name resolution (for example, resolving google.com to an IP address).
+
+###### So if Ubuntu already has a DNS resolver, why do I need AdGuard Home?
+
+`systemd-resolved` and `AdGuard Home` serve very different purposes, even though both are related to DNS.
+
+`systemd-resolved` is a lightweight local DNS resolver designed primarily for Ubuntu. Its job is to help the operating system resolve Internet domain names, cache DNS requests, and forward queries to external DNS servers. It is intended for local system functionality, not for managing an entire network.
+
+`AdGuard Home`, on the other hand, is a full-featured network DNS platform designed to serve all devices in the homelab. It provides centralized DNS management, ad blocking, tracking protection, local domain rewrites, DNS filtering, statistics, custom records, parental controls, and future integration with reverse proxies and internal infrastructure services.
+
+| Component          | Purpose                                                     |
+| ------------------ | ----------------------------------------------------------- |
+| `systemd-resolved` | Basic Ubuntu local DNS resolver                             |
+| AdGuard Home       | Centralized network-wide DNS server and management platform |
+
+
+After migration:
+
+- Ubuntu itself will still use DNS normally
+- But AdGuard Home becomes the primary DNS authority for:
+  - Windows devices
+  - Phones
+  - Docker services
+  - Local homelab domains
+  - Ad blocking
+  - Internal infrastructure routing
+
+This is why AdGuard Home is a foundational infrastructure component, while systemd-resolved is only an operating system utility.
+
+
+6. Disable Ubuntu DNS Stub Listener
+
+Edit resolved configuration in `/etc/systemd/resolved.conf` find this line `#DNSStubListener=yes` and change it to `DNSStubListener=no`. If the line does not exist, add it manually anywhere under [Resolve].
+
+
+
+
+
