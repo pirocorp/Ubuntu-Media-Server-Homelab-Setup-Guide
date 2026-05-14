@@ -1215,6 +1215,72 @@ This is why AdGuard Home is a foundational infrastructure component, while syste
 
 Edit resolved configuration in `/etc/systemd/resolved.conf` find this line `#DNSStubListener=yes` and change it to `DNSStubListener=no`. If the line does not exist, add it manually anywhere under [Resolve].
 
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/9b4bda74-c757-4cdb-909f-cbad2466c95b" />
+
+7. Restart systemd-resolved
+
+```bash
+sudo systemctl restart systemd-resolved
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/9407a3f4-3280-4b8f-9d59-9a46dc3a469b" />
+
+8. Recreate resolv.conf Symlink
+
+```bash
+# This ensures Ubuntu continues to resolve DNS properly after disabling the stub listener.
+sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/f3cb1a40-2fd2-429b-9712-b6641c3c5d25" />
+
+
+9. Check that Ubuntu itself can still resolve internet domain names correctly through DNS
+
+```bash
+ping google.com
+```
+
+or 
+
+```bash
+resolvectl query google.com
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/948ed54c-1470-44a0-915f-7eceda979738" />
+
+This confirms everything is working correctly. Ubuntu successfully:
+
+- resolved `google.com`
+- returned both IPv4 and IPv6 addresses
+- used DNS normally after disabling the stub listener
+
+Most importantly:
+
+- `systemd-resolved` still functions as Ubuntu’s DNS resolver
+
+10. Verify Port 53 Is Free
+
+```bash
+sudo ss -tulpn | grep :53
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/6f4de071-0c69-407b-a47f-4bc0b59a054b" />
+
+
+11. Then Start AdGuard Home Again
+
+At that point, `AdGuard Home` should successfully claim port `53` and start normally.
+
+```bash
+cd /srv/docker/adguard-home
+docker compose up -d
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/efd9a100-a004-43f7-b628-cb4fb973cc89" />
+
+<img width="1918" height="474" alt="image" src="https://github.com/user-attachments/assets/5ae79a59-dbab-4ae5-8e2e-024f45dd06f3" />
+
 
 
 
