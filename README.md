@@ -2223,5 +2223,38 @@ docker compose up -d
 
 Open Again the local [PLEX Server](http://192.168.0.246:32400/web)
 
-<img width="960" height="1032" alt="image" src="https://github.com/user-attachments/assets/70e9ae2c-071c-4e04-b1c3-cf4e3f7135c6" />
+<img width="564" height="568" alt="image" src="https://github.com/user-attachments/assets/ec190f01-e1c4-4f10-bf26-a71c8a1117f9" />
 
+
+6. Integrate PLEX into DNS and Reverse Proxy
+
+Add DNS Record
+
+Open AdGuard → DNS Rewrites
+
+<img width="543" height="589" alt="image" src="https://github.com/user-attachments/assets/3fb29b4d-5fba-4485-a4e6-129719d60b23" />
+
+<img width="686" height="76" alt="image" src="https://github.com/user-attachments/assets/d9b60833-3856-4526-bbfc-da3a99afe57d" />
+
+Verify DNS
+
+```powershell
+nslookup plex.home
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/b089b957-caed-45c4-aa08-15306fa43869" />
+
+Create NPM Proxy Host
+
+| Field               | Value           |
+| ------------------- | --------------- |
+| Domain Names        | `plex.home`     |
+| Scheme              | `http`          |
+| Forward Hostname/IP | `192.168.0.246` |
+| Forward Port        | `32400`         |
+
+<img width="539" height="652" alt="image" src="https://github.com/user-attachments/assets/f43fcbe8-eafa-4d22-b99e-cfac737d7d57" />
+
+<img width="557" height="409" alt="image" src="https://github.com/user-attachments/assets/3fea1588-e29c-4f8e-ae34-c23cd963558b" />
+
+<img width="951" height="785" alt="image" src="https://github.com/user-attachments/assets/0e508123-1f04-4f15-a6df-0c00ccbb6e8c" />
