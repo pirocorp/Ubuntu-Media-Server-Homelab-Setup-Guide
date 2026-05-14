@@ -1916,3 +1916,12 @@ Now that `Cockpit` is working correctly through the reverse proxy, the next step
 
 <img width="884" height="811" alt="image" src="https://github.com/user-attachments/assets/34641714-d0e9-4449-9a77-703ce3509902" />
 
+Step 11 - Resuing my custom certificate everywhere
+
+<img width="871" height="370" alt="image" src="https://github.com/user-attachments/assets/965535b7-578f-4905-a552-3e22d84cdca7" />
+
+
+
+
+
+
