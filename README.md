@@ -1650,8 +1650,23 @@ Step 2 — Add First Rewrite
 
 <img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/97d8071e-1cfe-4ba1-b212-1bff5b1d3bb8" />
 
+<img width="788" height="688" alt="image" src="https://github.com/user-attachments/assets/d27dba6a-daa5-4eae-a4cd-371f56c9179e" />
 
 
+Step 3 — Add Remaining Domains
 
+| Domain           | IP              |
+| ---------------- | --------------- |
+| `portainer.home` | `192.168.0.246` |
+| `server.home`    | `192.168.0.246` |
 
+Step 4 — Test Resolution
 
+From Windows PowerShell:
+
+```powershell
+nslookup portainer.home
+nslookup server.home
+nslookup adguard.home
+```
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/ff912ecf-15dd-44b1-991f-22f573b51638" />
