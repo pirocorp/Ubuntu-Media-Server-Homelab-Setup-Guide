@@ -1404,7 +1404,86 @@ docker ps -a
 
 <img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/03a379bf-4988-4826-b796-37542dd05d67" />
 
+Perfect — everything is now working correctly. The container now shows proper published ports, including:
+
+```
+0.0.0.0:53->53/tcp
+0.0.0.0:3000->3000/tcp
+0.0.0.0:80->80/tcp
+```
+
+
 <img width="960" height="1032" alt="image" src="https://github.com/user-attachments/assets/8cfdc460-1bf2-45f2-9eeb-f55ba051715e" />
+
+
+#### Initial AdGuard Home Setup
+
+1. Start The Setup Wizard
+
+Open: `http://192.168.0.246:3000`, then click: `Get Started`.
+
+<img width="845" height="626" alt="image" src="https://github.com/user-attachments/assets/5631c589-273c-4818-b63c-ea19e23f4c6f" />
+
+2. Configure Admin Web Interface
+
+<img width="651" height="856" alt="image" src="https://github.com/user-attachments/assets/9939dfb7-eba5-483f-935e-686ae3a15a12" />
+
+<img width="571" height="871" alt="image" src="https://github.com/user-attachments/assets/bddedd28-848f-4165-89e3-0e7152878a4c" />
+
+<img width="620" height="401" alt="image" src="https://github.com/user-attachments/assets/d5ab2700-a63a-4fd9-acd7-283fae3c8174" />
+
+<img width="870" height="879" alt="image" src="https://github.com/user-attachments/assets/2d04f0a6-8d11-45f7-83d5-4b4917836576" />
+
+
+
+| Section                  | Setting          | Recommended Value | Purpose                                                                            |
+| ------------------------ | ---------------- | ----------------- | ---------------------------------------------------------------------------------- |
+| Administration Interface | Active Interface | `All Interfaces`  | Allows access to the AdGuard Home web interface from devices on the local network. |
+| Administration Interface | Port             | `80`              | Main web management interface port after setup completion.                         |
+| DNS Server               | Active Interface | `All Interfaces`  | Allows AdGuard Home to accept DNS requests from all LAN devices.                   |
+| DNS Server               | Port             | `53`              | Standard DNS service port used for network DNS resolution.                         |
+| Static IP Requirement    | Server IP        | `192.168.0.246`   | Stable LAN IP address that client devices will use as their DNS server.            |
+| Administrator Account    | Username         | Custom            | Administrative login for managing AdGuard Home configuration and DNS settings.     |
+| Administrator Account    | Password         | Strong Password   | Secures access to the DNS management dashboard and infrastructure configuration.   |
+
+
+##### Important Architectural Note
+
+So your network architecture currently becomes:
+
+```
+Internet
+   │
+ISP Router
+   ├── DHCP
+   ├── Gateway
+   └── WiFi
+        │
+Ubuntu Server
+   └── AdGuard Home DNS
+        │
+Client Devices
+   └── Use 192.168.0.246 as DNS
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
