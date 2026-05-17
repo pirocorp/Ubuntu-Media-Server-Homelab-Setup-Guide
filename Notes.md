@@ -11,11 +11,6 @@
 
 Recommended maintenance process:
 
-- Download images
-`docker compose pull`
-
-- Recreate containers using new images
-`docker compose up -d`
-
-- Avoid using: `docker compose down`
-unless rebuilding or troubleshooting.
+- Download images `docker compose pull`
+- Recreate containers using new images `docker compose up -d`
+- Avoid using: `docker compose down` unless rebuilding or troubleshooting.
