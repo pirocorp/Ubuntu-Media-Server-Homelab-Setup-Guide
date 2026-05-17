@@ -2258,3 +2258,79 @@ Create NPM Proxy Host
 <img width="557" height="409" alt="image" src="https://github.com/user-attachments/assets/3fea1588-e29c-4f8e-ae34-c23cd963558b" />
 
 <img width="951" height="785" alt="image" src="https://github.com/user-attachments/assets/0e508123-1f04-4f15-a6df-0c00ccbb6e8c" />
+
+
+### Pin AdGuard Home to a Stable Docker Version
+
+#### Why pin versions?
+
+Using:
+
+```yaml
+image: adguard/adguardhome:latest
+```
+
+Means Docker automatically follows the newest stable release. That is convenient, but it can occasionally introduce breaking changes. Pinning a version gives:
+
+- Predictable upgrades
+- Easier rollback
+- More stable infrastructure
+
+1. Open the AdGuard Home compose file
+
+```bash
+cd /srv/docker/adguard-home
+nano compose.yml
+```
+
+2. Change the image tag
+
+Replace: `image: adguard/adguardhome:latest` with: `image: adguard/adguardhome:latest`
+
+Example final compose:
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/6361ac8b-c919-44ce-aff3-0d4ad0c974a5" />
+
+3. Pull the pinned image
+
+```bash
+# This downloads the image but does NOT restart the running container.
+docker compose pull
+```
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/65c289c5-0e08-4f61-a75b-b170d8968fa6" />
+
+
+4. Recreate the container using the pinned version
+
+```bash
+docker compose up -d
+```
+
+Docker will recreate the container, preserve all volumes/configuration, and keep downtime minimal. You do NOT need `docker compose down` for normal updates.
+
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/54e10783-ade9-4f5d-8025-aaabdc48302d" />
+
+
+5. Verify the running image
+
+```bash
+docker ps
+```
+
+<img width="1908" height="121" alt="image" src="https://github.com/user-attachments/assets/2913cbf8-930c-4ec4-89cd-cbd8256b6d8e" />
+
+You should see: `adguard/adguardhome:v0.107.74`
+
+
+
+
+
+
+
+
+
+
+
+
+
