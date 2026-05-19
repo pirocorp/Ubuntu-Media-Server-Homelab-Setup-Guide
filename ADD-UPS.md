@@ -610,3 +610,6 @@ You now have:
 - reverse proxy access
 - clean firewall setup
 - stable LAN-only monitoring
+
+
+<img width="1627" height="465" alt="image" src="https://github.com/user-attachments/assets/a3484ab2-14cf-474e-9dfd-37df9476ddbe" />
