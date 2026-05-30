@@ -1,5 +1,33 @@
 # Useful Commands
 
+## Homelab Health Check Commands
+
+```bash
+# CPU
+lscpu | grep "Model name"
+
+# RAM
+free -h
+
+# System SSD usage
+df -h /
+
+# Mounted storage drives
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT
+
+# Docker containers
+docker ps
+
+# Docker resource usage
+docker stats
+
+# Largest Docker application directories
+du -sh /srv/docker/*
+
+# Open ports
+ss -tulpn
+```
+
 ## Useful Hardware & System Information Commands
 
 | Command | Purpose | Example Output / Notes |
