@@ -653,5 +653,6 @@ Review:
 * SSD capacity
 * Container resource consumption
 * Available Bitmagnet updates
+* If the personal TMDB API key is configured correctly, Bitmagnet starts without the default TMDB API key warning.
 
 ```
