@@ -53,7 +53,7 @@ https://bitmagnet.home
 ### Direct Access
 
 ```text
-http://SERVER_IP:3333
+http://192.168.0.10:3333
 ```
 
 ---
