@@ -13,6 +13,8 @@ These commands provide a quick overview of the server's hardware, resource usage
 | `free -h`                    | Displays RAM and swap usage          | Human-readable memory statistics                 |
 | `hostnamectl`                | Displays hostname and OS information | Useful for inventory and documentation           |
 | `uname -a`                   | Displays Linux kernel information    | Useful for troubleshooting                       |
+| `sudo ncdu -x /`             | Show who consumes free space         | Useful for Space Managment                       |
+
 
 ---
 
