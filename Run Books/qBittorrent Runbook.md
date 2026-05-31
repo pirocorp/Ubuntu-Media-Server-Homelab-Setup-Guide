@@ -1,3 +1,307 @@
+# qBittorrent Seedbox Runbook
+
+## Purpose
+
+Self-hosted torrent seedbox running qBittorrent in Docker.
+
+Primary goals:
+
+* Download media directly into Plex libraries.
+* Continue seeding media while files remain in Plex.
+* Automatically refresh Plex when downloads complete.
+* Expose qBittorrent through Nginx Proxy Manager.
+* Support private and public trackers.
+* Allow external incoming peer connections through port forwarding.
+
+---
+
+# Architecture
+
+```text
+Internet
+    │
+    ▼
+Router
+    │
+    ├── TCP/UDP 6881
+    ▼
+Docker Host (192.168.0.10)
+    │
+    ▼
+qBittorrent Container
+    │
+    ├── /plex/Movies
+    ├── /plex/Series
+    ▼
+Plex Libraries
+```
+
+---
+
+# Service Information
+
+## Container
+
+Name:
+
+```text
+qbittorrent
+```
+
+Image:
+
+```text
+lscr.io/linuxserver/qbittorrent:5.2.1
+```
+
+Docker Directory:
+
+```text
+/srv/docker/qbittorrent
+```
+
+---
+
+# Storage
+
+Host:
+
+```text
+/mnt/data/Plex
+```
+
+Container:
+
+```text
+/plex
+```
+
+Structure:
+
+```text
+/plex
+├── Movies
+├── Series
+└── Transcode
+```
+
+---
+
+# Categories
+
+## plex-movies
+
+```text
+Save Path:
+/plex/Movies
+```
+
+## plex-series
+
+```text
+Save Path:
+/plex/Series
+```
+
+---
+
+# Network
+
+## WebUI
+
+Internal:
+
+```text
+http://192.168.0.10:8080
+```
+
+Public:
+
+```text
+https://qbittorrent.home
+```
+
+## Torrent Port
+
+```text
+6881/TCP
+6881/UDP
+```
+
+Router forwarding:
+
+```text
+External: 6881
+Internal: 192.168.0.10:6881
+```
+
+---
+
+# Plex Integration
+
+Completion Hook:
+
+```text
+/scripts/plex-refresh.sh
+```
+
+Purpose:
+
+* Refresh all Plex libraries after torrent completion.
+* New media appears automatically.
+
+---
+
+# Seeding Policy
+
+## Movies
+
+Download directly into:
+
+```text
+/plex/Movies
+```
+
+## Series
+
+Download directly into:
+
+```text
+/plex/Series
+```
+
+Files remain available for seeding as long as they remain in Plex.
+
+If media is deleted from Plex storage:
+
+```text
+Torrent becomes missing
+```
+
+Remove torrent manually.
+
+---
+
+# Operations
+
+## Start
+
+```bash
+cd /srv/docker/qbittorrent
+docker compose up -d
+```
+
+## Stop
+
+```bash
+docker compose down
+```
+
+## Restart
+
+```bash
+docker compose restart
+```
+
+## Logs
+
+```bash
+docker compose logs -f qbittorrent
+```
+
+---
+
+# Health Checks
+
+Verify container:
+
+```bash
+docker compose ps
+```
+
+Verify port:
+
+```bash
+docker exec -it qbittorrent ss -tulpn | grep 6881
+```
+
+Verify incoming connectivity:
+
+```text
+https://canyouseeme.org
+```
+
+---
+
+# Upgrade Procedure
+
+Pull image:
+
+```bash
+docker compose pull
+```
+
+Recreate:
+
+```bash
+docker compose up -d
+```
+
+Verify:
+
+```bash
+docker compose ps
+```
+
+---
+
+# Backup
+
+Backup:
+
+```text
+/srv/docker/qbittorrent/config
+```
+
+Contains:
+
+* qBittorrent settings
+* Categories
+* Torrent database
+* Fastresume data
+
+---
+
+# Recovery
+
+Restore:
+
+```text
+config/
+```
+
+Bring container online:
+
+```bash
+docker compose up -d
+```
+
+All torrents should reappear automatically.
+
+---
+
+# Known Design Decisions
+
+* Downloads go directly into Plex.
+* No Radarr.
+* No Sonarr.
+* No hardlinks.
+* No separate completed-downloads directory.
+* Seed while media exists.
+* Remove torrents when media is removed.
+* Refresh Plex automatically after completion.
+
+
 # qBittorrent ↔ Plex Integration
 
 ## Overview
