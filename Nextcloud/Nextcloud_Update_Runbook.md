@@ -235,7 +235,7 @@ docker exec -u www-data nextcloud-app php occ db:add-missing-columns
 ```
 
 ```bash
-php occ db:add-missing-primary-keys
+docker exec -u www-data nextcloud-app php occ db:add-missing-primary-keys
 ```
 
 ```bash
