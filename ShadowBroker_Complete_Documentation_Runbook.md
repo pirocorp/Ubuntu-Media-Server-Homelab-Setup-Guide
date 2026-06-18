@@ -55,16 +55,16 @@ Application configuration, persistent state, and container definitions are kept 
 
 ```mermaid
 flowchart TD
-    Operator[Operator / Admin] -->|Browser| Proxy[Nginx Proxy Manager / LAN Reverse Proxy]
-    Proxy -->|HTTP :3010| Frontend[shadowbroker-frontend<br/>UI container]
-    Frontend -->|API calls| Backend[shadowbroker-backend<br/>FastAPI / scheduler / ingestion]
-    Backend --> Data[(./data/backend<br/>persistent app data)]
-    Backend --> Wormhole[(Wormhole identity files)]
-    Backend --> Transparency[(Transparency ledger)]
-    Backend --> I2P[i2p container<br/>SOCKS5 :4447]
-    I2P --> PrivateNet[Private I2P transport]
-    Backend --> ExternalAPIs[External data/API providers]
-    Backend --> AIProvider[AI model/API provider]
+    Operator["Operator / Admin"] -->|Browser| Proxy["Nginx Proxy Manager / LAN Reverse Proxy"]
+    Proxy -->|HTTP 3010| Frontend["shadowbroker-frontend<br/>UI container"]
+    Frontend -->|API calls| Backend["shadowbroker-backend<br/>FastAPI / scheduler / ingestion"]
+    Backend --> Data[("./data/backend<br/>persistent app data")]
+    Backend --> Wormhole[("Wormhole identity files")]
+    Backend --> Transparency[("Transparency ledger")]
+    Backend --> I2P["i2p container<br/>SOCKS5 4447"]
+    I2P --> PrivateNet["Private I2P transport"]
+    Backend --> ExternalAPIs["External data/API providers"]
+    Backend --> AIProvider["AI model/API provider"]
 ```
 
 ---
@@ -437,16 +437,16 @@ docker logs shadowbroker-backend -f
 
 ```mermaid
 flowchart TD
-    A[Start update] --> B[Backup /srv/docker/shadowbroker]
-    B --> C[Edit .env]
-    C --> D[Set SHADOWBROKER_VERSION]
-    D --> E[docker compose pull]
-    E --> F[docker compose up -d]
-    F --> G[docker ps]
-    G --> H[Check backend logs]
-    H --> I{Healthy?}
-    I -->|Yes| J[Update complete]
-    I -->|No| K[Rollback to previous version]
+    A["Start update"] --> B["Back up /srv/docker/shadowbroker"]
+    B --> C["Edit .env"]
+    C --> D["Set SHADOWBROKER_VERSION"]
+    D --> E["docker compose pull"]
+    E --> F["docker compose up -d"]
+    F --> G["docker ps"]
+    G --> H["Check backend logs"]
+    H --> I{"Healthy?"}
+    I -->|Yes| J["Update complete"]
+    I -->|No| K["Rollback to previous version"]
 ```
 
 ---
@@ -476,15 +476,15 @@ docker compose up -d
 
 ```mermaid
 flowchart TD
-    A[Problem after update] --> B[Edit .env]
-    B --> C[Set previous SHADOWBROKER_VERSION]
-    C --> D[docker compose pull]
-    D --> E[docker compose up -d]
-    E --> F[Check containers]
-    F --> G[Check backend logs]
-    G --> H{Recovered?}
-    H -->|Yes| I[Rollback complete]
-    H -->|No| J[Restore from backup]
+    A["Problem after update"] --> B["Edit .env"]
+    B --> C["Set previous SHADOWBROKER_VERSION"]
+    C --> D["docker compose pull"]
+    D --> E["docker compose up -d"]
+    E --> F["Check containers"]
+    F --> G["Check backend logs"]
+    G --> H{"Recovered?"}
+    H -->|Yes| I["Rollback complete"]
+    H -->|No| J["Restore from backup"]
 ```
 
 ---
@@ -517,15 +517,15 @@ docker compose up -d
 
 ```mermaid
 flowchart LR
-    AppDir[/srv/docker/shadowbroker/] --> Archive[shadowbroker-backup.tar.gz]
-    Archive --> RestorePath[/srv/docker/shadowbroker restored/]
-    RestorePath --> ComposeUp[docker compose up -d]
-    ComposeUp --> Running[Running ShadowBroker stack]
+    AppDir["/srv/docker/shadowbroker/"] --> Archive["shadowbroker-backup.tar.gz"]
+    Archive --> RestorePath["/srv/docker/shadowbroker restored/"]
+    RestorePath --> ComposeUp["docker compose up -d"]
+    ComposeUp --> Running["Running ShadowBroker stack"]
 
-    AppDir --> Compose[compose.yml]
-    AppDir --> Env[.env]
-    AppDir --> Data[data/]
-    AppDir --> I2PData[i2pd/]
+    AppDir --> Compose["compose.yml"]
+    AppDir --> Env[".env"]
+    AppDir --> Data["data/"]
+    AppDir --> I2PData["i2pd/"]
 ```
 
 ---
@@ -556,11 +556,11 @@ docker exec shadowbroker-backend ls /app/data
 
 ```mermaid
 flowchart TD
-    Backend[shadowbroker-backend] --> AppData[/app/data/]
-    AppData --> Identity[wormhole.json]
-    AppData --> Status[wormhole_status.json]
-    AppData --> Keys[operator_api_keys.env]
-    Backend --> OperatorSession[Operator session / admin unlock]
+    Backend["shadowbroker-backend"] --> AppData["/app/data/"]
+    AppData --> Identity["wormhole.json"]
+    AppData --> Status["wormhole_status.json"]
+    AppData --> Keys["operator_api_keys.env"]
+    Backend --> OperatorSession["Operator session / admin unlock"]
     OperatorSession --> Identity
     OperatorSession --> Keys
 ```
@@ -590,12 +590,12 @@ External witness:
 
 ```mermaid
 flowchart TD
-    DMRoot[DM Root trust state] --> Transparency[Local transparency ledger]
-    DMRoot --> Witness[External witness]
-    Transparency --> LocalCheck[Local readback verification]
-    Witness --> IndependentCheck[Independent verification source]
-    LocalCheck --> LANTrust[LAN/private deployment trust]
-    IndependentCheck --> StrongTrust[Stronger trust model]
+    DMRoot["DM Root trust state"] --> Transparency["Local transparency ledger"]
+    DMRoot --> Witness["External witness"]
+    Transparency --> LocalCheck["Local readback verification"]
+    Witness --> IndependentCheck["Independent verification source"]
+    LocalCheck --> LANTrust["LAN / private deployment trust"]
+    IndependentCheck --> StrongTrust["Stronger trust model"]
 ```
 
 ---
@@ -634,15 +634,15 @@ docker compose restart i2p
 
 ```mermaid
 flowchart TD
-    A[Container restart loop or startup failure] --> B[Check logs]
-    B --> C{Backend database permission error?}
-    C -->|Yes| D[chown/chmod data/backend]
-    C -->|No| E{I2P data permission error?}
-    E -->|Yes| F[chown i2pd]
-    E -->|No| G[Inspect .env, compose.yml, ports, image version]
-    D --> H[Restart backend]
-    F --> I[Restart i2p]
-    G --> J[Recreate affected service]
+    A["Container restart loop or startup failure"] --> B["Check logs"]
+    B --> C{"Backend database permission error?"}
+    C -->|Yes| D["chown / chmod data/backend"]
+    C -->|No| E{"I2P data permission error?"}
+    E -->|Yes| F["chown i2pd"]
+    E -->|No| G["Inspect .env, compose.yml, ports, image version"]
+    D --> H["Restart backend"]
+    F --> I["Restart i2p"]
+    G --> J["Recreate affected service"]
 ```
 
 ---
@@ -661,10 +661,10 @@ Test-NetConnection 192.168.0.10 -Port 4447
 
 ```mermaid
 flowchart LR
-    Browser[Browser / Windows client] -->|HTTP/HTTPS| Proxy[Nginx Proxy Manager]
-    Proxy -->|HTTP :3010| Frontend[ShadowBroker Frontend]
-    Frontend -->|API| Backend[ShadowBroker Backend :8010]
-    Backend -->|SOCKS5| I2P[I2P :4447]
+    Browser["Browser / Windows client"] -->|HTTP or HTTPS| Proxy["Nginx Proxy Manager"]
+    Proxy -->|HTTP 3010| Frontend["ShadowBroker Frontend"]
+    Frontend -->|API| Backend["ShadowBroker Backend 8010"]
+    Backend -->|SOCKS5| I2P["I2P 4447"]
 ```
 
 ---
@@ -704,11 +704,11 @@ Enable:
 sequenceDiagram
     participant User as User browser
     participant NPM as Nginx Proxy Manager
-    participant FE as shadowbroker-frontend
-    participant BE as shadowbroker-backend
+    participant FE as shadowbroker frontend
+    participant BE as shadowbroker backend
 
     User->>NPM: Open ShadowBroker URL
-    NPM->>FE: Forward HTTP request to 192.168.0.10:3010
+    NPM->>FE: Forward HTTP request to 192.168.0.10 port 3010
     FE->>BE: Backend API requests
     BE-->>FE: API responses
     FE-->>NPM: Rendered UI response
@@ -743,17 +743,17 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    Daily[Daily checks] --> Weekly[Weekly backup and update review]
-    Weekly --> Monthly[Monthly restore/security review]
+    Daily["Daily checks"] --> Weekly["Weekly backup and update review"]
+    Weekly --> Monthly["Monthly restore and security review"]
     Monthly --> Daily
 
-    Daily --> Containers[Containers running]
-    Daily --> Logs[Logs clean]
-    Daily --> Feeds[Feeds active]
-    Weekly --> Backup[Backup completed]
-    Weekly --> Keys[API keys verified]
-    Monthly --> Restore[Test restore]
-    Monthly --> Secrets[Review/rotate secrets]
+    Daily --> Containers["Containers running"]
+    Daily --> Logs["Logs clean"]
+    Daily --> Feeds["Feeds active"]
+    Weekly --> Backup["Backup completed"]
+    Weekly --> Keys["API keys verified"]
+    Monthly --> Restore["Test restore"]
+    Monthly --> Secrets["Review or rotate secrets"]
 ```
 
 ---
@@ -786,13 +786,13 @@ docker compose up -d
 
 ```mermaid
 flowchart TD
-    A[Need clean rebuild] --> B[Stop stack]
-    B --> C[Remove data and i2pd]
-    C --> D[Recreate directories]
-    D --> E[Apply ownership]
-    E --> F[Pull images]
-    F --> G[Start stack]
-    G --> H[Reconfigure ShadowBroker state]
+    A["Need clean rebuild"] --> B["Stop stack"]
+    B --> C["Remove data and i2pd"]
+    C --> D["Recreate directories"]
+    D --> E["Apply ownership"]
+    E --> F["Pull images"]
+    F --> G["Start stack"]
+    G --> H["Reconfigure ShadowBroker state"]
 ```
 
 ---
@@ -812,12 +812,12 @@ With those restored, the complete ShadowBroker environment can be rebuilt.
 
 ```mermaid
 flowchart TD
-    Compose[compose.yml] --> Rebuild[Rebuild stack]
-    Env[.env] --> Rebuild
-    Data[data/] --> Rebuild
-    I2PData[i2pd/] --> Rebuild
-    Rebuild --> DockerUp[docker compose up -d]
-    DockerUp --> ShadowBroker[Operational ShadowBroker]
+    Compose["compose.yml"] --> Rebuild["Rebuild stack"]
+    Env[".env"] --> Rebuild
+    Data["data/"] --> Rebuild
+    I2PData["i2pd/"] --> Rebuild
+    Rebuild --> DockerUp["docker compose up -d"]
+    DockerUp --> ShadowBroker["Operational ShadowBroker"]
 ```
 
 ---
@@ -865,7 +865,7 @@ docker system prune
 
 ## 21. Final Notes
 
-For private LAN operation, required items are:
+For private LAN operation, the required items are:
 
 - Backend running
 - Feeds active
