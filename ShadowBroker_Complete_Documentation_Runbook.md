@@ -877,3 +877,259 @@ Optional items are:
 - Strong Trust
 
 Strong Trust requires another trusted witness source.
+
+---
+
+# 22. AI Agent Context
+
+This section provides future AI assistants, automation agents, and operators with the necessary understanding of this ShadowBroker deployment before they make recommendations or changes.
+
+The purpose of this section is context awareness.
+
+An AI agent should first understand the system, then operate it.
+
+---
+
+## Project Identity
+
+ShadowBroker is a self-hosted intelligence and monitoring platform deployed as a persistent Docker Compose stack.
+
+It should be treated as a managed server application, not a temporary container.
+
+Core principle:
+
+```text
+Containers are replaceable.
+Configuration, identity, and data are permanent.
+```
+
+---
+
+## System Purpose
+
+ShadowBroker provides:
+
+- OSINT and data collection workflows
+- External feed ingestion
+- Backend processing services
+- AI-assisted analysis capabilities
+- Operator administration
+- Private communication through I2P
+- Wormhole identity management
+- InfOnet trust verification
+
+The deployment acts as a private intelligence node controlled by the operator.
+
+---
+
+## Architecture Understanding
+
+High-level system flow:
+
+```mermaid
+flowchart TD
+    Operator["Operator"] --> Frontend["ShadowBroker Frontend"]
+    Frontend --> Backend["ShadowBroker Backend"]
+
+    Backend --> Storage["Persistent Storage"]
+    Backend --> Sources["External Data Sources"]
+    Backend --> AI["AI Provider"]
+    Backend --> Wormhole["Wormhole Identity"]
+    Backend --> InfOnet["InfOnet Trust Layer"]
+    Backend --> I2P["I2P Private Transport"]
+```
+
+The backend is the core intelligence engine.
+
+Most troubleshooting should start there.
+
+---
+
+## Component Roles
+
+### Frontend
+
+Container:
+
+```text
+shadowbroker-frontend
+```
+
+Purpose:
+
+- User interface
+- Dashboards
+- Operator interaction
+- Configuration management
+
+---
+
+### Backend
+
+Container:
+
+```text
+shadowbroker-backend
+```
+
+Purpose:
+
+- API service
+- Scheduling
+- Feed processing
+- AI workflows
+- Identity handling
+- Trust verification
+
+The backend owns the important operational logic.
+
+---
+
+## Persistent State
+
+Important directories:
+
+```text
+/srv/docker/shadowbroker/data/
+
+/srv/docker/shadowbroker/i2pd/
+```
+
+These contain:
+
+- application state
+- databases
+- identities
+- trust information
+- private transport data
+
+Never remove persistent directories unless performing an intentional reset.
+
+---
+
+## Critical Files
+
+Preserve:
+
+```text
+compose.yml
+.env
+data/
+i2pd/
+```
+
+Especially:
+
+```text
+ADMIN_KEY
+wormhole.json
+operator_api_keys.env
+transparency data
+```
+
+Loss of these files can reset identity or configuration.
+
+---
+
+## Wormhole Concept
+
+Wormhole represents the ShadowBroker node identity and operator state.
+
+The identity belongs to the persistent data, not the Docker container.
+
+Replacing a container should not create a new identity.
+
+---
+
+## InfOnet Concept
+
+InfOnet provides trust verification.
+
+Transparency:
+
+- local trust history
+- required for normal operation
+
+Witness:
+
+- independent external validation
+- optional for private LAN deployments
+
+A missing witness does not automatically mean system failure.
+
+---
+
+## Update Philosophy
+
+Correct update process:
+
+```mermaid
+flowchart TD
+    Backup["Backup existing deployment"]
+    Version["Change pinned version"]
+    Pull["Pull new containers"]
+    Deploy["Recreate stack"]
+    Verify["Verify logs and health"]
+
+    Backup --> Version
+    Version --> Pull
+    Pull --> Deploy
+    Deploy --> Verify
+```
+
+Never blindly move to the latest versions.
+
+---
+
+## AI Troubleshooting Rules
+
+When assisting this deployment:
+
+1. Read logs before changing the configuration.
+2. Preserve data before modifying containers.
+3. Prefer restarting over rebuilding.
+4. Prefer recreating containers over deleting volumes.
+5. Keep Docker Compose structure unchanged.
+6. Keep image versions pinned.
+7. Protect secrets and identity files.
+8. Suggest backups before risky operations.
+
+---
+
+## Recovery Model
+
+Preferred recovery order:
+
+```text
+Restart service
+        ↓
+Inspect logs
+        ↓
+Fix configuration
+        ↓
+Recreate container
+        ↓
+Restore backup
+```
+
+Avoid:
+
+```text
+Delete everything
+        ↓
+Install again
+```
+
+---
+
+## Final Instruction For AI Agents
+
+Before operating ShadowBroker:
+
+Understand the architecture.
+Protect the persistent state.
+Make reversible changes.
+Preserve the identity of the node.
+
+The goal is the stable long-term operation of a private intelligence platform.
+```
