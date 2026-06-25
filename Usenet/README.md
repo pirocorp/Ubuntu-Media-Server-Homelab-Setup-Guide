@@ -299,5 +299,9 @@ Official references:
 
 ## 16. One-paragraph implementation prompt
 
-Implement the locked Usenet homelab architecture in this document. Deploy one shared NZBHydra2 connected initially to NZBGeek; one shared central SABnzbd connected to Eweka and configured with categories that write completed jobs directly to approved application destination folders on potentially different drives; and one isolated SABnzbd instance per user, each with private configuration, queue/history, incomplete workspace, and completed staging directory. End-user devices are browser clients only. The shared NZBHydra2 interface is the centralized place for search, browsing, filtering, and result selection. Its integrated downloader action targets central SABnzbd, while personal downloads are handed off as NZB files to the relevant user's SABnzbd. Do not add Sonarr, Radarr, Prowlarr, Jellyfin, local client requirements, or redesign existing storage/network/application services. Ask for the missing implementation values listed in Section 11 before producing final deployment files.
+Implement the locked Usenet homelab architecture in this document. Deploy one shared NZBHydra2 connected initially to NZBGeek; one shared central SABnzbd connected to Eweka and configured with categories that write completed jobs directly to approved application destination folders on potentially different drives; and one isolated SABnzbd instance per user, each with private configuration, queue/history, incomplete workspace, and completed staging directory. 
+
+End-user devices are browser clients only. The shared NZBHydra2 interface is the centralized place for search, browsing, filtering, and result selection. Its integrated downloader action targets central SABnzbd, while personal downloads are handed off as NZB files to the relevant user's SABnzbd. 
+
+Do not add Sonarr, Radarr, Prowlarr, Jellyfin, local client requirements, or redesign existing storage/network/application services. Ask for the missing implementation values listed in Section 11 before producing final deployment files.
 
