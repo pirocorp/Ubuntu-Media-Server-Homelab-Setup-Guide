@@ -1,8 +1,8 @@
 # Services
 
 Status: Implemented
-Purpose: Entry point for deployed application and workload documentation.
-Related docs: [Overview](../overview/README.md), [Platform](../platform/README.md), [Roadmaps](../roadmaps/README.md)
+Purpose: Entry point for deployed application documentation, service overviews, and service-specific runbooks.
+Related docs: [Overview](../overview/README.md), [Platform](../platform/README.md), [Operations](../operations/README.md), [Roadmaps](../roadmaps/README.md)
 
 ## Implemented Services
 
@@ -16,7 +16,25 @@ Related docs: [Overview](../overview/README.md), [Platform](../platform/README.m
 - [UPS monitoring](./ups-monitoring/README.md)
 - [ShadowBroker](./shadowbroker/README.md)
 
+## Runbooks And How-To Docs
+
+- [Nextcloud update runbook](./nextcloud/update-runbook.md)
+- [Immich update and backup runbook](./immich/update-runbook.md)
+- [qBittorrent seedbox runbook](./qbittorrent/README.md)
+- [Bitmagnet runbook](./bitmagnet/README.md)
+- [ShadowBroker deployment and operations runbook](./shadowbroker/README.md)
+
+## Service READMEs Used As Main How-To
+
+These services currently use their main `README.md` as the primary operating reference:
+
+- [Plex](./plex/README.md)
+- [Audiobookshelf](./audiobookshelf/README.md)
+- [Kavita](./kavita/README.md)
+- [UPS monitoring](./ups-monitoring/README.md)
+
 ## Planned Work
 
+- [Remote access over VPN roadmap](../roadmaps/remote-access/README.md)
 - [Usenet roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)

@@ -73,6 +73,16 @@ Ubuntu Server host (192.168.0.10)
 - [Roadmaps](./docs/roadmaps/README.md)
 - [Archive](./docs/archive/README.md)
 
+## How-To And Runbooks
+
+- [Operations and common commands](./docs/operations/README.md)
+- [Let's Encrypt public-domain guide](./docs/platform/lets-encrypt-public-domain.md)
+- [Nextcloud update runbook](./docs/services/nextcloud/update-runbook.md)
+- [Immich update and backup runbook](./docs/services/immich/update-runbook.md)
+- [qBittorrent seedbox runbook](./docs/services/qbittorrent/README.md)
+- [Bitmagnet runbook](./docs/services/bitmagnet/README.md)
+- [ShadowBroker operations runbook](./docs/services/shadowbroker/README.md)
+
 ## Deployed Service Docs
 
 - [Plex](./docs/services/plex/README.md)
