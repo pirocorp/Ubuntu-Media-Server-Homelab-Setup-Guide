@@ -3,7 +3,9 @@
 Status: Implemented
 Purpose: Document local DNS, ingress routing, and HTTPS publishing across the homelab.
 Depends on: [Base server setup](./base-server-setup.md)
-Related docs: [Current state](../overview/current-state.md), [Let's Encrypt public-domain guide](./lets-encrypt-public-domain.md), [Legacy build history](../archive/legacy-root-readme.md)
+Related docs: [Infrastructure HowTo](./infrastructure-howto.md), [Current state](../overview/current-state.md), [Let's Encrypt public-domain guide](./lets-encrypt-public-domain.md), [Legacy build history](../archive/legacy-root-readme.md)
+
+Use the [Infrastructure HowTo](./infrastructure-howto.md) for the ordered setup path. This page captures the steady-state DNS and reverse-proxy model after the platform is live.
 
 ## Core Components
 

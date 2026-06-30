@@ -2,7 +2,9 @@
 
 Status: Implemented
 Purpose: Describe the current Ubuntu host baseline and point to the preserved installation history.
-Related docs: [Docker and Portainer](./docker-and-portainer.md), [Networking and reverse proxy](./networking-and-reverse-proxy.md), [Legacy build history](../archive/legacy-root-readme.md)
+Related docs: [Infrastructure HowTo](./infrastructure-howto.md), [Docker and Portainer](./docker-and-portainer.md), [Networking and reverse proxy](./networking-and-reverse-proxy.md), [Legacy build history](../archive/legacy-root-readme.md)
+
+Use the [Infrastructure HowTo](./infrastructure-howto.md) for the ordered rebuild sequence. This page is the concise baseline summary of the resulting host.
 
 ## Current Baseline
 

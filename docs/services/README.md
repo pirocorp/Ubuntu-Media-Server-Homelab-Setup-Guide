@@ -4,6 +4,8 @@ Status: Implemented
 Purpose: Entry point for deployed application documentation, service overviews, and service-specific runbooks.
 Related docs: [Overview](../overview/README.md), [Platform](../platform/README.md), [Operations](../operations/README.md), [Roadmaps](../roadmaps/README.md)
 
+These service docs assume the base environment from the [Infrastructure HowTo](../platform/infrastructure-howto.md) is already in place.
+
 ## Implemented Services
 
 - [Plex](./plex/README.md)

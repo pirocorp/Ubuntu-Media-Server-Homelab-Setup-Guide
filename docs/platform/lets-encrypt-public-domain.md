@@ -3,7 +3,9 @@
 Status: Implemented
 Purpose: Document the public-domain TLS approach used to replace self-signed certificates for homelab services.
 Depends on: [Networking and reverse proxy](./networking-and-reverse-proxy.md)
-Related docs: [Platform index](./README.md)
+Related docs: [Infrastructure HowTo](./infrastructure-howto.md), [Platform index](./README.md)
+
+Use this as the focused TLS and domain chapter for the [Infrastructure HowTo](./infrastructure-howto.md). The broader ordered platform build sequence lives there.
 
 ## Goal
 

@@ -3,7 +3,9 @@
 Status: Implemented
 Purpose: Document the container runtime conventions used across the homelab.
 Depends on: [Base server setup](./base-server-setup.md)
-Related docs: [Services index](../services/README.md), [Common commands](../operations/common-commands.md), [Legacy build history](../archive/legacy-root-readme.md)
+Related docs: [Infrastructure HowTo](./infrastructure-howto.md), [Services index](../services/README.md), [Common commands](../operations/common-commands.md), [Legacy build history](../archive/legacy-root-readme.md)
+
+Use the [Infrastructure HowTo](./infrastructure-howto.md) for the ordered build path. This page records the steady-state runtime conventions after Docker and Portainer are in place.
 
 ## Runtime Model
 

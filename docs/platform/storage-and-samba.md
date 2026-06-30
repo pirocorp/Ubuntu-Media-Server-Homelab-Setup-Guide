@@ -3,7 +3,9 @@
 Status: Implemented
 Purpose: Describe the current storage layout, mount strategy, and Windows share model.
 Depends on: [Base server setup](./base-server-setup.md)
-Related docs: [Plex](../services/plex/README.md), [Common commands](../operations/common-commands.md), [Legacy build history](../archive/legacy-root-readme.md)
+Related docs: [Infrastructure HowTo](./infrastructure-howto.md), [Plex](../services/plex/README.md), [Common commands](../operations/common-commands.md), [Legacy build history](../archive/legacy-root-readme.md)
+
+Use the [Infrastructure HowTo](./infrastructure-howto.md) for the ordered setup sequence. This page summarizes the resulting storage and Samba model after the platform is built.
 
 ## Storage Strategy
 

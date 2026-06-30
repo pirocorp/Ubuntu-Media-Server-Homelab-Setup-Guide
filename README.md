@@ -75,6 +75,7 @@ Ubuntu Server host (192.168.0.10)
 
 ## How-To And Runbooks
 
+- [Infrastructure HowTo](./docs/platform/infrastructure-howto.md)
 - [Operations and common commands](./docs/operations/README.md)
 - [Let's Encrypt public-domain guide](./docs/platform/lets-encrypt-public-domain.md)
 - [Nextcloud update runbook](./docs/services/nextcloud/update-runbook.md)
@@ -82,6 +83,8 @@ Ubuntu Server host (192.168.0.10)
 - [qBittorrent seedbox runbook](./docs/services/qbittorrent/README.md)
 - [Bitmagnet runbook](./docs/services/bitmagnet/README.md)
 - [ShadowBroker operations runbook](./docs/services/shadowbroker/README.md)
+
+Start with the infrastructure guide when rebuilding the base environment. Use the workload runbooks only after the platform itself is ready.
 
 ## Deployed Service Docs
 
@@ -97,6 +100,7 @@ Ubuntu Server host (192.168.0.10)
 
 ## Platform Docs
 
+- [Infrastructure HowTo](./docs/platform/infrastructure-howto.md)
 - [Base server setup](./docs/platform/base-server-setup.md)
 - [Docker and Portainer](./docs/platform/docker-and-portainer.md)
 - [Storage and Samba](./docs/platform/storage-and-samba.md)
