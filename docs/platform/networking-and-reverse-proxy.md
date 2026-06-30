@@ -26,6 +26,7 @@ Related docs: [Current state](../overview/current-state.md), [Let's Encrypt publ
 | `https://qbittorrent.pirocorp.com` | qBittorrent |
 | `https://plex.pirocorp.com` | Plex |
 | `https://audiobookshelf.pirocorp.com` | Audiobookshelf |
+| `https://immich.pirocorp.com` | Immich |
 | `https://shadowbroker.pirocorp.com` | ShadowBroker |
 
 ## Notes
@@ -33,5 +34,5 @@ Related docs: [Current state](../overview/current-state.md), [Let's Encrypt publ
 - AdGuard Home provides the DNS layer for local service discovery.
 - Nginx Proxy Manager is the central ingress path for published web services.
 - The active naming scheme uses `*.pirocorp.com` with Let's Encrypt certificates.
-- Some deployed stacks currently have only direct host-port documentation in this repo: Immich and Kavita.
+- Some deployed stacks currently have only direct host-port documentation in this repo: Kavita.
 - Public-domain TLS migration guidance is documented separately in the [Let's Encrypt guide](./lets-encrypt-public-domain.md).

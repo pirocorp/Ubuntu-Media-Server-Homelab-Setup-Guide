@@ -31,6 +31,8 @@ Related docs: [Architecture](./architecture.md), [Service inventory](./service-i
 | Bitmagnet | `https://bitmagnet.pirocorp.com` |
 | qBittorrent | `https://qbittorrent.pirocorp.com` |
 | Plex | `https://plex.pirocorp.com` |
+| Audiobookshelf | `https://audiobookshelf.pirocorp.com` |
+| Immich | `https://immich.pirocorp.com` |
 | ShadowBroker | `https://shadowbroker.pirocorp.com` |
 
 ## Direct Ports
