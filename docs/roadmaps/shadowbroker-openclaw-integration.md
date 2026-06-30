@@ -1,10 +1,17 @@
-# Shadowbroker + OpenClaw Integration Architecture
+# ShadowBroker + OpenClaw Integration Architecture
+
+Status: Planned
+Purpose: Proposed integration reference for connecting OpenClaw to the deployed ShadowBroker stack in the future.
+Depends on: [ShadowBroker deployment](../services/shadowbroker/README.md)
+Related docs: [Roadmaps index](./README.md), [Services index](../services/README.md)
 
 ## Objective
 
 The goal is to integrate an OpenClaw AI agent with a self-hosted Shadowbroker intelligence platform, allowing OpenClaw to operate as an external AI reasoning layer with authenticated access to Shadowbroker telemetry, tools, and command interfaces.
 
 Shadowbroker remains the central intelligence and telemetry system. OpenClaw acts as an autonomous AI agent that can query, analyze, and interact with Shadowbroker through the official AI API.
+
+This integration is not currently implemented in the homelab. Treat this document as a roadmap and design reference, not as an operational runbook.
 
 ---
 

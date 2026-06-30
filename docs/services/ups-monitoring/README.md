@@ -1,5 +1,10 @@
 # Home Server UPS + Netdata + Nginx Proxy Manager Setup Guide
 
+Status: Implemented
+Purpose: Deployment guide for UPS monitoring, NUT, and Netdata access through the homelab ingress stack.
+Depends on: [Base server setup](../../platform/base-server-setup.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
+Related docs: [Services index](../README.md), [Common commands](../../operations/common-commands.md)
+
 # Overview
 
 This guide documents the complete setup for:
@@ -12,6 +17,18 @@ This guide documents the complete setup for:
 - UFW firewall
 - Local-only secure access
 
+Current published URL:
+
+```text
+https://server.pirocorp.com
+```
+
+Internal Netdata target:
+
+```text
+http://192.168.0.10:19999
+```
+
 ---
 
 # Final Architecture
@@ -19,7 +36,7 @@ This guide documents the complete setup for:
 ```text
 Browser
    ↓
-server.home
+server.pirocorp.com
    ↓
 AdGuard DNS Rewrite
    ↓
@@ -378,9 +395,9 @@ Purpose:
 Add DNS rewrites:
 
 ```text
-server.home     → 192.168.0.10
-npm.home        → 192.168.0.10
-portainer.home  → 192.168.0.10
+server.pirocorp.com     → 192.168.0.10
+npm.pirocorp.com        → 192.168.0.10
+portainer.pirocorp.com  → 192.168.0.10
 ```
 
 Explanation:
@@ -398,7 +415,7 @@ Explanation:
 ### Domain
 
 ```text
-server.home
+server.pirocorp.com
 ```
 
 ### Scheme
@@ -459,7 +476,7 @@ Root causes included:
 Chrome cached HTTPS for:
 
 ```text
-server.home
+server.pirocorp.com
 ```
 
 This forced HTTPS even when:
@@ -483,7 +500,7 @@ chrome://net-internals/#hsts
 Delete:
 
 ```text
-server.home
+server.pirocorp.com
 ```
 
 Explanation:
@@ -542,7 +559,7 @@ http://192.168.0.10:19999
 ## DNS Access
 
 ```text
-http://server.home
+https://server.pirocorp.com
 ```
 
 ---

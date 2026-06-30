@@ -1,4 +1,10 @@
 # Usenet Homelab Architecture
+
+Status: Planned
+Purpose: Record the approved Usenet architecture before implementation begins.
+Depends on: Existing homelab platform, storage, DNS, and reverse proxy
+Related docs: [Roadmaps index](../README.md), [Service inventory](../../overview/service-inventory.md)
+
 ## Locked Decision Record and AI Implementation Brief
 
 **Status:** Approved concept; implementation details still to be supplied  

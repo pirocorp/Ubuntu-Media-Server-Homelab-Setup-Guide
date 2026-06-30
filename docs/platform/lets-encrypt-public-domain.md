@@ -1,5 +1,10 @@
 # How To: Replace a Self-Signed Certificate with Let's Encrypt for Home Servers
 
+Status: Implemented
+Purpose: Document the public-domain TLS approach used to replace self-signed certificates for homelab services.
+Depends on: [Networking and reverse proxy](./networking-and-reverse-proxy.md)
+Related docs: [Platform index](./README.md)
+
 ## Goal
 
 Replace a local self-signed certificate setup with a trusted Let's
@@ -18,7 +23,7 @@ Browser SSL warning
 After:
 
 ``` text
-https://service.example.com
+https://service.pirocorp.com
         |
 Let's Encrypt certificate
         |
@@ -275,15 +280,15 @@ NEXTCLOUD_DOMAIN=nextcloud.home
 New:
 
 ``` env
-NEXTCLOUD_DOMAIN=nextcloud.example.com
+NEXTCLOUD_DOMAIN=nextcloud.pirocorp.com
 ```
 
 Behind reverse proxy:
 
 ``` env
 OVERWRITEPROTOCOL=https
-OVERWRITEHOST=nextcloud.example.com
-OVERWRITECLIURL=https://nextcloud.example.com
+OVERWRITEHOST=nextcloud.pirocorp.com
+OVERWRITECLIURL=https://nextcloud.pirocorp.com
 ```
 
 Restart:

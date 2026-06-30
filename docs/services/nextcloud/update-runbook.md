@@ -1,5 +1,10 @@
 # Nextcloud Docker Upgrade Runbook
 
+Status: Implemented
+Purpose: Focused update and upgrade runbook for the deployed Nextcloud stack.
+Depends on: [Nextcloud service overview](./README.md)
+Related docs: [Services index](../README.md), [Common commands](../../operations/common-commands.md)
+
 This runbook is for the Nextcloud Docker deployment located at:
 
 ```bash
@@ -527,4 +532,4 @@ docker exec -u www-data nextcloud-app php occ app:enable mail
 - [ ] Calendar events can be accepted
 - [ ] iPhone CalDAV still syncs
 - [ ] Nginx Proxy Manager route still works
-- [ ] `https://nextcloud.home` opens correctly
+- [ ] `https://nextcloud.pirocorp.com` opens correctly

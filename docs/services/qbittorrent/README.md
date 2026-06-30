@@ -1,5 +1,10 @@
 # qBittorrent Seedbox Runbook
 
+Status: Implemented
+Purpose: Operating guide for the qBittorrent seedbox deployment.
+Depends on: [Storage and Samba](../../platform/storage-and-samba.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
+Related docs: [Plex](../plex/README.md), [Services index](../README.md)
+
 ## Purpose
 
 Self-hosted torrent seedbox running qBittorrent in Docker.
@@ -118,7 +123,7 @@ http://192.168.0.10:8080
 Public:
 
 ```text
-https://qbittorrent.home
+https://qbittorrent.pirocorp.com
 ```
 
 ## Torrent Port

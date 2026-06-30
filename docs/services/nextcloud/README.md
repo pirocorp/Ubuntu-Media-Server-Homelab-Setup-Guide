@@ -1,5 +1,10 @@
 # Nextcloud Homelab Deployment
 
+Status: Implemented
+Purpose: Service overview for the deployed Nextcloud stack.
+Depends on: [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
+Related docs: [Update runbook](./update-runbook.md), [Services index](../README.md)
+
 Self-hosted Nextcloud instance running in Docker.
 
 Purpose:
@@ -31,7 +36,7 @@ Client
   | HTTPS
   |
   v
-nextcloud.home
+nextcloud.pirocorp.com
   |
   |
 AdGuard DNS
@@ -103,7 +108,7 @@ Host mapping:
 URL:
 
 ```text
-https://nextcloud.home
+https://nextcloud.pirocorp.com
 ```
 
 
@@ -175,7 +180,7 @@ Important values:
 ```env
 NEXTCLOUD_VERSION=32-apache
 
-NEXTCLOUD_DOMAIN=nextcloud.home
+NEXTCLOUD_DOMAIN=nextcloud.pirocorp.com
 
 NEXTCLOUD_HTTP_PORT=8090
 
@@ -195,7 +200,7 @@ Nginx Proxy Manager:
 Domain:
 
 ```text
-nextcloud.home
+nextcloud.pirocorp.com
 ```
 
 Scheme:
@@ -230,7 +235,7 @@ Enable:
 AdGuard DNS rewrite:
 
 ```text
-nextcloud.home
+nextcloud.pirocorp.com
         |
         v
 Ubuntu Server IP
@@ -530,7 +535,7 @@ PONG
 URL:
 
 ```text
-https://nextcloud.home/remote.php/dav
+https://nextcloud.pirocorp.com/remote.php/dav
 ```
 
 

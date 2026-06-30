@@ -1,3 +1,9 @@
+# Common Commands
+
+Status: Implemented
+Purpose: Shared command reference for health checks, troubleshooting, and routine maintenance.
+Related docs: [Operations index](./README.md), [Current state](../overview/current-state.md)
+
 ## Homelab Health Check Commands
 
 These commands provide a quick overview of the server's hardware, resource usage, storage capacity, Docker environment, networking, and service health. They are useful for routine maintenance, troubleshooting, capacity planning, and validating infrastructure changes.

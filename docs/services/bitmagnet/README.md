@@ -1,5 +1,10 @@
 # Bitmagnet Runbook
 
+Status: Implemented
+Purpose: Operating guide for the Bitmagnet deployment.
+Depends on: [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
+Related docs: [Services index](../README.md), [Service inventory](../../overview/service-inventory.md)
+
 ## Overview
 
 Bitmagnet is a self-hosted BitTorrent DHT search engine running in Docker.
@@ -9,7 +14,7 @@ Bitmagnet is a self-hosted BitTorrent DHT search engine running in Docker.
 ```text
 AdGuard Home
       ↓
-bitmagnet.home
+bitmagnet.pirocorp.com
       ↓
 Nginx Proxy Manager
       ↓
@@ -47,7 +52,7 @@ PostgreSQL
 ### Web UI
 
 ```text
-https://bitmagnet.home
+https://bitmagnet.pirocorp.com
 ```
 
 ### Direct Access

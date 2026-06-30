@@ -1,4 +1,9 @@
-# ShadowBroker Complete Deployment Documentation & Operations Runbook
+# ShadowBroker Complete Deployment Documentation And Operations Runbook
+
+Status: Implemented
+Purpose: Main deployment and operations reference for the deployed ShadowBroker stack.
+Depends on: [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
+Related docs: [OpenClaw integration roadmap](../../roadmaps/shadowbroker-openclaw-integration.md), [Services index](../README.md)
 
 ## 1. Purpose
 
@@ -14,7 +19,6 @@ ShadowBroker runs as a self-hosted Docker Compose application providing:
 - Frontend web interface
 - Backend API services
 - Scheduler and ingestion services
-- AI agent integration
 - InfOnet trust functionality
 - Wormhole identity functionality
 - I2P private transport support
@@ -64,7 +68,6 @@ flowchart TD
     Backend --> I2P["i2p container<br/>SOCKS5 4447"]
     I2P --> PrivateNet["Private I2P transport"]
     Backend --> ExternalAPIs["External data/API providers"]
-    Backend --> AIProvider["AI model/API provider"]
 ```
 
 ---
@@ -111,7 +114,6 @@ Purpose:
 - Data processing
 - Scheduler
 - Feed ingestion
-- AI agent services
 - InfOnet verification
 - Wormhole identity management
 
@@ -880,13 +882,13 @@ Strong Trust requires another trusted witness source.
 
 ---
 
-# 22. AI Agent Context
+# 22. Operator And Automation Context
 
-This section provides future AI assistants, automation agents, and operators with the necessary understanding of this ShadowBroker deployment before they make recommendations or changes.
+This section provides future assistants, automation tooling, and operators with the necessary understanding of this ShadowBroker deployment before they make recommendations or changes.
 
-The purpose of this section is context awareness.
+The purpose of this section is context awareness for future maintenance.
 
-An AI agent should first understand the system, then operate it.
+A future operator or automation tool should first understand the system, then operate it.
 
 ---
 
