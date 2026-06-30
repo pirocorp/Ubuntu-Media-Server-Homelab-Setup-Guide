@@ -21,6 +21,8 @@ Related docs: [Architecture](./architecture.md), [Service inventory](./service-i
 
 ## Current Access URLs
 
+These service names resolve through the current AdGuard local DNS design. They are the intended LAN names today and the intended VPN names for future remote access.
+
 | Service | URL |
 | --- | --- |
 | Server monitoring (Netdata) | `https://server.pirocorp.com` |
@@ -101,5 +103,6 @@ Related docs: [Architecture](./architecture.md), [Service inventory](./service-i
 
 ### Planned
 
+- [Remote access over VPN roadmap](../roadmaps/remote-access/README.md)
 - [Usenet stack and architecture roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)

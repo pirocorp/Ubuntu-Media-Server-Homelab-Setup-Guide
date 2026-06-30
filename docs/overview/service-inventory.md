@@ -34,5 +34,6 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 
 | Service | Status | Documentation |
 | --- | --- | --- |
+| Remote access over VPN | Planned only, not deployed | [Remote access roadmap](../roadmaps/remote-access/README.md) |
 | Usenet stack | Planned only, not deployed | [Usenet roadmap](../roadmaps/usenet/README.md) |
 | ShadowBroker OpenClaw integration | Planned only, not deployed | [Integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md) |

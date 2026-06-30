@@ -6,5 +6,6 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 
 ## Planned Work
 
+- [Remote access over VPN roadmap](./remote-access/README.md)
 - [Usenet architecture roadmap](./usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./shadowbroker-openclaw-integration.md)

@@ -2,7 +2,7 @@
 
 This repository documents the current state of the homelab, why it is organized this way, how the deployed services are operated, and what is planned next.
 
-The active service-publishing scheme now uses `*.pirocorp.com` with Let's Encrypt certificates. Older `.home` hostnames are retained only where the previous naming scheme or migration steps need to be documented.
+The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt certificates plus AdGuard local DNS rewrites to private LAN addresses. Older `.home` hostnames are retained only where the previous naming scheme or migration steps need to be documented.
 
 ## Current Status
 
@@ -26,10 +26,13 @@ The active service-publishing scheme now uses `*.pirocorp.com` with Let's Encryp
 
 ### Planned
 
+- [Remote access over VPN roadmap](./docs/roadmaps/remote-access/README.md)
 - [Usenet architecture and deployment roadmap](./docs/roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./docs/roadmaps/shadowbroker-openclaw-integration.md)
 
 ## Current Access URLs
+
+These names are intended for local DNS resolution today and for the planned VPN path later. They are not documented here as public internet endpoints.
 
 | Service | URL |
 | --- | --- |
