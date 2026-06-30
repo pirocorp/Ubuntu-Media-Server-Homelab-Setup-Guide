@@ -3,7 +3,7 @@
 Status: Implemented
 Purpose: Deployment and workflow reference for the Immich stack.
 Depends on: [Docker and Portainer](../../platform/docker-and-portainer.md), [Storage and Samba](../../platform/storage-and-samba.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
-Related docs: [Services index](../README.md), [Current state](../../overview/current-state.md)
+Related docs: [Update and backup runbook](./update-runbook.md), [Services index](../README.md), [Current state](../../overview/current-state.md)
 
 ## Overview
 
@@ -128,13 +128,13 @@ The intended model is:
 
 ### Backups
 
-`Backups` stores manual exports and backup archives.
+`Backups` is also still in the planning phase as the intended location for manual exports and backup archives.
 
 ## Reverse Proxy
 
 Immich is published through Nginx Proxy Manager and AdGuard Home.
 
-Current documentation assumption:
+Current routing:
 
 ```text
 immich.pirocorp.com -> 192.168.0.10
@@ -260,6 +260,10 @@ A dedicated Immich user was created for TV usage:
 - email: `tv@piroman-server`
 
 The TV account is intended to have viewer-only access to specifically shared albums.
+
+Preferred TV client:
+
+- `Immich TV` non-official app
 
 ## Notes
 
