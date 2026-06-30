@@ -107,7 +107,7 @@ ss -tulpn
 | System Drive       | 2 TB NVMe SSD                   |
 | Data Drives        | Multiple NTFS HDDs              |
 | Container Platform | Docker + Docker Compose         |
-| Management         | Portainer + Cockpit             |
+| Management         | Portainer + Netdata             |
 | DNS                | AdGuard Home                    |
 | Reverse Proxy      | Nginx Proxy Manager             |
 

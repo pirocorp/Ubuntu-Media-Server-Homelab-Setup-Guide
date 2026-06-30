@@ -10,7 +10,6 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 | Component | Role | Documentation |
 | --- | --- | --- |
 | Ubuntu Server | Host operating system | [Base server setup](../platform/base-server-setup.md) |
-| Cockpit | Server administration | [Base server setup](../platform/base-server-setup.md) |
 | Docker and Compose | Container runtime | [Docker and Portainer](../platform/docker-and-portainer.md) |
 | Portainer | Container management | [Docker and Portainer](../platform/docker-and-portainer.md) |
 | AdGuard Home | DNS and filtering | [Networking and reverse proxy](../platform/networking-and-reverse-proxy.md) |
@@ -25,6 +24,9 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 | Nextcloud | Files, calendar, contacts, and sync | [Nextcloud](../services/nextcloud/README.md) |
 | qBittorrent | Torrent downloader and seedbox | [qBittorrent](../services/qbittorrent/README.md) |
 | Bitmagnet | Torrent search engine | [Bitmagnet](../services/bitmagnet/README.md) |
+| Audiobookshelf | Audiobook and podcast server | [Audiobookshelf](../services/audiobookshelf/README.md) |
+| Immich | Photo and video management | [Immich](../services/immich/README.md) |
+| Kavita | Reading server and library manager | [Kavita](../services/kavita/README.md) |
 | UPS monitoring | Power visibility and monitoring | [UPS monitoring](../services/ups-monitoring/README.md) |
 | ShadowBroker | Intelligence and monitoring platform | [ShadowBroker](../services/shadowbroker/README.md) |
 

@@ -10,6 +10,9 @@ Related docs: [Overview](../overview/README.md), [Platform](../platform/README.m
 - [Nextcloud](./nextcloud/README.md)
 - [qBittorrent](./qbittorrent/README.md)
 - [Bitmagnet](./bitmagnet/README.md)
+- [Audiobookshelf](./audiobookshelf/README.md)
+- [Immich](./immich/README.md)
+- [Kavita](./kavita/README.md)
 - [UPS monitoring](./ups-monitoring/README.md)
 - [ShadowBroker](./shadowbroker/README.md)
 

@@ -8,7 +8,7 @@ The active service-publishing scheme now uses `*.pirocorp.com` with Let's Encryp
 
 ### Implemented
 
-- Ubuntu Server host with SSH and Cockpit administration
+- Ubuntu Server host with SSH administration
 - Docker and Docker Compose runtime
 - Portainer
 - AdGuard Home
@@ -20,6 +20,9 @@ The active service-publishing scheme now uses `*.pirocorp.com` with Let's Encryp
 - Bitmagnet
 - UPS monitoring with NUT and Netdata
 - ShadowBroker
+- Audiobookshelf
+- Immich
+- Kavita
 
 ### Planned
 
@@ -36,9 +39,9 @@ The active service-publishing scheme now uses `*.pirocorp.com` with Let's Encryp
 | Nginx Proxy Manager admin | `http://npm.pirocorp.com:81` |
 | Nextcloud | `https://nextcloud.pirocorp.com` |
 | Bitmagnet | `https://bitmagnet.pirocorp.com` |
+| qBittorrent | `https://qbittorrent.pirocorp.com` |
+| Plex | `https://plex.pirocorp.com` |
 | ShadowBroker | `https://shadowbroker.pirocorp.com` |
-
-Cockpit is currently documented on its direct admin port: `https://192.168.0.10:9090`.
 
 ## Architecture Summary
 
@@ -70,6 +73,9 @@ Ubuntu Server host (192.168.0.10)
 - [Nextcloud](./docs/services/nextcloud/README.md)
 - [qBittorrent](./docs/services/qbittorrent/README.md)
 - [Bitmagnet](./docs/services/bitmagnet/README.md)
+- [Audiobookshelf](./docs/services/audiobookshelf/README.md)
+- [Immich](./docs/services/immich/README.md)
+- [Kavita](./docs/services/kavita/README.md)
 - [UPS monitoring](./docs/services/ups-monitoring/README.md)
 - [ShadowBroker](./docs/services/shadowbroker/README.md)
 

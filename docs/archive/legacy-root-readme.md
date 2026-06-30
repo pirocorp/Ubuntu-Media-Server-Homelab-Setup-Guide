@@ -140,7 +140,6 @@ Build a headless Ubuntu Server homelab/media server with:
 - Plex
 - Immich
 - Kavita
-- Stash
 - bitmagnet
 - NTFS media disks
 - SSD system drive
@@ -634,7 +633,6 @@ This approach makes backups easier because each application’s configuration an
 ├── plex
 ├── immich
 ├── kavita
-├── stash
 ├── adguard
 └── nginx-proxy-manager
 ```

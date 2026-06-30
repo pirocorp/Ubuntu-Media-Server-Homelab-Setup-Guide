@@ -16,11 +16,14 @@ AdGuard Home DNS
   v
 Nginx Proxy Manager
   |
-  +--> Cockpit
+  +--> Netdata
   +--> Portainer
   +--> AdGuard Home
   +--> Nextcloud
   +--> Bitmagnet
+  +--> qBittorrent
+  +--> Plex
+  +--> ShadowBroker
   +--> other published services
 
 Ubuntu Server host (192.168.0.10)
@@ -36,11 +39,12 @@ Ubuntu Server host (192.168.0.10)
 | Layer | Current role |
 | --- | --- |
 | Ubuntu Server | Base operating system for the homelab |
-| SSH and Cockpit | Remote administration paths |
+| SSH | Remote administration path |
 | Docker and Compose | Runtime for service stacks |
 | Portainer | Container visibility and management |
 | AdGuard Home | DNS filtering and local hostname resolution |
 | Nginx Proxy Manager | Reverse proxy and HTTPS entry point |
+| Netdata and NUT | Host and UPS monitoring |
 | NTFS and Linux mounts | Shared data, media, and application storage |
 
 ## Storage Model
@@ -56,4 +60,5 @@ Ubuntu Server host (192.168.0.10)
 - The repo is the source of truth for what is currently deployed.
 - Platform concerns are documented under `docs/platform/`.
 - Each application or workload gets one clear home under `docs/services/`.
+- The live Docker stack inventory currently includes 12 stack roots under `/srv/docker`.
 - Historical build walkthrough material is retained in `docs/archive/`.

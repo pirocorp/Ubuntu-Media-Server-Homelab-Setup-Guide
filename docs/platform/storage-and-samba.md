@@ -16,13 +16,20 @@ Related docs: [Plex](../services/plex/README.md), [Common commands](../operation
 
 ## Current Mounted Domains
 
-| Mount point | Purpose |
-| --- | --- |
-| `/mnt/iac` | domain-oriented shared storage |
-| `/mnt/lp` | domain-oriented shared storage |
-| `/mnt/data` | main media and shared application data |
-| `/mnt/ia` | domain-oriented shared storage |
-| `/mnt/comp` | domain-oriented shared storage |
+| Mount point | Label | Filesystem | Size | Used | Available | Use |
+| --- | --- | --- | --- | --- | --- | --- |
+| `/mnt/iac` | `IAC` | `ntfs` | `3.7T` | `1.8T` | `1.9T` | `50%` |
+| `/mnt/lp` | `LP` | `ntfs` | `7.3T` | `3.7T` | `3.7T` | `51%` |
+| `/mnt/data` | `DATA` | `ntfs` | `7.3T` | `3.3T` | `4.1T` | `45%` |
+| `/mnt/ia` | `IA` | `ntfs` | `3.7T` | `2.8T` | `894G` | `77%` |
+| `/mnt/comp` | `COMP` | `ntfs` | `3.7T` | `1.1T` | `2.7T` | `28%` |
+
+## System Volumes
+
+| Mount point | Filesystem | Size | Used | Available | Use |
+| --- | --- | --- | --- | --- | --- |
+| `/` | `ext4` | `1.8T` | `125G` | `1.6T` | `8%` |
+| `/boot/efi` | `vfat` | `1.1G` | `6.4M` | `1.1G` | `1%` |
 
 ## Samba Model
 

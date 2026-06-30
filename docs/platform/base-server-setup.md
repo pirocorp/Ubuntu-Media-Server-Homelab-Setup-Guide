@@ -10,7 +10,10 @@ Related docs: [Docker and Portainer](./docker-and-portainer.md), [Networking and
 | --- | --- |
 | Hostname | `piroman-server` |
 | LAN IP | `192.168.0.10` |
-| Access | SSH and Cockpit |
+| OS | `Ubuntu 26.04 LTS` |
+| Kernel | `Linux 7.0.0-22-generic` |
+| Architecture | `x86-64` |
+| Access | SSH |
 | OS role | Headless homelab and container host |
 | Main admin user | `piroman` |
 
@@ -18,7 +21,7 @@ Related docs: [Docker and Portainer](./docker-and-portainer.md), [Networking and
 
 - Ubuntu Server is the base operating system for the homelab.
 - SSH is the primary remote-management path.
-- Cockpit provides browser-based server administration.
+- Netdata provides browser-based host monitoring at `server.pirocorp.com`.
 - UFW is part of the platform hardening model.
 - Docker workloads are hosted locally on the same server.
 

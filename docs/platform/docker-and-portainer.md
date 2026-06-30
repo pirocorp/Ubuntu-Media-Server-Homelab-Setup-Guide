@@ -20,6 +20,20 @@ Related docs: [Services index](../services/README.md), [Common commands](../oper
 | Config persistence | local stack folders and Docker-managed state |
 | Portainer URL | `https://portainer.pirocorp.com` |
 
+## Current Stack Roots
+
+- `adguard-home`
+- `audiobookshelf`
+- `bitmagnet`
+- `immich`
+- `kavita`
+- `nextcloud`
+- `nginx-proxy-manager`
+- `plex`
+- `portainer`
+- `qbittorrent`
+- `shadowbroker`
+
 ## Operational Notes
 
 - Prefer pinned image versions for stable services instead of floating `latest` tags.
