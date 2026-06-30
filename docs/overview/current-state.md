@@ -33,6 +33,7 @@ Related docs: [Architecture](./architecture.md), [Service inventory](./service-i
 | Plex | `https://plex.pirocorp.com` |
 | Audiobookshelf | `https://audiobookshelf.pirocorp.com` |
 | Immich | `https://immich.pirocorp.com` |
+| Kavita | `https://kavita.pirocorp.com` |
 | ShadowBroker | `https://shadowbroker.pirocorp.com` |
 
 ## Direct Ports

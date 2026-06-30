@@ -43,6 +43,7 @@ The active service-publishing scheme now uses `*.pirocorp.com` with Let's Encryp
 | Plex | `https://plex.pirocorp.com` |
 | Audiobookshelf | `https://audiobookshelf.pirocorp.com` |
 | Immich | `https://immich.pirocorp.com` |
+| Kavita | `https://kavita.pirocorp.com` |
 | ShadowBroker | `https://shadowbroker.pirocorp.com` |
 
 ## Architecture Summary
