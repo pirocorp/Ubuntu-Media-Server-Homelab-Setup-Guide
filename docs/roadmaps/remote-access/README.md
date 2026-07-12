@@ -1,19 +1,33 @@
 # Homelab Remote Access Over VPN
 
-Status: Planned
-Purpose: Record the approved phase-1 remote-access design so it can be implemented later without redesigning the rest of the homelab.
+Status: Implemented
+Purpose: Record the deployed phase-1 remote-access design so it can be operated without redesigning the rest of the homelab.
 Depends on: [Current state](../../overview/current-state.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
 Related docs: [Roadmaps index](../README.md), [Architecture](../../overview/architecture.md), [Storage and Samba](../../platform/storage-and-samba.md)
 
 ## Summary
 
-This document captures the approved rollout plan for adding private remote access to the homelab.
+This document captures the approved and deployed phase-1 plan for private remote access to the homelab.
 
 Phase 1 uses Tailscale directly on `piroman-server` as the VPN entry point for the whole home network. The goal is to keep the current `*.pirocorp.com` naming pattern, avoid exposing more services publicly, and preserve an easy migration path to self-hosted WireGuard or a dedicated router/firewall later.
 
-This is planning material only. Tailscale is not yet deployed on the live host.
+Phase 1 is deployed. Tailscale is installed directly on `piroman-server`, advertising the confirmed LAN route `192.168.0.0/24`.
 
 Execution runbook: [Tailscale remote access runbook](../../operations/tailscale-remote-access-runbook.md)
+
+## Deployment Record
+
+| Item | Value |
+| --- | --- |
+| Host subnet router | `piroman-server` |
+| Server LAN IP | `192.168.0.10` |
+| Server Tailscale IP | `100.94.205.122` |
+| Advertised route | `192.168.0.0/24` |
+| Split DNS nameserver | `192.168.0.10` |
+| Split DNS domain | `pirocorp.com` |
+| Exit node | Not enabled |
+| Initial Windows client IP | `100.87.10.92` |
+| Off-LAN validation | Windows on iPhone hotspot and iPhone on mobile data |
 
 ## Goals
 
@@ -63,17 +77,17 @@ These are intentionally not part of phase 1:
 - Making `*.pirocorp.com` publicly reachable from the internet
 - Cleaning up existing qBittorrent router forwarding rules
 
-## Implementation Checklist For Later
+## Implementation Checklist
 
-1. Confirm the real LAN subnet and keep `piroman-server` on a stable address.
-2. Install Tailscale on the Ubuntu host.
-3. Enable the host settings required for subnet routing.
-4. Advertise the homelab LAN route through Tailscale.
-5. Configure Tailscale DNS so `pirocorp.com` queries go to AdGuard Home.
-6. Approve the advertised route and DNS behavior in the Tailscale admin controls if required.
-7. Enroll one trusted laptop and one trusted phone as the first remote clients.
-8. Validate name resolution, SSH, SMB, and service access from an external network.
-9. Write the final operational runbook under platform/operations after the deployment is live.
+- [x] Confirm the real LAN subnet and keep `piroman-server` on a stable address.
+- [x] Install Tailscale on the Ubuntu host.
+- [x] Enable the host settings required for subnet routing.
+- [x] Advertise the homelab LAN route through Tailscale.
+- [x] Configure Tailscale DNS so `pirocorp.com` queries go to AdGuard Home.
+- [x] Approve the advertised route and DNS behavior in the Tailscale admin controls.
+- [x] Enroll one trusted laptop and one trusted phone as the first remote clients.
+- [x] Validate name resolution and service access from an external network.
+- [x] Write the final operational runbook under operations.
 
 ## Validation Targets
 

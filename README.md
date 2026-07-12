@@ -13,6 +13,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - Portainer
 - AdGuard Home
 - Nginx Proxy Manager
+- Tailscale remote access
 - Storage mounts and Samba shares
 - Plex
 - Nextcloud
@@ -26,13 +27,12 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 
 ### Planned
 
-- [Remote access over VPN roadmap](./docs/roadmaps/remote-access/README.md)
 - [Usenet architecture and deployment roadmap](./docs/roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./docs/roadmaps/shadowbroker-openclaw-integration.md)
 
 ## Current Access URLs
 
-These names are intended for local DNS resolution today and for the planned VPN path later. They are not documented here as public internet endpoints.
+These names are intended for local DNS resolution and trusted Tailscale VPN clients. They are not documented here as public internet endpoints.
 
 | Service | URL |
 | --- | --- |

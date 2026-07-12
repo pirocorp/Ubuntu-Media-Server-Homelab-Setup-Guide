@@ -14,6 +14,7 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 | Portainer | Container management | [Docker and Portainer](../platform/docker-and-portainer.md) |
 | AdGuard Home | DNS and filtering | [Networking and reverse proxy](../platform/networking-and-reverse-proxy.md) |
 | Nginx Proxy Manager | Reverse proxy and HTTPS ingress | [Networking and reverse proxy](../platform/networking-and-reverse-proxy.md) |
+| Tailscale remote access | VPN subnet routing for trusted remote clients | [Tailscale remote access runbook](../operations/tailscale-remote-access-runbook.md) |
 | Storage mounts and Samba | Shared storage and LAN file access | [Storage and Samba](../platform/storage-and-samba.md) |
 
 ## Implemented Services And Workloads
@@ -34,6 +35,5 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 
 | Service | Status | Documentation |
 | --- | --- | --- |
-| Remote access over VPN | Planned only, not deployed | [Remote access roadmap](../roadmaps/remote-access/README.md) |
 | Usenet stack | Planned only, not deployed | [Usenet roadmap](../roadmaps/usenet/README.md) |
 | ShadowBroker OpenClaw integration | Planned only, not deployed | [Integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md) |

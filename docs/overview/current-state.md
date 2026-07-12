@@ -16,12 +16,15 @@ Related docs: [Architecture](./architecture.md), [Service inventory](./service-i
 | Architecture | `x86-64` |
 | Main admin user | `piroman` |
 | Primary service domain | `*.pirocorp.com` |
+| Remote access | Tailscale subnet router on host |
+| Tailscale server IP | `100.94.205.122` |
+| Advertised VPN route | `192.168.0.0/24` |
 | Container root | `/srv/docker` |
 | Main shared data mount | `/mnt/data` |
 
 ## Current Access URLs
 
-These service names resolve through the current AdGuard local DNS design. They are the intended LAN names today and the intended VPN names for future remote access.
+These service names resolve through the current AdGuard local DNS design. They are the intended LAN names and VPN names for trusted Tailscale clients.
 
 | Service | URL |
 | --- | --- |
@@ -90,6 +93,7 @@ These service names resolve through the current AdGuard local DNS design. They a
 - Portainer container management
 - AdGuard Home local DNS and filtering
 - Nginx Proxy Manager internal ingress
+- Tailscale remote access with `piroman-server` as subnet router
 - Storage mounts and Samba shares
 - Plex media server
 - Nextcloud
@@ -103,6 +107,5 @@ These service names resolve through the current AdGuard local DNS design. They a
 
 ### Planned
 
-- [Remote access over VPN roadmap](../roadmaps/remote-access/README.md)
 - [Usenet stack and architecture roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)

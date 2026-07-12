@@ -1,7 +1,7 @@
 # Tailscale Remote Access Runbook
 
-Status: Ready to execute
-Purpose: Implement phase-1 private remote access with Tailscale installed directly on `piroman-server` as the homelab subnet router.
+Status: Implemented
+Purpose: Operate phase-1 private remote access with Tailscale installed directly on `piroman-server` as the homelab subnet router.
 Depends on: [Remote access roadmap](../roadmaps/remote-access/README.md), [Networking and reverse proxy](../platform/networking-and-reverse-proxy.md), [Current state](../overview/current-state.md)
 Related docs: [Operations index](./README.md), [Common commands](./common-commands.md)
 
@@ -102,6 +102,14 @@ Enable Linux packet forwarding:
 ```bash
 printf 'net.ipv4.ip_forward = 1\nnet.ipv6.conf.all.forwarding = 1\n' | sudo tee /etc/sysctl.d/99-tailscale.conf
 sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
+```
+
+Verify packet forwarding later:
+
+```bash
+cat /etc/sysctl.d/99-tailscale.conf
+sudo sysctl net.ipv4.ip_forward
+sudo sysctl net.ipv6.conf.all.forwarding
 ```
 
 Advertise the confirmed LAN route:
@@ -255,7 +263,18 @@ Acceptance criteria:
 Live checkpoint:
 
 - Same-LAN Windows validation succeeded over the Tailscale interface.
-- Remaining validation: repeat DNS and service checks from outside the LAN, such as phone mobile data or Windows through a phone hotspot.
+- Off-LAN Windows validation succeeded while the laptop was connected through an iPhone hotspot.
+- Windows Wi-Fi profile during off-LAN test: `iPhone`
+- iPhone hotspot client address: `172.20.10.2`
+- iPhone hotspot gateway/DNS: `172.20.10.1`
+- Observed off-LAN WAN IP from hotspot: `149.62.206.25`
+- Observed home/local WAN IP for comparison: `94.225.83.154`
+- Off-LAN `tailscale status` showed `piroman-server` reachable via DERP relay `ams`.
+- Off-LAN `Resolve-DnsName nextcloud.pirocorp.com` returned `192.168.0.10`.
+- Off-LAN `Test-NetConnection 192.168.0.10 -Port 443` succeeded through interface `Tailscale`.
+- iPhone mobile-data validation succeeded with Tailscale installed and connected.
+- Main service URLs open from the iPhone over Tailscale.
+- Remaining optional validation: test SSH/SMB from off-LAN clients if those remote workflows are needed.
 
 ## Troubleshooting
 
@@ -308,13 +327,18 @@ sudo sysctl -w net.ipv6.conf.all.forwarding=0
 
 Only turn forwarding back off if no other local service depends on it.
 
-## Post-Implementation Documentation
+## Post-Implementation Follow-Ups
 
-After live validation succeeds, update:
+Completed documentation updates:
 
-- [Current state](../overview/current-state.md): add Tailscale remote access as implemented.
-- [Service inventory](../overview/service-inventory.md): move remote access from planned to implemented platform component.
-- [Remote access roadmap](../roadmaps/remote-access/README.md): mark phase 1 deployed and record the actual LAN CIDR.
+- [Current state](../overview/current-state.md): Tailscale remote access is implemented.
+- [Service inventory](../overview/service-inventory.md): remote access is listed as an implemented platform component.
+- [Remote access roadmap](../roadmaps/remote-access/README.md): phase 1 is marked deployed.
+
+Remaining follow-ups:
+
+- Consider disabling key expiry for `piroman-server`.
+- Reboot into the pending kernel update during a planned maintenance window.
 
 ## Official References
 

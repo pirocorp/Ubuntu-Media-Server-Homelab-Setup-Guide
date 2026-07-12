@@ -37,6 +37,7 @@ These services currently use their main `README.md` as the primary operating ref
 
 ## Planned Work
 
-- [Remote access over VPN roadmap](../roadmaps/remote-access/README.md)
 - [Usenet roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)
+
+Remote access is now implemented as a platform capability. Use the [Tailscale remote access runbook](../operations/tailscale-remote-access-runbook.md) for operations.
