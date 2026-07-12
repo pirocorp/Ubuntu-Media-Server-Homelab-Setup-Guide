@@ -335,10 +335,17 @@ Completed documentation updates:
 - [Service inventory](../overview/service-inventory.md): remote access is listed as an implemented platform component.
 - [Remote access roadmap](../roadmaps/remote-access/README.md): phase 1 is marked deployed.
 
-Remaining follow-ups:
+Before continuing with later VPN phases, review and suggest these phase-1 optional tasks:
 
 - Consider disabling key expiry for `piroman-server`.
 - Reboot into the pending kernel update during a planned maintenance window.
+- Decide whether to add the optional router forward `UDP 41641 -> 192.168.0.10` for better direct-connection performance.
+- Run optional off-LAN SSH and SMB checks if those remote workflows matter:
+
+```powershell
+Test-NetConnection 192.168.0.10 -Port 22
+Test-NetConnection 192.168.0.10 -Port 445
+```
 
 ## Official References
 
