@@ -13,6 +13,8 @@ Phase 1 uses Tailscale directly on `piroman-server` as the VPN entry point for t
 
 This is planning material only. Tailscale is not yet deployed on the live host.
 
+Execution runbook: [Tailscale remote access runbook](../../operations/tailscale-remote-access-runbook.md)
+
 ## Goals
 
 - Reach the full home LAN remotely, not only the Ubuntu server.

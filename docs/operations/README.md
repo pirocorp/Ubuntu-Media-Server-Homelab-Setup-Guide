@@ -8,6 +8,7 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 
 - [Infrastructure HowTo](../platform/infrastructure-howto.md)
 - [Common commands](./common-commands.md)
+- [Tailscale remote access runbook](./tailscale-remote-access-runbook.md)
 - [Let's Encrypt public-domain guide](../platform/lets-encrypt-public-domain.md)
 - [Docker and Portainer](../platform/docker-and-portainer.md)
 - [Storage and Samba](../platform/storage-and-samba.md)

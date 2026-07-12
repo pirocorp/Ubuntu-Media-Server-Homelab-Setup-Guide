@@ -17,10 +17,12 @@ Use the infrastructure guide as the ordered bootstrap path for rebuilding the ba
 - [Storage and Samba](./storage-and-samba.md)
 - [Networking and reverse proxy](./networking-and-reverse-proxy.md)
 - [Let's Encrypt public-domain guide](./lets-encrypt-public-domain.md)
+- [Tailscale remote access runbook](../operations/tailscale-remote-access-runbook.md)
 
 ## Platform How-To Entry Points
 
 - [Infrastructure HowTo](./infrastructure-howto.md)
+- [Tailscale remote access runbook](../operations/tailscale-remote-access-runbook.md)
 - [Let's Encrypt public-domain guide](./lets-encrypt-public-domain.md)
 - [Networking and reverse proxy](./networking-and-reverse-proxy.md)
 - [Storage and Samba](./storage-and-samba.md)

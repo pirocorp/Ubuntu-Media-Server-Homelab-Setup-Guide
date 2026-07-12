@@ -77,6 +77,7 @@ Ubuntu Server host (192.168.0.10)
 
 - [Infrastructure HowTo](./docs/platform/infrastructure-howto.md)
 - [Operations and common commands](./docs/operations/README.md)
+- [Tailscale remote access runbook](./docs/operations/tailscale-remote-access-runbook.md)
 - [Let's Encrypt public-domain guide](./docs/platform/lets-encrypt-public-domain.md)
 - [Nextcloud update runbook](./docs/services/nextcloud/update-runbook.md)
 - [Immich update and backup runbook](./docs/services/immich/update-runbook.md)
