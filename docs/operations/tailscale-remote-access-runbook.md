@@ -186,6 +186,14 @@ server.pirocorp.com
 
 The expected DNS answer for those names remains the private LAN address, usually `192.168.0.10`.
 
+Live checkpoint:
+
+- Split DNS nameserver added: `192.168.0.10`
+- Restricted domain: `pirocorp.com`
+- Windows client `piroman` joined the tailnet with Tailscale IP `100.87.10.92`
+- Windows `Resolve-DnsName nextcloud.pirocorp.com` returns `192.168.0.10`
+- Windows `Test-NetConnection 192.168.0.10 -Port 443` succeeds through interface `Tailscale`
+
 ## Enroll First Clients
 
 Install Tailscale on one trusted laptop and one trusted phone. Sign in with the same tailnet.
@@ -243,6 +251,11 @@ Acceptance criteria:
 - SSH to `piroman-server` works through the VPN.
 - SMB shares work through the VPN.
 - Local LAN access still works when Tailscale is disconnected.
+
+Live checkpoint:
+
+- Same-LAN Windows validation succeeded over the Tailscale interface.
+- Remaining validation: repeat DNS and service checks from outside the LAN, such as phone mobile data or Windows through a phone hotspot.
 
 ## Troubleshooting
 
