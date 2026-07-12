@@ -91,6 +91,8 @@ Live checkpoint:
 - Tailscale package installed successfully: `tailscale 1.98.8`
 - `tailscaled.service` was created and enabled
 - Browser authentication completed for `piroman-server` in the `pirocorp.github` tailnet
+- Tailscale IPv4 assigned: `100.94.205.122`
+- `tailscale netcheck` reports UDP connectivity available and nearest DERP as Amsterdam
 - Server reported a pending kernel upgrade from `7.0.0-22-generic` to `7.0.0-27-generic`; reboot later after VPN validation or during a planned maintenance window
 
 ## Enable Subnet Routing
@@ -116,6 +118,15 @@ sudo tailscale set --advertise-routes=192.168.0.0/24
 
 Keep default subnet-route SNAT enabled for phase 1. Do not advertise `0.0.0.0/0`; that would make the host an exit node, which is not part of this design.
 
+Live checkpoint:
+
+- IP forwarding enabled in `/etc/sysctl.d/99-tailscale.conf`
+- `net.ipv4.ip_forward = 1`
+- `net.ipv6.conf.all.forwarding = 1`
+- Advertised route configured: `192.168.0.0/24`
+- Advertised subnet route approved in the Tailscale admin console: `192.168.0.0/24`
+- Tailscale admin console warns that key expiry is enabled; consider disabling key expiry for `piroman-server` after remote access validation is complete
+
 ## Approve The Route
 
 In the Tailscale admin console:
@@ -126,7 +137,21 @@ In the Tailscale admin console:
 4. Approve the advertised LAN route.
 5. Leave key expiry enabled for initial testing; consider disabling it later only after the setup is stable.
 
+Live checkpoint:
+
+- Approved route: `192.168.0.0/24`
+- Exit node: not allowed, as intended
+- Key expiry: enabled for now
+
 If tailnet access controls are locked down, add a rule or grant that allows trusted users/devices to reach `<LAN_CIDR>`. Route approval and access rules are separate controls.
+
+## Optional Later Key Expiry Change
+
+Key expiry is currently enabled for `piroman-server`. That is okay during initial setup and validation.
+
+After remote access is confirmed working, consider disabling key expiry for `piroman-server` in the Tailscale admin console so the subnet router does not unexpectedly require reauthentication later.
+
+Only do this for trusted, stable infrastructure devices. If the server is ever replaced or compromised, revoke the device from the Tailscale admin console.
 
 ## Optional Later Router Forward
 
