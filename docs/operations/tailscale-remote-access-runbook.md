@@ -55,6 +55,25 @@ sudo systemctl enable --now tailscaled
 sudo tailscale up --accept-dns=false
 ```
 
+If the install script stops during `apt update` because an unrelated third-party repository is broken, disable that repository first, then install Tailscale from the repo the script already added.
+
+Example observed issue:
+
+```text
+https://packagecloud.io/ookla/speedtest-cli/ubuntu resolve Release
+404 Not Found
+```
+
+Recovery:
+
+```bash
+grep -Ril 'packagecloud.io/ookla/speedtest-cli' /etc/apt/sources.list /etc/apt/sources.list.d
+sudo mv <OOKLA_SOURCE_FILE> <OOKLA_SOURCE_FILE>.disabled
+sudo apt update
+sudo apt install -y tailscale
+sudo systemctl enable --now tailscaled
+```
+
 Open the authentication URL printed by `tailscale up`, sign in, and confirm `piroman-server` appears in the Tailscale admin console.
 
 Verify on the server:
@@ -66,6 +85,13 @@ tailscale netcheck
 ```
 
 `--accept-dns=false` is intentional. This host already has a local DNS role, so Tailscale should not rewrite the server's own resolver behavior.
+
+Live checkpoint:
+
+- Tailscale package installed successfully: `tailscale 1.98.8`
+- `tailscaled.service` was created and enabled
+- Browser authentication completed for `piroman-server` in the `pirocorp.github` tailnet
+- Server reported a pending kernel upgrade from `7.0.0-22-generic` to `7.0.0-27-generic`; reboot later after VPN validation or during a planned maintenance window
 
 ## Enable Subnet Routing
 
