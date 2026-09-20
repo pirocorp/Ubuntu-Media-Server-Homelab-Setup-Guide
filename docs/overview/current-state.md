@@ -41,6 +41,8 @@ These service names resolve through the current AdGuard local DNS design. They a
 | Kavita | `https://kavita.pirocorp.com` |
 | ShadowBroker | `https://shadowbroker.pirocorp.com` |
 
+NetAlertX is currently direct-LAN only and has not yet been published through AdGuard/Nginx Proxy Manager.
+
 ## Direct Ports
 
 | Service | Address |
@@ -58,6 +60,7 @@ These service names resolve through the current AdGuard local DNS design. They a
 | Audiobookshelf | `192.168.0.10:13378` |
 | Immich | `192.168.0.10:2283` |
 | Kavita | `192.168.0.10:5000` |
+| NetAlertX web UI | `192.168.0.10:20211` |
 
 ## Active Docker Stack Roots
 
@@ -66,6 +69,7 @@ These service names resolve through the current AdGuard local DNS design. They a
 - `/srv/docker/bitmagnet`
 - `/srv/docker/immich`
 - `/srv/docker/kavita`
+- `/srv/docker/netalertx`
 - `/srv/docker/nextcloud`
 - `/srv/docker/nginx-proxy-manager`
 - `/srv/docker/plex`
@@ -104,6 +108,7 @@ These service names resolve through the current AdGuard local DNS design. They a
 - Kavita
 - UPS monitoring with NUT and Netdata
 - ShadowBroker
+- NetAlertX LAN device inventory and presence monitoring
 
 ### Planned
 
