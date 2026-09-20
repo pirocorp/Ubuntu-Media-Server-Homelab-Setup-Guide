@@ -17,6 +17,7 @@ These service docs assume the base environment from the [Infrastructure HowTo](.
 - [Kavita](./kavita/README.md)
 - [UPS monitoring](./ups-monitoring/README.md)
 - [ShadowBroker](./shadowbroker/README.md)
+- [NetAlertX](./netalertx/README.md)
 
 ## Runbooks And How-To Docs
 
@@ -25,6 +26,7 @@ These service docs assume the base environment from the [Infrastructure HowTo](.
 - [qBittorrent seedbox runbook](./qbittorrent/README.md)
 - [Bitmagnet runbook](./bitmagnet/README.md)
 - [ShadowBroker deployment and operations runbook](./shadowbroker/README.md)
+- [NetAlertX deployment and operations runbook](./netalertx/README.md)
 
 ## Service READMEs Used As Main How-To
 
@@ -34,6 +36,7 @@ These services currently use their main `README.md` as the primary operating ref
 - [Audiobookshelf](./audiobookshelf/README.md)
 - [Kavita](./kavita/README.md)
 - [UPS monitoring](./ups-monitoring/README.md)
+- [NetAlertX](./netalertx/README.md)
 
 ## Planned Work
 
