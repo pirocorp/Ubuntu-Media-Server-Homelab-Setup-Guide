@@ -30,6 +30,7 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 | Kavita | Reading server and library manager | [Kavita](../services/kavita/README.md) |
 | UPS monitoring | Power visibility and monitoring | [UPS monitoring](../services/ups-monitoring/README.md) |
 | ShadowBroker | Intelligence and monitoring platform | [ShadowBroker](../services/shadowbroker/README.md) |
+| NetAlertX | LAN device inventory and presence monitoring | [NetAlertX](../services/netalertx/README.md) |
 
 ## Planned
 
