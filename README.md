@@ -33,7 +33,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 
 ## Current Access URLs
 
-These names are intended for local DNS resolution and trusted Tailscale VPN clients. They are not documented here as public internet endpoints. NetAlertX is currently exposed only by its direct LAN URL and has not yet been published through Nginx Proxy Manager.
+These names are intended for local DNS resolution and trusted Tailscale VPN clients. They are not documented here as public internet endpoints.
 
 | Service | URL |
 | --- | --- |
@@ -49,7 +49,7 @@ These names are intended for local DNS resolution and trusted Tailscale VPN clie
 | Immich | `https://immich.pirocorp.com` |
 | Kavita | `https://kavita.pirocorp.com` |
 | ShadowBroker | `https://shadowbroker.pirocorp.com` |
-| NetAlertX (direct LAN) | `http://192.168.0.10:20211` |
+| NetAlertX | `https://netalertx.pirocorp.com` |
 
 ## Architecture Summary
 
