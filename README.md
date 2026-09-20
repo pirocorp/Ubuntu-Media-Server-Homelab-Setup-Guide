@@ -24,6 +24,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - Audiobookshelf
 - Immich
 - Kavita
+- NetAlertX network inventory and presence monitoring
 
 ### Planned
 
@@ -32,7 +33,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 
 ## Current Access URLs
 
-These names are intended for local DNS resolution and trusted Tailscale VPN clients. They are not documented here as public internet endpoints.
+These names are intended for local DNS resolution and trusted Tailscale VPN clients. They are not documented here as public internet endpoints. NetAlertX is currently exposed only by its direct LAN URL and has not yet been published through Nginx Proxy Manager.
 
 | Service | URL |
 | --- | --- |
@@ -48,6 +49,7 @@ These names are intended for local DNS resolution and trusted Tailscale VPN clie
 | Immich | `https://immich.pirocorp.com` |
 | Kavita | `https://kavita.pirocorp.com` |
 | ShadowBroker | `https://shadowbroker.pirocorp.com` |
+| NetAlertX (direct LAN) | `http://192.168.0.10:20211` |
 
 ## Architecture Summary
 
@@ -85,6 +87,7 @@ Ubuntu Server host (192.168.0.10)
 - [qBittorrent seedbox runbook](./docs/services/qbittorrent/README.md)
 - [Bitmagnet runbook](./docs/services/bitmagnet/README.md)
 - [ShadowBroker operations runbook](./docs/services/shadowbroker/README.md)
+- [NetAlertX deployment and operations runbook](./docs/services/netalertx/README.md)
 
 Start with the infrastructure guide when rebuilding the base environment. Use the workload runbooks only after the platform itself is ready.
 
@@ -99,6 +102,7 @@ Start with the infrastructure guide when rebuilding the base environment. Use th
 - [Kavita](./docs/services/kavita/README.md)
 - [UPS monitoring](./docs/services/ups-monitoring/README.md)
 - [ShadowBroker](./docs/services/shadowbroker/README.md)
+- [NetAlertX](./docs/services/netalertx/README.md)
 
 ## Platform Docs
 
