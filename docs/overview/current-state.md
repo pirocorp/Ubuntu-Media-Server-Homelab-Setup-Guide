@@ -40,8 +40,9 @@ These service names resolve through the current AdGuard local DNS design. They a
 | Immich | `https://immich.pirocorp.com` |
 | Kavita | `https://kavita.pirocorp.com` |
 | ShadowBroker | `https://shadowbroker.pirocorp.com` |
+| NetAlertX | `https://netalertx.pirocorp.com` |
 
-NetAlertX is currently direct-LAN only and has not yet been published through AdGuard/Nginx Proxy Manager.
+NetAlertX uses an explicit AdGuard rewrite for `netalertx.pirocorp.com`, Nginx Proxy Manager forwarding to `192.168.0.10:20211`, and the existing `pirocorp.com` / `*.pirocorp.com` Let's Encrypt certificate.
 
 ## Direct Ports
 
@@ -77,6 +78,26 @@ NetAlertX is currently direct-LAN only and has not yet been published through Ad
 - `/srv/docker/qbittorrent`
 - `/srv/docker/shadowbroker`
 
+## NetAlertX Network Publishing Notes
+
+NetAlertX runs with `network_mode: host`, while Nginx Proxy Manager runs in Docker network `nginx-proxy-manager_default`.
+
+Current NPM network details:
+
+```text
+Subnet:  172.20.0.0/16
+NPM IP:  172.20.0.2
+Gateway: 172.20.0.1
+```
+
+UFW permits the NPM Docker subnet to reach only the NetAlertX web port on the host:
+
+```text
+172.20.0.0/16 -> 192.168.0.10:20211/tcp
+```
+
+Direct LAN access remains permitted from `192.168.0.0/24`.
+
 ## Mounted Storage Snapshot
 
 | Mount | Label | Filesystem | Size | Used | Available | Use |
@@ -108,7 +129,7 @@ NetAlertX is currently direct-LAN only and has not yet been published through Ad
 - Kavita
 - UPS monitoring with NUT and Netdata
 - ShadowBroker
-- NetAlertX LAN device inventory and presence monitoring
+- NetAlertX LAN device inventory and presence monitoring with HTTPS access through `netalertx.pirocorp.com`
 
 ### Planned
 
