@@ -28,6 +28,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 
 ### Planned
 
+- [Homepage dashboard architecture roadmap](./docs/roadmaps/homepage/README.md)
 - [Usenet architecture and deployment roadmap](./docs/roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./docs/roadmaps/shadowbroker-openclaw-integration.md)
 
