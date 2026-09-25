@@ -10,5 +10,6 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 
 ## Planned Work
 
+- [Homepage dashboard architecture roadmap](./homepage/README.md)
 - [Usenet architecture roadmap](./usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./shadowbroker-openclaw-integration.md)
