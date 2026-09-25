@@ -11,5 +11,6 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 ## Planned Work
 
 - [Homepage dashboard architecture roadmap](./homepage/README.md)
+- [Stremio + AIOStreams self-hosted streaming architecture roadmap](./stremio-aiostreams/README.md)
 - [Usenet architecture roadmap](./usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./shadowbroker-openclaw-integration.md)
