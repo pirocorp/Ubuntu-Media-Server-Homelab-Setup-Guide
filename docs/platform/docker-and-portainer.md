@@ -3,7 +3,7 @@
 Status: Implemented
 Purpose: Document the container runtime conventions used across the homelab.
 Depends on: [Base server setup](./base-server-setup.md)
-Related docs: [Infrastructure HowTo](./infrastructure-howto.md), [Services index](../services/README.md), [Common commands](../operations/common-commands.md), [Legacy build history](../archive/legacy-root-readme.md)
+Related docs: [Infrastructure HowTo](./infrastructure-howto.md), [Current state](../overview/current-state.md), [Services index](../services/README.md), [Common commands](../operations/common-commands.md), [Legacy build history](../archive/legacy-root-readme.md)
 
 Use the [Infrastructure HowTo](./infrastructure-howto.md) for the ordered build path. This page records the steady-state runtime conventions after Docker and Portainer are in place.
 
@@ -29,12 +29,15 @@ Use the [Infrastructure HowTo](./infrastructure-howto.md) for the ordered build 
 - `bitmagnet`
 - `immich`
 - `kavita`
+- `netalertx`
 - `nextcloud`
 - `nginx-proxy-manager`
 - `plex`
 - `portainer`
 - `qbittorrent`
 - `shadowbroker`
+
+Keep this list aligned with the live inventory in [Current state](../overview/current-state.md) whenever a deployed stack is added or removed.
 
 ## Operational Notes
 
