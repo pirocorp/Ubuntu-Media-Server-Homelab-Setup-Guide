@@ -27,6 +27,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - NetAlertX network inventory and presence monitoring
 - AIOStreams self-hosted Stremio stream aggregation/control layer
 - `stremio-libtorrent-server` central BitTorrent streaming engine with persistent read-ahead/cache
+- Stremio Web UI published internally through AdGuard Home + Nginx Proxy Manager
 
 ### Partially Implemented
 
@@ -58,8 +59,9 @@ These names are intended for local DNS resolution and trusted Tailscale VPN clie
 | ShadowBroker | `https://shadowbroker.pirocorp.com` |
 | NetAlertX | `https://netalertx.pirocorp.com` |
 | AIOStreams | `https://aio.pirocorp.com` |
+| Stremio Web UI | `https://stremio.pirocorp.com` |
 
-`stremio-libtorrent-server` uses a generated trusted `*.stremio.rocks:12470` client endpoint. The instance-specific hostname is recorded by the running server and documented in the service runbook rather than treated as a permanent `pirocorp.com` service name.
+`stremio.pirocorp.com` is the browser-facing Stremio Web UI only. The `stremio-libtorrent-server` media path continues to use the generated trusted `*.stremio.rocks:12470` client endpoint directly, so large media transfers do not traverse Nginx Proxy Manager.
 
 ## Architecture Summary
 
@@ -75,11 +77,17 @@ Stremio discovery/control
   -> Nginx Proxy Manager
   -> AIOStreams
 
+Stremio browser UI
+  -> stremio.pirocorp.com
+  -> AdGuard Home
+  -> Nginx Proxy Manager
+  -> stremio-libtorrent-server Web UI :8081
+
 Stremio media path
   -> stremio-libtorrent-server
   -> 10 GiB read-ahead
   -> 300 GiB persistent cache
-  -> trusted *.stremio.rocks HTTPS
+  -> trusted *.stremio.rocks HTTPS :12470
 
 Ubuntu Server host (192.168.0.10)
   -> Docker / Docker Compose
@@ -112,6 +120,7 @@ Ubuntu Server host (192.168.0.10)
 - [NetAlertX deployment and operations runbook](./docs/services/netalertx/README.md)
 - [AIOStreams deployment and operations runbook](./docs/services/aiostreams/README.md)
 - [stremio-libtorrent-server deployment and operations runbook](./docs/services/stremio-libtorrent-server/README.md)
+- [Stremio Web UI publishing runbook](./docs/services/stremio-libtorrent-server/web-ui-publishing.md)
 
 Start with the infrastructure guide when rebuilding the base environment. Use the workload runbooks only after the platform itself is ready.
 
