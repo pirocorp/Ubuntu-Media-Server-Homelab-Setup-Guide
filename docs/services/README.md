@@ -31,6 +31,7 @@ These service docs assume the base environment from the [Infrastructure HowTo](.
 - [NetAlertX deployment and operations runbook](./netalertx/README.md)
 - [AIOStreams deployment and operations runbook](./aiostreams/README.md)
 - [stremio-libtorrent-server deployment and operations runbook](./stremio-libtorrent-server/README.md)
+- [Stremio Web UI publishing through AdGuard and Nginx Proxy Manager](./stremio-libtorrent-server/web-ui-publishing.md)
 
 ## Service READMEs Used As Main How-To
 
