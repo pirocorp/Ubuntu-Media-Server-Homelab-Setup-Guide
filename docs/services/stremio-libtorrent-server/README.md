@@ -3,11 +3,11 @@
 Status: Implemented  
 Purpose: Document the deployed central Stremio BitTorrent streaming engine, persistent cache, trusted HTTPS endpoint, and operational validation.  
 Depends on: [Docker and Portainer](../../platform/docker-and-portainer.md), [Storage and Samba](../../platform/storage-and-samba.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)  
-Related docs: [Services index](../README.md), [Service inventory](../../overview/service-inventory.md), [Stremio + AIOStreams architecture roadmap](../../roadmaps/stremio-aiostreams/README.md), [AIOStreams](../aiostreams/README.md), [qBittorrent](../qbittorrent/README.md)
+Related docs: [Services index](../README.md), [Service inventory](../../overview/service-inventory.md), [Stremio + AIOStreams architecture roadmap](../../roadmaps/stremio-aiostreams/README.md), [Phase 4 completion](../../roadmaps/stremio-aiostreams/phase-4-completion.md), [AIOStreams](../aiostreams/README.md), [qBittorrent](../qbittorrent/README.md)
 
 ## Current Deployment
 
-`stremio-libtorrent-server` is the central torrent playback engine for the Stremio architecture. It is responsible for joining BitTorrent swarms, downloading and prioritizing torrent pieces around the playhead, building server-side read-ahead, retaining a persistent disk cache, and serving the resulting media stream to Stremio clients.
+`stremio-libtorrent-server` is the central torrent playback engine for the Stremio architecture. It joins BitTorrent swarms, prioritizes torrent pieces around the playhead, maintains server-side read-ahead and persistent cache data, and serves the resulting media stream to Stremio clients.
 
 | Item | Current value |
 | --- | --- |
@@ -17,8 +17,9 @@ Related docs: [Services index](../README.md), [Service inventory](../../overview
 | Stack root | `/srv/docker/stremio-libtorrent-server` |
 | Persistent data/cache | `/mnt/data/stremio-libtorrent-server` |
 | Cache filesystem | `/mnt/data` on NTFS/fuseblk |
-| Cache budget | `300GiB` |
+| Cache budget | `100GiB` |
 | Read-ahead target | `10GiB` |
+| Cache eviction grace | upstream default `1800s` / 30 minutes |
 | Download rate limit | `0` / unlimited |
 | Adaptive picking | disabled |
 | BitTorrent listen port | `6882/TCP+UDP` |
@@ -30,6 +31,35 @@ Related docs: [Services index](../README.md), [Service inventory](../../overview
 | Router forwarding for `6882` | not completed yet; Phase 6 |
 
 The container is healthy and the trusted HTTPS endpoint has been validated with normal certificate verification, without `curl -k`.
+
+## Architecture
+
+```text
+Stremio client
+      |
+      | selected torrent infoHash / fileIdx
+      v
+stremio-libtorrent-server
+      |
+      +--> DHT / trackers / PEX / peers
+      |       |
+      |       +--> 6882/TCP+UDP
+      |
+      +--> 10 GiB playhead read-ahead target
+      +--> 100 GiB persistent cache budget
+      |       |
+      |       +--> /mnt/data/stremio-libtorrent-server
+      |
+      v
+trusted HTTPS stream :12470
+      |
+      v
+Stremio player
+```
+
+The media path intentionally does not traverse Nginx Proxy Manager. The upstream trusted `*.stremio.rocks` HTTPS endpoint is used directly so large video transfers do not add an unnecessary reverse-proxy hop.
+
+AIOStreams remains separate from this path. It provides source discovery and result normalization; it does not proxy selected media bytes.
 
 ## Why Port `6882`
 
@@ -47,79 +77,13 @@ The Stremio torrent engine therefore uses:
 6882/UDP
 ```
 
-The BitTorrent listen port inside the container and the published host port must match. Do not map host `6882` to container `6881`; the application itself is configured to listen on `6882`.
+The application itself is configured to listen on `6882`; do not map host `6882` to container `6881`.
 
-## Architecture
+## Storage
 
-```text
-Stremio client
-      |
-      | selected torrent infohash / file index
-      v
-stremio-libtorrent-server
-      |
-      +--> DHT / trackers / PEX / peers
-      |       |
-      |       +--> 6882/TCP+UDP
-      |
-      +--> playhead-first torrent download
-      +--> 10 GiB read-ahead target
-      +--> 300 GiB persistent cache
-      |       |
-      |       +--> /mnt/data/stremio-libtorrent-server
-      |
-      v
-trusted HTTPS stream :12470
-      |
-      v
-Stremio player
-```
+`/mnt/data` was selected for the persistent cache. At preflight it had approximately 4.1 TiB available, providing substantial headroom for the current `100GiB` cache budget.
 
-The media path intentionally does not traverse Nginx Proxy Manager. The upstream trusted `*.stremio.rocks` HTTPS endpoint is used directly so large video transfers do not add an unnecessary reverse-proxy hop.
-
-AIOStreams remains separate from this path. It provides source discovery and result normalization; it does not proxy the selected media stream.
-
-## Preflight Decisions
-
-The deployment was validated against the live host before installation.
-
-### Host Resources
-
-```text
-Architecture: x86_64
-CPU: Intel Xeon E3-1231 v3 @ 3.40 GHz
-CPU topology: 4 cores / 8 threads
-RAM: 30 GiB total
-GPU: NVIDIA GeForce GT 730
-```
-
-Transcoding was explicitly excluded from the v1 design, so the GPU is not passed into the container.
-
-### Storage
-
-`/mnt/data` was selected for the persistent cache. At preflight it had approximately:
-
-```text
-Filesystem: fuseblk / NTFS
-Size:       7.3 TiB
-Available:  4.1 TiB
-```
-
-This provides ample headroom for the locked `300GiB` cache budget.
-
-### Ports Verified Free Before Deployment
-
-```text
-8081/tcp
-11470/tcp
-12470/tcp
-6882/tcp
-6882/udp
-```
-
-Host `8080` was deliberately not used because qBittorrent already publishes its web UI there.
-
-## Storage Layout
+Layout:
 
 ```text
 /srv/docker/stremio-libtorrent-server
@@ -130,7 +94,9 @@ Host `8080` was deliberately not used because qBittorrent already publishes its 
 ├── .resume/
 ├── .evictor-owner
 ├── certificates.pem
-└── httpsCert.json
+├── httpsCert.json
+├── .<infohash>.parts
+└── <torrent-name>/
 ```
 
 The persistent bind mount is:
@@ -139,13 +105,11 @@ The persistent bind mount is:
 /mnt/data/stremio-libtorrent-server -> /root/.stremio-server
 ```
 
-Torrent cache contents are added under this same persistent root as playback begins.
-
 `certificates.pem` contains private key material. Never commit it to Git or copy it into unprotected documentation artifacts.
 
 ## Installation
 
-### 1. Create Directories
+### Create Directories
 
 ```bash
 sudo mkdir -p /srv/docker/stremio-libtorrent-server
@@ -153,12 +117,14 @@ sudo chown -R piroman:piroman /srv/docker/stremio-libtorrent-server
 sudo mkdir -p /mnt/data/stremio-libtorrent-server
 ```
 
-### 2. Create `.env`
+### `.env`
+
+Current sanitized configuration:
 
 ```env
 STREMIO_LIBTORRENT_VERSION=1.6.15
 STREMIOSRV_BT_LISTEN_PORT=6882
-STREMIOSRV_CACHE_SIZE=300GiB
+STREMIOSRV_CACHE_SIZE=100GiB
 STREMIOSRV_READAHEAD_BYTES=10GiB
 STREMIOSRV_DOWNLOAD_RATE_LIMIT=0
 STREMIOSRV_ADAPTIVE_PICKING=false
@@ -166,19 +132,15 @@ STREMIO_DATA_DIR=/mnt/data/stremio-libtorrent-server
 IPADDRESS=192.168.0.10
 ```
 
-Restrict the file:
+`STREMIOSRV_CACHE_EVICT_GRACE` is not explicitly set, so upstream default `1800` seconds / 30 minutes is used.
+
+Restrict the environment file:
 
 ```bash
 chmod 600 /srv/docker/stremio-libtorrent-server/.env
 ```
 
-Validated deployment mode:
-
-```text
-600 piroman:piroman /srv/docker/stremio-libtorrent-server/.env
-```
-
-### 3. Create `compose.yaml`
+### `compose.yaml`
 
 ```yaml
 services:
@@ -215,31 +177,12 @@ services:
 
 There is intentionally no NVIDIA, VAAPI, or other GPU/transcoding overlay in v1.
 
-### 4. Validate Before Start
+## Start And Validate
 
 ```bash
 cd /srv/docker/stremio-libtorrent-server
-docker compose config -q && echo "Compose syntax OK"
+docker compose config -q
 docker compose config --images
-```
-
-Expected image:
-
-```text
-androshack/stremio-libtorrent-server:1.6.15
-```
-
-Verify the upstream tag exists before first deployment or a future version change:
-
-```bash
-docker manifest inspect \
-  androshack/stremio-libtorrent-server:1.6.15 \
-  >/dev/null && echo "Image 1.6.15 available"
-```
-
-### 5. Pull And Start
-
-```bash
 docker compose pull
 docker compose up -d
 docker compose ps
@@ -261,31 +204,14 @@ Expected published ports include:
 0.0.0.0:6882->6882/udp
 ```
 
-Docker may also display `6881/tcp` as exposed image metadata. That is not a published host binding and does not conflict with qBittorrent. The actual host peer port remains `6882`.
+Docker may also display `6881/tcp` as exposed image metadata. That is not a published host binding and does not conflict with qBittorrent.
 
-## Startup Validation
+## Runtime Configuration Check
 
-Inspect logs:
-
-```bash
-docker compose logs --tail=150 stremio-libtorrent-server
-```
-
-Healthy first startup should show:
-
-- trusted `stremio.rocks` certificate acquisition;
-- a generated `A` record for the LAN-IP-based hostname;
-- HTTPS metadata saved under `/root/.stremio-server`;
-- cache evictor started with `budget=300.0 GiB`;
-- application startup complete;
-- Uvicorn listening on `0.0.0.0:11470`.
-
-## Validate Runtime Configuration
-
-Do not rely only on `.env`; verify the actual container environment:
+Do not rely only on `.env`; verify the running container:
 
 ```bash
-docker exec stremio-libtorrent-server env | \
+docker compose exec stremio-libtorrent-server env | \
   grep -E '^STREMIOSRV_(BT_LISTEN_PORT|CACHE_SIZE|READAHEAD_BYTES|DOWNLOAD_RATE_LIMIT|ADAPTIVE_PICKING)='
 ```
 
@@ -296,24 +222,14 @@ STREMIOSRV_READAHEAD_BYTES=10GiB
 STREMIOSRV_DOWNLOAD_RATE_LIMIT=0
 STREMIOSRV_ADAPTIVE_PICKING=false
 STREMIOSRV_BT_LISTEN_PORT=6882
-STREMIOSRV_CACHE_SIZE=300GiB
+STREMIOSRV_CACHE_SIZE=100GiB
 ```
 
-## HTTP API Validation
+## HTTP And Health Validation
 
-Port `11470` is the streaming-server API, not a normal website root. Opening:
+Port `11470` is the streaming-server API. The root may correctly return `{"detail":"Not Found"}`.
 
-```text
-http://192.168.0.10:11470/
-```
-
-may correctly return:
-
-```json
-{"detail":"Not Found"}
-```
-
-The health endpoint is:
+Use:
 
 ```bash
 curl -fsS http://192.168.0.10:11470/health
@@ -323,17 +239,17 @@ The Docker healthcheck uses the same endpoint internally at `127.0.0.1:11470/hea
 
 ## BitTorrent Port Validation
 
-Port `6882` is a BitTorrent peer port, not HTTP. Opening it in a browser can produce `ERR_EMPTY_RESPONSE`; that does not indicate a failure.
+Port `6882` is BitTorrent peer traffic, not HTTP.
 
-Validate the published sockets on the host instead:
+Validate host sockets:
 
 ```bash
 sudo ss -lntup | grep -E ':6882\b'
 ```
 
-Both TCP and UDP should be present after startup.
+Both TCP and UDP should be present.
 
-Inbound router forwarding is deliberately deferred to Phase 6. Do not disturb the existing qBittorrent `6881/TCP+UDP` forwarding when `6882` is added later.
+Inbound router forwarding remains Phase 6 work. Do not disturb qBittorrent `6881/TCP+UDP` when adding the new rule.
 
 ## Trusted HTTPS Client Endpoint
 
@@ -349,19 +265,13 @@ On startup the image obtains a trusted certificate and generates an HTTPS hostna
 *.stremio.rocks:12470
 ```
 
-The exact generated hostname is stored in logs and `httpsCert.json`. The currently validated deployment generated:
-
-```text
-https://192-168-0-10.519b6502d940.stremio.rocks:12470/
-```
-
-Treat the generated hostname as instance state rather than hard-coding it into automation. If the certificate identity changes after a rebuild, use the hostname reported by the running server.
+The exact hostname is stored in logs and `httpsCert.json`. Treat it as instance state rather than hard-coding the suffix into automation.
 
 Validate TLS without disabling certificate verification:
 
 ```bash
 curl -sS -o /dev/null -w 'HTTP %{http_code}\n' \
-  https://192-168-0-10.519b6502d940.stremio.rocks:12470/
+  https://<generated-host>.stremio.rocks:12470/
 ```
 
 Validated response:
@@ -370,41 +280,92 @@ Validated response:
 HTTP 200
 ```
 
-The same endpoint successfully loaded the Stremio web interface in a browser.
+## End-To-End Playback Proof
 
-## Why The Media Path Does Not Use Nginx Proxy Manager
+Phase 4 established that normal AIOStreams/Torrentio selections reach this server.
 
-AIOStreams uses the normal internal AdGuard + NPM pattern because it is a control/configuration service.
+During desktop playback of `Mayday`, the following changed under `/mnt/data/stremio-libtorrent-server`:
 
-The streaming server uses the upstream trusted `*.stremio.rocks:12470` endpoint instead because:
+- the selected media file;
+- `.resume/<infohash>.fastresume`;
+- `.resume/index.json`;
+- the matching `.<infohash>.parts` file;
+- `.evictor-owner`.
 
-- native Stremio clients require trusted HTTPS in some environments;
-- the upstream service already supplies a trusted certificate flow;
-- direct streaming avoids an unnecessary reverse-proxy hop for large media transfers;
-- Range requests and seeking can be validated directly against the streaming server.
+This proves that the Ubuntu server, rather than the desktop Stremio client, downloaded and cached the selected torrent.
 
-Do not add NPM to the media path unless a later requirement demonstrates a concrete need and Range/seek behavior is retested.
+Initial primary-TV playback through the same central path was also successful.
 
-## Persistent State Validation
+## Cache Behaviour
 
-After startup:
+### `10GiB` Is Read-Ahead, Not A Download Cap
 
-```bash
-ls -lah /mnt/data/stremio-libtorrent-server
-```
+`STREMIOSRV_READAHEAD_BYTES=10GiB` is the high-priority region around/ahead of the playhead. It does not limit total downloaded bytes.
 
-Validated persistent state includes:
+Upstream continues filling the wanted file after playback closes. Therefore a partially watched 20-60+ GiB movie can continue downloading until complete.
+
+A custom fork to pause-on-close was rejected to avoid maintaining patched images across upstream releases.
+
+### Current Upstream-Only Policy
 
 ```text
-.resume/
-.evictor-owner
-certificates.pem
-httpsCert.json
+Read-ahead:       10GiB
+Cache budget:     100GiB
+Eviction grace:   1800s / 30 min upstream default
+Download rate:    unlimited
+Adaptive picking: false
 ```
 
-The torrent cache will populate this root during playback.
+The cache budget is not a hard quota. Active/protected data can temporarily push actual disk usage above `100GiB` before a background eviction pass runs.
 
-Because `/mnt/data` is an NTFS/fuse mount, displayed Unix mode bits may appear permissive. The certificate PEM includes private-key material, so Samba/share exposure of this path must be reviewed before final architecture acceptance.
+`CACHE_EVICT_GRACE` is not a TTL. It prevents recently served/modified entries from being selected; cleanup is still triggered by the cache exceeding its size budget.
+
+### Live Eviction Validation
+
+During real 4K playback, observed media usage reached approximately:
+
+```text
+The Whisper Man       21G
+The End Of Oak Street 22G
+Mayday                24G
+In The Grey           36G  (active)
+-----------------------------------
+Total                 ~101G
+```
+
+The cache then evicted the older `Mayday` entry while keeping the active `In The Grey` entry, reducing total usage to approximately `78G`.
+
+This validates the current `100GiB` upstream-only cache policy.
+
+If routine use begins to include single REMUX files larger than `100GiB`, consider increasing the budget because upstream cache guidance expects the budget to exceed the largest normal file.
+
+## Cache Monitoring
+
+Total real disk usage:
+
+```bash
+du -sh /mnt/data/stremio-libtorrent-server
+```
+
+Real allocated size file-by-file, including sparse media files:
+
+```bash
+find /mnt/data/stremio-libtorrent-server -type f -exec du -h {} + | sort -h
+```
+
+Watch media files and total cache every 10 seconds:
+
+```bash
+watch -n 10 'du -sh /mnt/data/stremio-libtorrent-server; echo; find /mnt/data/stremio-libtorrent-server -type f \( -name "*.mkv" -o -name "*.mp4" \) -exec du -h {} + | sort -h'
+```
+
+Recent cache/eviction logs:
+
+```bash
+docker logs --since 5m stremio-libtorrent-server 2>&1 | grep -Ei 'evict|cache'
+```
+
+Do not use apparent file length alone for partially downloaded torrent files: libtorrent can create sparse files whose `st_size` reflects final size while `du` reflects actual allocated disk blocks.
 
 ## Docker Operations
 
@@ -412,7 +373,7 @@ Because `/mnt/data` is an NTFS/fuse mount, displayed Unix mode bits may appear p
 cd /srv/docker/stremio-libtorrent-server
 ```
 
-Start:
+Start/recreate:
 
 ```bash
 docker compose up -d
@@ -460,25 +421,13 @@ Before changing versions:
 
 1. check the current stable upstream release;
 2. review release notes for environment or API changes;
-3. back up `/mnt/data/stremio-libtorrent-server`;
+3. back up `/mnt/data/stremio-libtorrent-server` as appropriate;
 4. update only the version variable;
 5. validate the resolved image;
 6. pull and recreate;
-7. revalidate runtime settings and trusted HTTPS.
+7. revalidate runtime settings, trusted HTTPS, cache policy, and playback.
 
-Commands:
-
-```bash
-cd /srv/docker/stremio-libtorrent-server
-docker compose config -q
-docker compose config --images
-docker compose pull
-docker compose up -d
-docker compose ps
-docker compose logs --tail=150 stremio-libtorrent-server
-```
-
-After every upgrade, re-run the runtime environment check and verify that the generated trusted HTTPS endpoint still returns `HTTP 200`.
+The deployment intentionally avoids a custom fork/image so normal upstream upgrades do not require carrying local code patches.
 
 ## Backup
 
@@ -515,7 +464,7 @@ The backup contains `certificates.pem` and therefore private-key material. Store
 
 ### `6882` Shows An Empty Browser Response
 
-Expected. It is not an HTTP service. Validate sockets with `ss` and later validate peer connectivity using BitTorrent-aware tests.
+Expected. It is not an HTTP service. Validate sockets with `ss`.
 
 ### `11470/` Returns `{"detail":"Not Found"}`
 
@@ -523,25 +472,29 @@ Expected for the API root. Test `/health` instead.
 
 ### Container Is Healthy But Cache Is Not Growing
 
-Cache usage will not grow until actual torrent playback begins. Phase 7 validates growth using a legitimate high-bitrate source.
+Cache usage grows only after actual torrent playback starts. Confirm that AIOStreams returns P2P torrent entries and inspect media/cache files during playback.
+
+### Cache Exceeds `100GiB`
+
+Expected temporarily when active/protected data pushes usage above the configured budget. The background evictor removes eligible older entries on subsequent passes.
 
 ### Trusted HTTPS Fails
 
-Check startup logs for certificate acquisition and inspect:
+Check startup logs and inspect:
 
 ```bash
 ls -lah /mnt/data/stremio-libtorrent-server
 cat /mnt/data/stremio-libtorrent-server/httpsCert.json
 ```
 
-Do not paste private key contents from `certificates.pem` into tickets, chats, or Git.
+Do not paste private-key contents from `certificates.pem` into tickets, chats, or Git.
 
 ### qBittorrent Port Conflict
 
-Confirm the new service is configured for `6882` both inside and outside the container:
+Confirm the new service uses `6882` both inside and outside the container:
 
 ```bash
-docker exec stremio-libtorrent-server env | grep STREMIOSRV_BT_LISTEN_PORT
+docker compose exec stremio-libtorrent-server env | grep STREMIOSRV_BT_LISTEN_PORT
 sudo ss -lntup | grep -E ':(6881|6882)\b'
 ```
 
@@ -553,33 +506,35 @@ qBittorrent must remain on `6881`; Stremio must remain on `6882`.
 cd /srv/docker/stremio-libtorrent-server
 docker compose ps
 docker compose logs --tail=100 stremio-libtorrent-server
-docker exec stremio-libtorrent-server env | grep -E '^STREMIOSRV_(BT_LISTEN_PORT|CACHE_SIZE|READAHEAD_BYTES|DOWNLOAD_RATE_LIMIT|ADAPTIVE_PICKING)='
+docker compose exec stremio-libtorrent-server env | grep -E '^STREMIOSRV_(BT_LISTEN_PORT|CACHE_SIZE|READAHEAD_BYTES|DOWNLOAD_RATE_LIMIT|ADAPTIVE_PICKING)='
 curl -fsS http://192.168.0.10:11470/health
 sudo ss -lntup | grep -E ':6882\b'
-ls -lah /mnt/data/stremio-libtorrent-server
+du -sh /mnt/data/stremio-libtorrent-server
 ```
 
 For the client-facing TLS check, use the generated `*.stremio.rocks:12470` hostname reported by the current instance and verify it without `-k`.
 
 ## Implementation Status
 
-Completed in Phase 3:
+Completed:
 
 - pinned `androshack/stremio-libtorrent-server:1.6.15` deployment;
 - persistent state/cache under `/mnt/data/stremio-libtorrent-server`;
 - `10GiB` read-ahead;
-- `300GiB` cache budget;
+- `100GiB` cache budget;
+- upstream default 30-minute eviction grace;
 - unlimited torrent download rate;
 - experimental adaptive picking disabled;
 - `6882/TCP+UDP` peer port without disturbing qBittorrent `6881`;
 - LAN-only web/API bindings;
 - trusted `*.stremio.rocks:12470` HTTPS method;
-- healthy-container, runtime-environment, persistence, and TLS validation.
+- healthy-container, runtime-environment, persistence, and TLS validation;
+- end-to-end proof that Stremio-selected torrents are downloaded by the Ubuntu server;
+- real 4K cache growth and LRU eviction validation;
+- initial primary-TV playback through the central media path.
 
-Still pending in later phases:
+Still pending:
 
-- AIOStreams Torrentio/source configuration;
-- primary TV client streaming-server configuration;
-- end-to-end proof that selected torrents are downloaded by the Ubuntu server;
+- full primary-TV/client acceptance including seek/resume and sustained playback confidence;
 - router forwarding and inbound-peer validation for `6882/TCP+UDP`;
-- large-file read-ahead, seek, and resilience testing.
+- formal large-file read-ahead, seek, and resilience testing.
