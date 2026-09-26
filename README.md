@@ -25,11 +25,16 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - Immich
 - Kavita
 - NetAlertX network inventory and presence monitoring
+- AIOStreams self-hosted Stremio stream aggregation/control layer
+- `stremio-libtorrent-server` central BitTorrent streaming engine with persistent read-ahead/cache
+
+### Partially Implemented
+
+- [Stremio + AIOStreams self-hosted streaming architecture](./docs/overview/stremio-streaming-architecture.md) — Phases 1-3 are deployed; source configuration, client cutover, peer forwarding, and resilience testing remain pending.
 
 ### Planned
 
 - [Homepage dashboard architecture roadmap](./docs/roadmaps/homepage/README.md)
-- [Stremio + AIOStreams self-hosted streaming architecture roadmap](./docs/roadmaps/stremio-aiostreams/README.md)
 - [Usenet architecture and deployment roadmap](./docs/roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./docs/roadmaps/shadowbroker-openclaw-integration.md)
 
@@ -52,14 +57,29 @@ These names are intended for local DNS resolution and trusted Tailscale VPN clie
 | Kavita | `https://kavita.pirocorp.com` |
 | ShadowBroker | `https://shadowbroker.pirocorp.com` |
 | NetAlertX | `https://netalertx.pirocorp.com` |
+| AIOStreams | `https://aio.pirocorp.com` |
+
+`stremio-libtorrent-server` uses a generated trusted `*.stremio.rocks:12470` client endpoint. The instance-specific hostname is recorded by the running server and documented in the service runbook rather than treated as a permanent `pirocorp.com` service name.
 
 ## Architecture Summary
 
 ```text
-Clients
+General homelab services
   -> AdGuard Home DNS
   -> Nginx Proxy Manager
   -> published homelab services
+
+Stremio discovery/control
+  -> aio.pirocorp.com
+  -> AdGuard Home
+  -> Nginx Proxy Manager
+  -> AIOStreams
+
+Stremio media path
+  -> stremio-libtorrent-server
+  -> 10 GiB read-ahead
+  -> 300 GiB persistent cache
+  -> trusted *.stremio.rocks HTTPS
 
 Ubuntu Server host (192.168.0.10)
   -> Docker / Docker Compose
@@ -90,6 +110,8 @@ Ubuntu Server host (192.168.0.10)
 - [Bitmagnet runbook](./docs/services/bitmagnet/README.md)
 - [ShadowBroker operations runbook](./docs/services/shadowbroker/README.md)
 - [NetAlertX deployment and operations runbook](./docs/services/netalertx/README.md)
+- [AIOStreams deployment and operations runbook](./docs/services/aiostreams/README.md)
+- [stremio-libtorrent-server deployment and operations runbook](./docs/services/stremio-libtorrent-server/README.md)
 
 Start with the infrastructure guide when rebuilding the base environment. Use the workload runbooks only after the platform itself is ready.
 
@@ -105,6 +127,8 @@ Start with the infrastructure guide when rebuilding the base environment. Use th
 - [UPS monitoring](./docs/services/ups-monitoring/README.md)
 - [ShadowBroker](./docs/services/shadowbroker/README.md)
 - [NetAlertX](./docs/services/netalertx/README.md)
+- [AIOStreams](./docs/services/aiostreams/README.md)
+- [stremio-libtorrent-server](./docs/services/stremio-libtorrent-server/README.md)
 
 ## Platform Docs
 

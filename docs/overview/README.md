@@ -9,3 +9,4 @@ Related docs: [Platform](../platform/README.md), [Services](../services/README.m
 - [Current state](./current-state.md)
 - [Architecture](./architecture.md)
 - [Service inventory](./service-inventory.md)
+- [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md)

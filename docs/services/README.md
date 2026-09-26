@@ -18,6 +18,8 @@ These service docs assume the base environment from the [Infrastructure HowTo](.
 - [UPS monitoring](./ups-monitoring/README.md)
 - [ShadowBroker](./shadowbroker/README.md)
 - [NetAlertX](./netalertx/README.md)
+- [AIOStreams](./aiostreams/README.md)
+- [stremio-libtorrent-server](./stremio-libtorrent-server/README.md)
 
 ## Runbooks And How-To Docs
 
@@ -27,6 +29,8 @@ These service docs assume the base environment from the [Infrastructure HowTo](.
 - [Bitmagnet runbook](./bitmagnet/README.md)
 - [ShadowBroker deployment and operations runbook](./shadowbroker/README.md)
 - [NetAlertX deployment and operations runbook](./netalertx/README.md)
+- [AIOStreams deployment and operations runbook](./aiostreams/README.md)
+- [stremio-libtorrent-server deployment and operations runbook](./stremio-libtorrent-server/README.md)
 
 ## Service READMEs Used As Main How-To
 
@@ -37,9 +41,12 @@ These services currently use their main `README.md` as the primary operating ref
 - [Kavita](./kavita/README.md)
 - [UPS monitoring](./ups-monitoring/README.md)
 - [NetAlertX](./netalertx/README.md)
+- [AIOStreams](./aiostreams/README.md)
+- [stremio-libtorrent-server](./stremio-libtorrent-server/README.md)
 
 ## Planned Work
 
+- [Stremio + AIOStreams remaining implementation phases](../roadmaps/stremio-aiostreams/README.md)
 - [Usenet roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)
 

@@ -31,10 +31,15 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 | UPS monitoring | Power visibility and monitoring | [UPS monitoring](../services/ups-monitoring/README.md) |
 | ShadowBroker | Intelligence and monitoring platform | [ShadowBroker](../services/shadowbroker/README.md) |
 | NetAlertX | LAN device inventory and presence monitoring | [NetAlertX](../services/netalertx/README.md) |
+| AIOStreams | Self-hosted Stremio stream aggregation/control layer | [AIOStreams](../services/aiostreams/README.md) |
+| stremio-libtorrent-server | Central BitTorrent playback, read-ahead, cache, and Stremio streaming server | [stremio-libtorrent-server](../services/stremio-libtorrent-server/README.md) |
+
+The combined deployed architecture and implementation status for the Stremio stack is recorded in [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md).
 
 ## Planned
 
 | Service | Status | Documentation |
 | --- | --- | --- |
+| Stremio + AIOStreams remaining phases | Sources, client cutover, router forwarding, and resilience testing still pending | [Architecture roadmap](../roadmaps/stremio-aiostreams/README.md) |
 | Usenet stack | Planned only, not deployed | [Usenet roadmap](../roadmaps/usenet/README.md) |
 | ShadowBroker OpenClaw integration | Planned only, not deployed | [Integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md) |
