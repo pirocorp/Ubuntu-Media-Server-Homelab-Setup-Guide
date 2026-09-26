@@ -24,7 +24,7 @@ Related docs: [Architecture](./architecture.md), [Service inventory](./service-i
 
 ## Current Access URLs
 
-These service names resolve through the current AdGuard local DNS design. They are the intended LAN names and VPN names for trusted Tailscale clients.
+These service names normally resolve through the current AdGuard local DNS design. A public wildcard DNS fallback also maps `*.pirocorp.com` to the private LAN address for clients such as the TV that bypass local DNS.
 
 | Service | URL |
 | --- | --- |
@@ -47,6 +47,14 @@ These service names resolve through the current AdGuard local DNS design. They a
 NetAlertX uses an explicit AdGuard rewrite for `netalertx.pirocorp.com`, Nginx Proxy Manager forwarding to `192.168.0.10:20211`, and the existing `pirocorp.com` / `*.pirocorp.com` Let's Encrypt certificate.
 
 AIOStreams uses the same local publishing model: explicit AdGuard rewrite for `aio.pirocorp.com`, Nginx Proxy Manager forwarding to `192.168.0.10:3001`, and the existing wildcard certificate.
+
+For TV/client compatibility, Cloudflare public DNS also has a DNS-only wildcard record:
+
+```text
+*.pirocorp.com -> 192.168.0.10
+```
+
+This publishes only an RFC1918/private address and does not make the services Internet-routable. It exists because the primary TV did not reliably honor the local AdGuard resolver even with manual DNS configuration.
 
 The Stremio Web UI also follows the standard local publishing model: explicit AdGuard rewrite for `stremio.pirocorp.com`, Nginx Proxy Manager forwarding to `192.168.0.10:8081`, WebSockets enabled, and the existing wildcard certificate. The final HTTPS endpoint was validated with `HTTP 200`.
 
@@ -102,20 +110,26 @@ qBittorrent remains on `6881/TCP+UDP`; the Stremio torrent engine uses the separ
 | AIOStreams | `ghcr.io/viren070/aiostreams:v2.34.1`, healthy |
 | AIOStreams state | `/srv/docker/aiostreams/data` |
 | AIOStreams URL | `https://aio.pirocorp.com` |
+| AIOStreams source | Torrentio P2P / non-debrid, validated |
 | Streaming engine | `androshack/stremio-libtorrent-server:1.6.15`, healthy |
 | Streaming cache/state | `/mnt/data/stremio-libtorrent-server` |
 | Stremio Web UI | `https://stremio.pirocorp.com` via AdGuard + NPM to `192.168.0.10:8081` |
 | Streaming-server HTTPS | generated trusted `*.stremio.rocks:12470` endpoint, direct media path |
 | Read-ahead | `10GiB` |
-| Cache budget | `300GiB` |
+| Cache budget | `100GiB` |
+| Cache eviction grace | upstream default `1800s` / 30 minutes |
 | Download rate | unlimited |
 | Adaptive picking | disabled |
 | Torrent peer port | `6882/TCP+UDP` |
 | qBittorrent peer port | `6881/TCP+UDP`, unchanged |
 | Transcoding | not part of normal v1 path |
-| Current implementation phase | Phases 1-3 complete; Phases 4-7 pending |
+| Current implementation phase | Phases 1-4 complete; Phase 5 initial TV validation in progress; Phases 6-7 pending |
 
-See [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md) for the as-built architecture, validated preflight values, port plan, security boundaries, and remaining acceptance checks. See the [Stremio Web UI publishing runbook](../services/stremio-libtorrent-server/web-ui-publishing.md) for the DNS and reverse-proxy configuration.
+Phase 4 end-to-end proof confirmed that selected Torrentio results contain usable torrent metadata and that `stremio-libtorrent-server` downloads/caches the selected media on the Ubuntu server. The primary TV also completed initial P2P playback through the central path.
+
+The cache budget was reduced from the original `300GiB` plan to `100GiB` after live testing showed that upstream continues filling the wanted file after playback closes. A custom fork was rejected. The current upstream-only policy retains `10GiB` read-ahead and uses size-triggered LRU cleanup. During live 4K playback the cache reached approximately `101G`; the evictor removed the older `Mayday` entry (~24G) while preserving the active `In The Grey` stream, reducing usage to approximately `78G`.
+
+See [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md) for the as-built architecture, validated preflight values, port plan, security boundaries, and remaining acceptance checks. See [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md) for the source configuration and end-to-end evidence. See the [Stremio Web UI publishing runbook](../services/stremio-libtorrent-server/web-ui-publishing.md) for the DNS and reverse-proxy configuration.
 
 ## NetAlertX Network Publishing Notes
 
@@ -150,7 +164,7 @@ AIOStreams was validated directly from the NPM container on `192.168.0.10:3001`;
 | `/mnt/ia` | `IA` | `ntfs` | `3.7T` | `2.8T` | `894G` | `77%` |
 | `/mnt/comp` | `COMP` | `ntfs` | `3.7T` | `1.1T` | `2.7T` | `28%` |
 
-`/mnt/data/stremio-libtorrent-server` is the selected persistent cache/state location for the central Stremio torrent engine. The `300GiB` cache budget is well within the preflight free-space margin.
+`/mnt/data/stremio-libtorrent-server` is the selected persistent cache/state location for the central Stremio torrent engine. The current `100GiB` cache budget has substantial filesystem headroom. The budget is not a hard quota and active/protected entries can temporarily push observed usage above it before an eviction pass runs.
 
 ## Scope
 
@@ -174,11 +188,16 @@ AIOStreams was validated directly from the NPM container on `192.168.0.10:3001`;
 - ShadowBroker
 - NetAlertX LAN device inventory and presence monitoring with HTTPS access through `netalertx.pirocorp.com`
 - AIOStreams self-hosted control/discovery layer at `https://aio.pirocorp.com`
-- `stremio-libtorrent-server` central torrent engine with `10GiB` read-ahead, `300GiB` persistent cache, `6882/TCP+UDP`, and trusted client HTTPS
+- Torrentio P2P/non-debrid source configured through AIOStreams with usable infoHash/fileIdx validation
+- `stremio-libtorrent-server` central torrent engine with `10GiB` read-ahead, `100GiB` persistent cache, `6882/TCP+UDP`, and trusted client HTTPS
+- end-to-end proof that Stremio selections are downloaded and cached by the Ubuntu server
+- size-triggered LRU cache eviction validated under real 4K load
 - Stremio Web UI published internally at `https://stremio.pirocorp.com` through AdGuard Home and Nginx Proxy Manager
+- public DNS-only wildcard `*.pirocorp.com -> 192.168.0.10` for clients that bypass local DNS
+- initial primary-TV P2P playback through the central server path
 
 ### Planned
 
-- [Stremio + AIOStreams remaining implementation phases](../roadmaps/stremio-aiostreams/README.md): Torrentio/source configuration, client cutover, router peer-port validation, and large-file resilience testing
+- [Stremio + AIOStreams remaining implementation phases](../roadmaps/stremio-aiostreams/README.md): complete primary-TV/client acceptance, router peer-port validation, and formal large-file resilience testing
 - [Usenet stack and architecture roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)
