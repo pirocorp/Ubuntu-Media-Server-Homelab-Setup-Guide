@@ -1,20 +1,23 @@
 # Stremio + AIOStreams Implemented Architecture
 
-Status: Partially implemented — Phases 1-4 complete  
-Purpose: Record the as-built Stremio streaming architecture after host preflight, AIOStreams deployment, central torrent-engine deployment, and source/end-to-end P2P validation.  
+Status: Implemented — seven-phase baseline complete; explicit router forwarding for `6882/TCP+UDP` remains a deferred operational follow-up  
+Purpose: Record the accepted as-built Stremio streaming architecture after deployment, end-to-end P2P validation, client acceptance, peer-path validation, and large-file resilience testing.  
 Depends on: [Current state](./current-state.md), [Docker and Portainer](../platform/docker-and-portainer.md), [Networking and reverse proxy](../platform/networking-and-reverse-proxy.md), [Storage and Samba](../platform/storage-and-samba.md)  
-Related docs: [Original architecture roadmap](../roadmaps/stremio-aiostreams/README.md), [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md), [AIOStreams runbook](../services/aiostreams/README.md), [stremio-libtorrent-server runbook](../services/stremio-libtorrent-server/README.md), [qBittorrent](../services/qbittorrent/README.md)
+Related docs: [Original architecture roadmap](../roadmaps/stremio-aiostreams/README.md), [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md), [Phase 5 completion](../roadmaps/stremio-aiostreams/phase-5-completion.md), [Phase 6 completion](../roadmaps/stremio-aiostreams/phase-6-completion.md), [Phase 7 completion](../roadmaps/stremio-aiostreams/phase-7-completion.md), [multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md), [AIOStreams runbook](../services/aiostreams/README.md), [stremio-libtorrent-server runbook](../services/stremio-libtorrent-server/README.md), [qBittorrent](../services/qbittorrent/README.md)
 
 ## Implementation Scope
 
-The original roadmap defined a seven-phase free/self-hosted Stremio rebuild. This document records the live server state after completion of:
+The original roadmap defined a seven-phase free/self-hosted Stremio rebuild. The baseline is complete:
 
 1. Phase 1 — preflight;
 2. Phase 2 — self-hosted AIOStreams deployment;
 3. Phase 3 — `stremio-libtorrent-server` deployment;
-4. Phase 4 — Torrentio P2P/non-debrid source configuration and end-to-end torrent validation.
+4. Phase 4 — Torrentio P2P/non-debrid source configuration and end-to-end torrent validation;
+5. Phase 5 — TV/desktop client acceptance, seek/resume validation, and identification of the primary-TV `100 Mbit/s` Ethernet limitation;
+6. Phase 6 — peer-listener/firewall/real-UDP-peer validation, with explicit router forwarding intentionally deferred;
+7. Phase 7 — large-file read-ahead, cache/LRU, seek, resume, and resilience acceptance using full 4K playback.
 
-Phase 5 has started with successful primary-TV playback through the central path, but full client acceptance is still pending. Phases 6-7 remain pending for router peer-port validation and formal large-file resilience testing.
+The seven-phase baseline is therefore closed. The remaining `6882/TCP+UDP -> 192.168.0.10:6882` router forward is an optional/deferred operational follow-up rather than an incomplete architecture phase.
 
 ## Locked Architecture Preserved
 
@@ -28,13 +31,15 @@ The deployed state still follows the original locked decisions, with one explici
 - persistent torrent cache reduced from the original `300GiB` plan to `100GiB` after live validation;
 - qBittorrent unchanged on `6881/TCP+UDP`;
 - Stremio torrent engine on `6882/TCP+UDP`;
-- no TorBox, Real-Debrid, Premiumize, StremThru, or MediaFlow in v1;
-- no GPU/transcoding path in normal v1 operation;
+- no TorBox, Real-Debrid, Premiumize, StremThru, or MediaFlow in the original baseline v1;
+- no GPU/transcoding path in normal baseline operation;
 - Docker stacks under `/srv/docker/<service>`;
 - explicit AdGuard local DNS rewrites remain the normal LAN DNS model;
 - Cloudflare DNS-only wildcard `*.pirocorp.com -> 192.168.0.10` is used as a compatibility fallback for clients that bypass local DNS;
 - Nginx Proxy Manager for the AIOStreams control/configuration endpoint;
 - direct trusted HTTPS from `stremio-libtorrent-server` for the media path.
+
+The later [multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md) is a follow-up project that reopens only the source-layer decision. It does not change the historical baseline decision record above.
 
 ## As-Built High-Level Architecture
 
@@ -275,9 +280,17 @@ The AIOStreams addon was installed into the Stremio account. Optional third-part
 
 Desktop playback of `Mayday` created live media and resume-state updates under `/mnt/data/stremio-libtorrent-server`, proving the selected torrent was downloaded by the Ubuntu server rather than the desktop client.
 
-The primary TV also successfully resolved AIOStreams through the DNS fallback and played P2P content through the central path. This initial TV success starts Phase 5, but full client acceptance is not yet declared complete.
+The primary TV also successfully resolved AIOStreams through the DNS fallback and played P2P content through the central path. This established the starting point for the later Phase 5 client acceptance work.
 
-See [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md) for the detailed acceptance evidence.
+See [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md) for the detailed source and end-to-end evidence.
+
+## Phases 5-7 — Acceptance Completion
+
+The remaining baseline phases were subsequently completed:
+
+- [Phase 5](../roadmaps/stremio-aiostreams/phase-5-completion.md) closed TV/desktop client acceptance and documented the primary TV's `100 Mbit/s` Ethernet interface as the practical limitation for the heaviest UHD REMUX cases rather than the server/torrent/cache architecture.
+- [Phase 6](../roadmaps/stremio-aiostreams/phase-6-completion.md) validated the `6882/TCP+UDP` listener/firewall path and observed real UDP peer activity. The explicit router port-forward was deliberately left as a deferred operational follow-up.
+- [Phase 7](../roadmaps/stremio-aiostreams/phase-7-completion.md) completed large-file resilience acceptance. Two full 4K films were watched through the central path, with seek, stop/reopen/resume, long-seek behavior, `10GiB` read-ahead, and `100GiB` cache/LRU behavior accepted for the deployed stack.
 
 ## Cache Policy Reopened After Live Testing
 
@@ -306,7 +319,7 @@ If normal usage begins to include individual REMUX files larger than `100GiB`, r
 | Stremio web UI | `192.168.0.10:8081/tcp` | LAN host binding |
 | Stremio API | `192.168.0.10:11470/tcp` | LAN host binding |
 | Stremio trusted HTTPS | `192.168.0.10:12470/tcp` | LAN host binding; trusted `stremio.rocks` hostname |
-| Stremio BitTorrent | `6882/TCP+UDP` | peer port; router forwarding pending Phase 6 |
+| Stremio BitTorrent | `6882/TCP+UDP` | listener/firewall and UDP peer activity validated; explicit router forwarding deferred |
 
 Docker may show `6881/tcp` in the Stremio image metadata. That is not a host binding. The live peer binding is `6882`.
 
@@ -330,7 +343,7 @@ The media server uses:
 Stremio client -> trusted *.stremio.rocks:12470 -> stremio-libtorrent-server
 ```
 
-This was selected because the upstream service provides trusted client HTTPS directly, and it avoids adding NPM as another hop for large video transfers. Range/seek behavior remains part of the formal client/resilience acceptance work.
+This was selected because the upstream service provides trusted client HTTPS directly, and it avoids adding NPM as another hop for large video transfers. Range/seek, stop/reopen/resume, and long-seek behavior were accepted during Phases 5 and 7.
 
 ## Security Boundaries
 
@@ -382,7 +395,7 @@ For a clean rebuild on the existing homelab platform:
 8. validate trusted `*.stremio.rocks:12470` HTTPS without `-k`;
 9. configure Torrentio in AIOStreams in P2P/non-debrid mode and install the AIOStreams addon into Stremio;
 10. verify actual server-side cache activity during playback;
-11. complete full TV/client acceptance, router peer-port validation, and formal large-file resilience testing before marking the full v1 architecture complete.
+11. repeat the Phase 5-7 client, peer-path, and large-file resilience checks before declaring a rebuilt baseline accepted. The explicit router `6882/TCP+UDP` forward may remain deferred if inbound forwarding is not currently required.
 
 ## Current Acceptance Matrix
 
@@ -403,11 +416,12 @@ For a clean rebuild on the existing homelab platform:
 | Torrentio P2P source configured through AIOStreams | PASS — Phase 4 |
 | AIOStreams results contain usable infoHash/fileIdx data | PASS — Phase 4 |
 | Proof that Ubuntu server downloads/caches selected torrent | PASS — Phase 4 |
-| Primary TV reaches AIOStreams and plays through central path | PASS — initial Phase 5 validation |
-| Full primary-TV/client acceptance | IN PROGRESS — Phase 5 |
-| Router forwarding/inbound peers on `6882` | PENDING — Phase 6 |
-| Formal large-file seek/buffer resilience test | PENDING — Phase 7 |
+| Primary TV reaches AIOStreams and plays through central path | PASS — Phase 5 |
+| Full primary-TV/client acceptance | PASS — Phase 5 |
+| `6882` listener/firewall and real UDP peer activity | PASS — Phase 6 |
+| Explicit router forwarding for `6882/TCP+UDP` | DEFERRED — operational follow-up |
+| Formal large-file seek/buffer/cache resilience test | PASS — Phase 7 |
 
 ## Next Step
 
-Phase 4 is closed. Continue with Phase 5 client acceptance while preserving the validated source and cache baseline. After that, validate router forwarding for `6882/TCP+UDP` and run the formal large-file resilience tests.
+The original seven-phase baseline is complete. Preserve the validated Torrentio/playback path. The next planned Stremio work is the [AIOStreams multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md), which evaluates STorz with the existing Bitmagnet `v0.10.0` instance and DMM hashlists without changing Torrentio or the playback engine.

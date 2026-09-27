@@ -28,13 +28,11 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - AIOStreams self-hosted Stremio stream aggregation/control layer
 - `stremio-libtorrent-server` central BitTorrent streaming engine with persistent read-ahead/cache
 - Stremio Web UI published internally through AdGuard Home + Nginx Proxy Manager
-
-### Partially Implemented
-
-- [Stremio + AIOStreams self-hosted streaming architecture](./docs/overview/stremio-streaming-architecture.md) — Phases 1-3 are deployed; source configuration, client cutover, peer forwarding, and resilience testing remain pending.
+- [Stremio + AIOStreams self-hosted streaming architecture](./docs/overview/stremio-streaming-architecture.md) — seven-phase baseline complete; client and large-file acceptance passed, with the explicit `6882/TCP+UDP` router forward retained as a deferred operational follow-up
 
 ### Planned
 
+- [AIOStreams multi-source P2P expansion](./docs/roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
 - [Homepage dashboard architecture roadmap](./docs/roadmaps/homepage/README.md)
 - [Usenet architecture and deployment roadmap](./docs/roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./docs/roadmaps/shadowbroker-openclaw-integration.md)
@@ -86,7 +84,7 @@ Stremio browser UI
 Stremio media path
   -> stremio-libtorrent-server
   -> 10 GiB read-ahead
-  -> 300 GiB persistent cache
+  -> 100 GiB persistent cache
   -> trusted *.stremio.rocks HTTPS :12470
 
 Ubuntu Server host (192.168.0.10)
