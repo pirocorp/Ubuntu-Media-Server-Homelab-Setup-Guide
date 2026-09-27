@@ -3,7 +3,7 @@
 Status: Implemented  
 Purpose: Document the deployed self-hosted AIOStreams control plane used to aggregate Stremio stream sources without paid debrid services.  
 Depends on: [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)  
-Related docs: [Services index](../README.md), [Service inventory](../../overview/service-inventory.md), [Stremio + AIOStreams architecture roadmap](../../roadmaps/stremio-aiostreams/README.md), [stremio-libtorrent-server](../stremio-libtorrent-server/README.md)
+Related docs: [Services index](../README.md), [Service inventory](../../overview/service-inventory.md), [Stremio + AIOStreams architecture roadmap](../../roadmaps/stremio-aiostreams/README.md), [Phase 4 completion](../../roadmaps/stremio-aiostreams/phase-4-completion.md), [stremio-libtorrent-server](../stremio-libtorrent-server/README.md)
 
 ## Current Deployment
 
@@ -20,8 +20,9 @@ AIOStreams is the stream aggregation and control layer for the Stremio architect
 | Published host port | `192.168.0.10:3001/tcp` |
 | Preferred URL | `https://aio.pirocorp.com` |
 | Database | SQLite |
-| Public DNS | no public `A` record; validated as NXDOMAIN from Cloudflare DNS |
-| Phase 4 source configuration | not configured yet |
+| Local DNS | explicit AdGuard rewrite to `192.168.0.10` |
+| Public DNS fallback | DNS-only `*.pirocorp.com -> 192.168.0.10` |
+| Phase 4 source configuration | Torrentio P2P/non-debrid configured and validated |
 
 The deployed instance is healthy and has been validated through both the direct LAN port and the preferred HTTPS URL.
 
@@ -32,9 +33,14 @@ Stremio client / browser
         |
         | https://aio.pirocorp.com
         v
-AdGuard Home explicit DNS rewrite
+DNS resolution
         |
-        | aio.pirocorp.com -> 192.168.0.10
+        +--> normal LAN: AdGuard explicit rewrite
+        |                aio.pirocorp.com -> 192.168.0.10
+        |
+        +--> DNS-bypassing clients: Cloudflare DNS-only wildcard
+                         *.pirocorp.com -> 192.168.0.10
+        |
         v
 Nginx Proxy Manager :443
         |
@@ -42,10 +48,10 @@ Nginx Proxy Manager :443
         v
 AIOStreams :3000
         |
-        +--> Torrentio / other free P2P-capable addons  [Phase 4]
+        +--> Torrentio P2P / non-debrid
         |
         v
-normalized Stremio stream results
+normalized Stremio torrent stream results
 ```
 
 AIOStreams is intentionally separated from the media path. After a user selects a torrent result, Stremio passes the torrent information to the configured `stremio-libtorrent-server`; AIOStreams is not in the video byte path.
@@ -198,11 +204,13 @@ The direct browser URL is:
 http://192.168.0.10:3001/stremio/configure
 ```
 
-## DNS Publishing With AdGuard Home
+## DNS Publishing
 
-The homelab uses explicit DNS rewrites rather than wildcard local DNS.
+### Normal LAN Resolution — AdGuard Home
 
-In AdGuard Home add:
+The homelab continues to use explicit AdGuard rewrites for normal LAN DNS.
+
+In AdGuard Home:
 
 ```text
 aio.pirocorp.com -> 192.168.0.10
@@ -220,7 +228,42 @@ Expected:
 192.168.0.10 aio.pirocorp.com
 ```
 
-The public DNS namespace was also checked separately through Cloudflare DNS-over-HTTPS and returned NXDOMAIN for `aio.pirocorp.com`. This confirms that the hostname is currently supplied by local AdGuard DNS rather than a public `A` record.
+### TV / DNS-Bypass Compatibility — Public Wildcard
+
+The primary TV did not reliably resolve `aio.pirocorp.com` through the local AdGuard resolver, even after manual DNS configuration.
+
+To avoid hard-coded service IPs on devices that bypass local DNS, Cloudflare public DNS now contains:
+
+```text
+Type:          A
+Name:          *
+IPv4 address:  192.168.0.10
+Proxy status:  DNS only
+TTL:           Auto
+```
+
+This produces:
+
+```text
+*.pirocorp.com -> 192.168.0.10
+```
+
+The record points only to an RFC1918/private address. It does not make the homelab services Internet-routable.
+
+Validation through Google DNS:
+
+```powershell
+nslookup aio.pirocorp.com 8.8.8.8
+```
+
+Validated response:
+
+```text
+Name:    aio.pirocorp.com
+Address: 192.168.0.10
+```
+
+The explicit AdGuard rewrites remain the preferred LAN DNS model; the public wildcard is a compatibility fallback for clients that ignore or bypass it.
 
 ## Nginx Proxy Manager
 
@@ -293,6 +336,79 @@ Expected:
 ```text
 HTTP 200
 ```
+
+## Phase 4 Source Configuration
+
+Torrentio is configured as the initial stream source in P2P/non-debrid mode.
+
+Current baseline:
+
+```text
+Resources:          Stream only
+URL:                default/blank
+Providers:          unrestricted
+Services:           unrestricted
+Media Types:        unrestricted
+Multiple Instances: OFF
+```
+
+Filtering baseline:
+
+- no debrid/cache requirement;
+- no stream-type inclusion/exclusion requirement;
+- CAM, SCR, TS, and TC releases excluded;
+- 3D visual tag excluded;
+- preferred resolution order includes 2160p, 1440p, 1080p and lower fallbacks;
+- preferred quality order favors BluRay REMUX, BluRay, WEB-DL, WEBRip, HDRip and related normal releases;
+- existing deduplication remains enabled;
+- no seeders sort criterion was added during initial validation.
+
+Proxy/background policy:
+
+```text
+AIOStreams built-in media proxy: OFF in practice
+proxiedServices: []
+proxiedAddons:   []
+precacheNextEpisode: false
+preloadStreams.enabled: false
+```
+
+Autoplay matching uses:
+
+```text
+matchingFile
+attributes: resolution, quality
+```
+
+Statistics output remains enabled for troubleshooting.
+
+The generated configuration URL contains private identifiers/tokens and must not be committed or copied into documentation.
+
+## Stremio Addon Baseline
+
+AIOStreams was installed into the Stremio account so it synchronizes to account clients.
+
+During validation, optional third-party addons were removed because one or more polluted the normal movie/detail flow with deep-link style entries. The stable baseline retained:
+
+- Cinemeta;
+- Local Files;
+- AIOStreams.
+
+After the cleanup, normal movie navigation invoked AIOStreams and returned expected Torrentio P2P streams.
+
+## Stream Result Validation
+
+Direct AIOStreams stream API testing confirmed that normal stream results contain the data required by the central torrent engine, including:
+
+- `infoHash`;
+- `fileIdx`;
+- filename;
+- video size;
+- seeder information.
+
+Multiple titles returned valid P2P results, including Guardians of the Galaxy, Mayday, The Whisper Man, Project Hail Mary, Back Roads, and others used during troubleshooting.
+
+Desktop playback of `Mayday` subsequently produced matching cache and `.fastresume` activity under `/mnt/data/stremio-libtorrent-server`, proving the end-to-end path.
 
 ## Persistent State Validation
 
@@ -406,10 +522,11 @@ Keep the real `.env` outside Git and include it only in a protected secrets back
 - Never commit the real AIOStreams `SECRET_KEY`.
 - Never commit generated Stremio configuration URLs containing private configuration tokens.
 - The service binds its direct host port only to `192.168.0.10`, not to `0.0.0.0`.
-- The preferred hostname is provided by local AdGuard DNS; the validated public DNS response for `aio.pirocorp.com` is NXDOMAIN.
+- Local AdGuard rewrites remain the preferred LAN DNS model.
+- The public DNS-only wildcard maps only to the private RFC1918 address `192.168.0.10`; it does not expose the services directly to the Internet.
 - HTTPS terminates at the existing Nginx Proxy Manager wildcard certificate.
 - AIOStreams is a control/discovery service and is not intended to be a public Internet management endpoint.
-- Phase 4 must continue to use only free P2P-capable upstream sources; paid debrid credentials are outside the v1 architecture.
+- Phase 4 uses only free P2P-capable upstream sources; paid debrid credentials remain outside the v1 architecture.
 
 ## Troubleshooting
 
@@ -445,13 +562,23 @@ docker exec nginx-proxy-manager \
 
 If direct LAN access works but this test fails, inspect Docker networking and UFW before changing AIOStreams itself.
 
-### DNS Does Not Resolve
+### TV Does Not Resolve `aio.pirocorp.com`
 
-Verify the explicit AdGuard rewrite and then run:
+First verify the local AdGuard rewrite. If the TV still bypasses local DNS, verify the public wildcard through an external resolver:
 
-```bash
-getent hosts aio.pirocorp.com
+```powershell
+nslookup aio.pirocorp.com 8.8.8.8
 ```
+
+Expected:
+
+```text
+Address: 192.168.0.10
+```
+
+### Stremio Shows Unexpected Deep-Link Entries Instead Of P2P Streams
+
+Temporarily reduce the account addon baseline to Cinemeta, Local Files, and AIOStreams, then restart the Stremio client and retest. During Phase 4 this removed conflicting third-party result pollution and restored normal AIOStreams invocation.
 
 ## Operational Health Checklist
 
@@ -465,9 +592,11 @@ curl -sS -o /dev/null -w 'HTTP %{http_code}\n' https://aio.pirocorp.com/stremio/
 ls -lah /srv/docker/aiostreams/data
 ```
 
+For a DNS-bypassing client path, also verify `aio.pirocorp.com` against an external resolver.
+
 ## Implementation Status
 
-Completed in Phase 2:
+Completed:
 
 - self-hosted AIOStreams deployment;
 - pinned `v2.34.1` image;
@@ -476,11 +605,15 @@ Completed in Phase 2:
 - explicit AdGuard rewrite;
 - Nginx Proxy Manager publishing with the existing wildcard certificate;
 - HTTPS validation;
-- public-DNS NXDOMAIN validation.
+- Cloudflare DNS-only wildcard fallback for clients that bypass local DNS;
+- Torrentio P2P/non-debrid source configuration;
+- source-result validation for usable torrent/infoHash/fileIdx data;
+- AIOStreams Stremio-account installation;
+- end-to-end proof that selected P2P streams reach the central torrent engine;
+- initial primary-TV playback through the central path.
 
 Still pending in later phases:
 
-- Torrentio P2P/non-debrid source configuration;
-- source-result validation for usable torrent/infohash data;
-- deduplication/filter/sort tuning;
-- client addon installation and end-to-end torrent playback validation.
+- full primary-TV/client acceptance including seek/resume behaviour and sustained playback confidence;
+- router forwarding and inbound-peer validation for `6882/TCP+UDP`;
+- formal large-file read-ahead, seek, and resilience testing.
