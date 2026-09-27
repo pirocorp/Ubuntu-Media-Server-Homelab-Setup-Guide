@@ -123,13 +123,15 @@ qBittorrent remains on `6881/TCP+UDP`; the Stremio torrent engine uses the separ
 | Torrent peer port | `6882/TCP+UDP` |
 | qBittorrent peer port | `6881/TCP+UDP`, unchanged |
 | Transcoding | not part of normal v1 path |
-| Current implementation phase | Phases 1-4 complete; Phase 5 initial TV validation in progress; Phases 6-7 pending |
+| Current implementation phase | Phases 1-5 complete; Phases 6-7 pending |
 
-Phase 4 end-to-end proof confirmed that selected Torrentio results contain usable torrent metadata and that `stremio-libtorrent-server` downloads/caches the selected media on the Ubuntu server. The primary TV also completed initial P2P playback through the central path.
+Phase 4 end-to-end proof confirmed that selected Torrentio results contain usable torrent metadata and that `stremio-libtorrent-server` downloads/caches the selected media on the Ubuntu server.
+
+Phase 5 client acceptance is complete. The primary TV successfully uses the central streaming-server path, forward and backward seeking were exercised repeatedly, stop/reopen/resume worked, sustained 4K playback was validated, and desktop playback/seek were also confirmed. A known client-side limitation remains: the primary TV's built-in `100 Mbit/s` Ethernet link can become the bottleneck for very high-bitrate UHD BluRay REMUX files and can cause brief sub-second stalls when the media demand exceeds the practical Fast Ethernet ceiling.
 
 The cache budget was reduced from the original `300GiB` plan to `100GiB` after live testing showed that upstream continues filling the wanted file after playback closes. A custom fork was rejected. The current upstream-only policy retains `10GiB` read-ahead and uses size-triggered LRU cleanup. During live 4K playback the cache reached approximately `101G`; the evictor removed the older `Mayday` entry (~24G) while preserving the active `In The Grey` stream, reducing usage to approximately `78G`.
 
-See [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md) for the as-built architecture, validated preflight values, port plan, security boundaries, and remaining acceptance checks. See [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md) for the source configuration and end-to-end evidence. See the [Stremio Web UI publishing runbook](../services/stremio-libtorrent-server/web-ui-publishing.md) for the DNS and reverse-proxy configuration.
+See [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md) for the as-built architecture, validated preflight values, port plan, security boundaries, and remaining acceptance checks. See [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md) for the source configuration and end-to-end evidence. See [Phase 5 completion](../roadmaps/stremio-aiostreams/phase-5-completion.md) for client acceptance, seek/resume evidence, and the documented TV Ethernet limitation. See the [Stremio Web UI publishing runbook](../services/stremio-libtorrent-server/web-ui-publishing.md) for the DNS and reverse-proxy configuration.
 
 ## NetAlertX Network Publishing Notes
 
@@ -194,10 +196,12 @@ AIOStreams was validated directly from the NPM container on `192.168.0.10:3001`;
 - size-triggered LRU cache eviction validated under real 4K load
 - Stremio Web UI published internally at `https://stremio.pirocorp.com` through AdGuard Home and Nginx Proxy Manager
 - public DNS-only wildcard `*.pirocorp.com -> 192.168.0.10` for clients that bypass local DNS
-- initial primary-TV P2P playback through the central server path
+- primary-TV client acceptance through the central server path, including forward/backward seek and stop/reopen/resume
+- desktop playback and seek acceptance through the configured stack
+- primary-TV `100 Mbit/s` Ethernet ceiling characterized as a known client-network limitation for very high-bitrate UHD REMUX playback
 
 ### Planned
 
-- [Stremio + AIOStreams remaining implementation phases](../roadmaps/stremio-aiostreams/README.md): complete primary-TV/client acceptance, router peer-port validation, and formal large-file resilience testing
+- [Stremio + AIOStreams remaining implementation phases](../roadmaps/stremio-aiostreams/README.md): router peer-port validation and formal large-file resilience testing
 - [Usenet stack and architecture roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)
