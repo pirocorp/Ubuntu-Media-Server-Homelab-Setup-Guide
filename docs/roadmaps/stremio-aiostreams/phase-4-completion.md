@@ -160,6 +160,24 @@ Observed examples included:
 
 This is sufficient to close Phase 4 and establishes the starting point for Phase 5 client acceptance and Phase 7 resilience testing.
 
+### Primary TV Ethernet bottleneck identified
+
+Sustained playback testing of `In The Grey` exposed brief sub-second playback stalls in a high-bitrate section. The server, torrent engine, storage path, and LAN diagnostics did not show a correlated fault:
+
+- `stremio-libtorrent-server` logs showed no relevant warning/error around the event;
+- CPU and RAM retained substantial headroom;
+- disk sampling on `/dev/sdc` showed no saturation or deep queue at the stall;
+- the server Ethernet interface showed no TX errors or drops;
+- continuous ping to the TV showed no packet loss or latency spike correlated with the stall.
+
+The primary TV is connected through a `100 Mbit/s` Ethernet interface. `ffprobe` analysis of the affected two-minute interval (`01:21:45`–`01:23:45`) showed the video stream alone running mostly around `80–100 Mbit/s`, including observed peaks of `126.99 Mbit/s` and `115.32 Mbit/s`. These figures exclude audio/container overhead.
+
+Live `iftop` measurement of the actual server-to-TV flow showed approximately `92–93 Mbit/s` sustained with roughly `95.8–97.1 Mbit/s` observed peak throughput, effectively reaching the practical ceiling of the TV's Fast Ethernet link.
+
+The operational bottleneck is therefore recorded as the primary TV's `100 Mbit/s` Ethernet connection for very high-bitrate UHD BluRay REMUX playback. The brief stalls are consistent with the client buffer being unable to absorb sustained/burst demand above the available Ethernet throughput.
+
+The TV's Wi-Fi interface is faster but considered less stable. No Wi-Fi A/B test was performed in this session because the TV requires physically disconnecting the Ethernet cable before switching to Wi-Fi. No server-side tuning is planned for this symptom at this point.
+
 ## Phase 4 Acceptance
 
 | Check | Result |
@@ -177,11 +195,12 @@ This is sufficient to close Phase 4 and establishes the starting point for Phase
 | LRU eviction observed above budget | PASS |
 | Primary TV can resolve and use `aio.pirocorp.com` | PASS |
 | Initial TV P2P playback through central path | PASS |
+| Primary TV 100 Mbit/s Ethernet limit characterized | PASS |
 
 ## Remaining Work
 
 Phase 4 is closed. Remaining roadmap work is:
 
-- Phase 5 — complete primary-TV/client acceptance, including seek/resume behaviour and sustained playback confidence;
+- Phase 5 — complete primary-TV/client acceptance, including seek/resume behaviour and sustained playback confidence; the known `100 Mbit/s` TV Ethernet ceiling should be treated as a client-network limitation for very high-bitrate REMUX files;
 - Phase 6 — router forwarding/inbound peer validation for `6882/TCP+UDP`;
 - Phase 7 — formal large-file read-ahead, seek, and resilience testing.
