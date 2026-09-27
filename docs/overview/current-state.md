@@ -135,7 +135,7 @@ Phase 7 resilience acceptance is complete. Two full 4K films were watched throug
 
 The cache budget was reduced from the original `300GiB` plan to `100GiB` after live testing showed that upstream continues filling the wanted file after playback closes. A custom fork was rejected. The current upstream-only policy retains `10GiB` read-ahead and uses size-triggered LRU cleanup. During live 4K playback the cache reached approximately `101G`; the evictor removed the older `Mayday` entry (~24G) while preserving the active `In The Grey` stream, reducing usage to approximately `78G`.
 
-See [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md) for the as-built architecture, validated preflight values, port plan, security boundaries, and remaining acceptance checks. See [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md) for the source configuration and end-to-end evidence. See [Phase 5 completion](../roadmaps/stremio-aiostreams/phase-5-completion.md) for client acceptance, seek/resume evidence, and the documented TV Ethernet limitation. See [Phase 6 completion](../roadmaps/stremio-aiostreams/phase-6-completion.md) for listener/firewall checks, real UDP peer evidence, the external TCP result, and the deferred router forward. See [Phase 7 completion](../roadmaps/stremio-aiostreams/phase-7-completion.md) for final sustained-4K/read-ahead/resilience acceptance. See the [Stremio Web UI publishing runbook](../services/stremio-libtorrent-server/web-ui-publishing.md) for the DNS and reverse-proxy configuration.
+See [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md) for the as-built architecture, validated preflight values, port plan, security boundaries, and completed acceptance status. See [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md) for the source configuration and end-to-end evidence. See [Phase 5 completion](../roadmaps/stremio-aiostreams/phase-5-completion.md) for client acceptance, seek/resume evidence, and the documented TV Ethernet limitation. See [Phase 6 completion](../roadmaps/stremio-aiostreams/phase-6-completion.md) for listener/firewall checks, real UDP peer evidence, the external TCP result, and the deferred router forward. See [Phase 7 completion](../roadmaps/stremio-aiostreams/phase-7-completion.md) for final sustained-4K/read-ahead/resilience acceptance. See the [Stremio Web UI publishing runbook](../services/stremio-libtorrent-server/web-ui-publishing.md) for the DNS and reverse-proxy configuration.
 
 ## NetAlertX Network Publishing Notes
 
@@ -209,6 +209,7 @@ AIOStreams was validated directly from the NPM container on `192.168.0.10:3001`;
 
 ### Planned
 
+- [AIOStreams multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
 - deferred router follow-up: add explicit `6882/TCP+UDP -> 192.168.0.10:6882` forwarding and re-test public inbound TCP while leaving qBittorrent `6881/TCP+UDP` unchanged
 - [Usenet stack and architecture roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)
