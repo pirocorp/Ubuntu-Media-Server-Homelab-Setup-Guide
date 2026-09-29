@@ -47,8 +47,9 @@ These services currently use their main `README.md` as the primary operating ref
 
 ## Planned Work
 
-- [Stremio + AIOStreams remaining implementation phases](../roadmaps/stremio-aiostreams/README.md)
+- [AIOStreams multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
+- [Homepage dashboard roadmap](../roadmaps/homepage/README.md)
 - [Usenet roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)
 
-Remote access is now implemented as a platform capability. Use the [Tailscale remote access runbook](../operations/tailscale-remote-access-runbook.md) for operations.
+The original Stremio/AIOStreams seven-phase implementation baseline is complete, including the explicit `6882/TCP+UDP` router-forward follow-up. Remote access is also implemented as a platform capability. Use the [Tailscale remote access runbook](../operations/tailscale-remote-access-runbook.md) for operations.

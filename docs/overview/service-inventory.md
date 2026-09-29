@@ -34,12 +34,13 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 | AIOStreams | Self-hosted Stremio stream aggregation/control layer | [AIOStreams](../services/aiostreams/README.md) |
 | stremio-libtorrent-server | Central BitTorrent playback, read-ahead, cache, and Stremio streaming server | [stremio-libtorrent-server](../services/stremio-libtorrent-server/README.md) |
 
-The combined deployed architecture and implementation status for the Stremio stack is recorded in [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md).
+The combined deployed architecture and implementation status for the Stremio stack is recorded in [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md). The original seven-phase baseline and the explicit `6882/TCP+UDP` router-forward follow-up are complete.
 
 ## Planned
 
 | Service | Status | Documentation |
 | --- | --- | --- |
-| Stremio + AIOStreams remaining phases | Sources, client cutover, router forwarding, and resilience testing still pending | [Architecture roadmap](../roadmaps/stremio-aiostreams/README.md) |
+| AIOStreams multi-source P2P expansion | Planned follow-up; preserves Torrentio and evaluates STorz with Bitmagnet + DMM coverage | [Multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md) |
+| Homepage dashboard | Planned only, not deployed | [Homepage roadmap](../roadmaps/homepage/README.md) |
 | Usenet stack | Planned only, not deployed | [Usenet roadmap](../roadmaps/usenet/README.md) |
 | ShadowBroker OpenClaw integration | Planned only, not deployed | [Integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md) |

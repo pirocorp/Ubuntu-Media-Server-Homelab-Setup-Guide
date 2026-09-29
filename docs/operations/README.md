@@ -22,6 +22,10 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 - [qBittorrent seedbox runbook](../services/qbittorrent/README.md)
 - [Bitmagnet runbook](../services/bitmagnet/README.md)
 - [ShadowBroker deployment and operations runbook](../services/shadowbroker/README.md)
+- [NetAlertX deployment and operations runbook](../services/netalertx/README.md)
+- [AIOStreams deployment and operations runbook](../services/aiostreams/README.md)
+- [stremio-libtorrent-server deployment and operations runbook](../services/stremio-libtorrent-server/README.md)
+- [Stremio Web UI publishing runbook](../services/stremio-libtorrent-server/web-ui-publishing.md)
 
 ## Notes
 

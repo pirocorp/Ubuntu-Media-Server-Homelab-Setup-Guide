@@ -212,5 +212,6 @@ AIOStreams was validated directly from the NPM container on `192.168.0.10:3001`;
 ### Planned
 
 - [AIOStreams multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
+- [Homepage dashboard architecture roadmap](../roadmaps/homepage/README.md)
 - [Usenet stack and architecture roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)

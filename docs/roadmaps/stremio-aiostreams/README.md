@@ -1,13 +1,16 @@
 # Stremio + AIOStreams Self-Hosted Streaming Architecture
 
-Status: Planned
-Purpose: Record the approved zero-subscription Stremio architecture before implementation begins.
+Status: Historical implementation decision record — implemented
+Purpose: Preserve the approved zero-subscription Stremio architecture that was used to build the completed seven-phase baseline.
 Depends on: Existing Ubuntu Docker host, Nginx Proxy Manager, AdGuard Home, Stremio clients, and Internet connectivity for BitTorrent peer traffic
-Related docs: [Roadmaps index](../README.md), [Current state](../../overview/current-state.md), [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md), [qBittorrent](../../services/qbittorrent/README.md)
+Related docs: [Roadmaps index](../README.md), [Current state](../../overview/current-state.md), [As-built Stremio architecture](../../overview/stremio-streaming-architecture.md), [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md), [qBittorrent](../../services/qbittorrent/README.md)
+
+> Historical snapshot: this document preserves the pre-implementation design and acceptance plan written on 2026-09-25. Forward-looking wording such as “planned”, “implementation not yet started”, the original `300GiB` cache target, the original no-public-wildcard assumption, and unchecked acceptance boxes describe the design state at that time rather than the current deployment. The authoritative live state is [Current state](../../overview/current-state.md) and [Stremio + AIOStreams implemented architecture](../../overview/stremio-streaming-architecture.md). The seven-phase baseline and the later `6882/TCP+UDP` router-forward follow-up are complete. The next source-layer project is the [multi-source P2P expansion](./multi-source-p2p-expansion.md).
 
 ## Locked Decision Record and Implementation Brief
 
-**Status:** Approved architecture; implementation not yet started  
+**Historical status at creation:** Approved architecture; implementation not yet started  
+**Current disposition:** Implemented; seven-phase baseline complete; explicit `6882/TCP+UDP` router forwarding complete  
 **Version:** 1.0  
 **Date:** 2026-09-25  
 **Planned implementation:** 2026-09-26

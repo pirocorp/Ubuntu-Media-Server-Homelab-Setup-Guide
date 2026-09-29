@@ -28,7 +28,7 @@ Related docs: [Services index](../README.md), [Service inventory](../../overview
 | Trusted HTTPS | `192.168.0.10:12470 -> 12470/tcp` |
 | Client TLS method | upstream trusted `*.stremio.rocks` certificate generated from `IPADDRESS=192.168.0.10` |
 | Transcoding | not part of the normal v1 path; no GPU overlay configured |
-| Router forwarding for `6882` | not completed yet; Phase 6 |
+| Router forwarding for `6882` | enabled to `192.168.0.10:6882`; TCP and UDP operationally validated |
 
 The container is healthy and the trusted HTTPS endpoint has been validated with normal certificate verification, without `curl -k`.
 
@@ -43,7 +43,9 @@ stremio-libtorrent-server
       |
       +--> DHT / trackers / PEX / peers
       |       |
-      |       +--> 6882/TCP+UDP
+      |       +--> Internet TCP+UDP :6882
+      |              |
+      |              +--> router -> 192.168.0.10:6882
       |
       +--> 10 GiB playhead read-ahead target
       +--> 100 GiB persistent cache budget
@@ -249,7 +251,7 @@ sudo ss -lntup | grep -E ':6882\b'
 
 Both TCP and UDP should be present.
 
-Inbound router forwarding remains Phase 6 work. Do not disturb qBittorrent `6881/TCP+UDP` when adding the new rule.
+The router explicitly forwards `6882/TCP+UDP` to `192.168.0.10:6882`. Docker DNAT/forwarding rules for both protocols are validated, public inbound TCP was independently confirmed open, and live bidirectional Internet UDP peer traffic has been observed. qBittorrent remains unchanged on `6881/TCP+UDP`.
 
 ## Trusted HTTPS Client Endpoint
 
@@ -451,8 +453,8 @@ The backup contains `certificates.pem` and therefore private-key material. Store
 
 ## Security Notes
 
-- Only BitTorrent peer port `6882/TCP+UDP` is a candidate for public inbound forwarding.
-- `8081`, `11470`, and `12470` are bound to the LAN IP rather than `0.0.0.0` in Compose.
+- The only Stremio port intentionally forwarded for public inbound peer traffic is `6882/TCP+UDP`.
+- `8081`, `11470`, and `12470` are bound to the LAN IP rather than `0.0.0.0` in Compose and are not part of the general public-forward scope.
 - The trusted `stremio.rocks` HTTPS endpoint resolves to the LAN IP used during certificate setup; it is intended for trusted client access, not general public service publishing.
 - `certificates.pem` contains a private key and must never be committed.
 - `/mnt/data` is NTFS/fuse; review Samba exposure of `/mnt/data/stremio-libtorrent-server` before final acceptance.
@@ -516,6 +518,8 @@ For the client-facing TLS check, use the generated `*.stremio.rocks:12470` hostn
 
 ## Implementation Status
 
+The original seven-phase Stremio/AIOStreams baseline is complete.
+
 Completed:
 
 - pinned `androshack/stremio-libtorrent-server:1.6.15` deployment;
@@ -531,10 +535,8 @@ Completed:
 - healthy-container, runtime-environment, persistence, and TLS validation;
 - end-to-end proof that Stremio-selected torrents are downloaded by the Ubuntu server;
 - real 4K cache growth and LRU eviction validation;
-- initial primary-TV playback through the central media path.
+- full primary-TV/client acceptance including seek/resume and sustained playback;
+- explicit router forwarding for `6882/TCP+UDP`, with TCP and UDP operationally validated;
+- formal large-file read-ahead, seek, cache/LRU, and resilience acceptance.
 
-Still pending:
-
-- full primary-TV/client acceptance including seek/resume and sustained playback confidence;
-- router forwarding and inbound-peer validation for `6882/TCP+UDP`;
-- formal large-file read-ahead, seek, and resilience testing.
+No baseline implementation phases remain pending. The next planned Stremio work is the separate [AIOStreams multi-source P2P expansion](../../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md), which changes only the source layer and preserves this playback engine.
