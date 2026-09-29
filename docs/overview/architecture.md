@@ -62,6 +62,6 @@ Ubuntu Server host (192.168.0.10)
 - The repo is the source of truth for what is currently deployed.
 - Platform concerns are documented under `docs/platform/`.
 - Each application or workload gets one clear home under `docs/services/`.
-- The live Docker stack inventory currently includes 12 stack roots under `/srv/docker`.
+- The live Docker stack inventory currently includes 14 stack roots under `/srv/docker`.
 - Remote access is provided by Tailscale on the host, advertising `192.168.0.0/24` to trusted clients.
 - Historical build walkthrough material is retained in `docs/archive/`.
