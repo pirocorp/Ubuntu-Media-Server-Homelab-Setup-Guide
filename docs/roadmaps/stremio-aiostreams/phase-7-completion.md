@@ -134,11 +134,12 @@ Completed:
 6. Phase 6 — peer-port and connectivity validation;
 7. Phase 7 — large-file/read-ahead/resilience acceptance.
 
-One independent operational follow-up remains outside the completed roadmap acceptance:
+At the time Phase 7 was accepted on 2026-09-27, one independent router-forward follow-up remained outside the seven-phase acceptance. That follow-up was completed on 2026-09-29:
 
 ```text
-Later add router forwarding:
 6882/TCP+UDP -> 192.168.0.10:6882
 ```
 
-When that is done, qBittorrent `6881/TCP+UDP` must remain unchanged and public forwarding must still exclude the Stremio web/API/media-management ports.
+Both `6882/TCP` and `6882/UDP` are now recorded as operationally validated. qBittorrent remains unchanged on `6881/TCP+UDP`, and public forwarding continues to exclude the Stremio web UI, streaming API, and trusted-media management ports.
+
+See [Phase 6 completion](./phase-6-completion.md) and the [as-built Stremio architecture](../../overview/stremio-streaming-architecture.md) for the completed router-forward validation record.
