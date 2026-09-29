@@ -8,6 +8,7 @@ These service docs assume the base environment from the [Infrastructure HowTo](.
 
 ## Implemented Services
 
+- [Homepage](./homepage/README.md)
 - [Plex](./plex/README.md)
 - [Nextcloud](./nextcloud/README.md)
 - [qBittorrent](./qbittorrent/README.md)
@@ -23,6 +24,7 @@ These service docs assume the base environment from the [Infrastructure HowTo](.
 
 ## Runbooks And How-To Docs
 
+- [Homepage deployment and operations runbook](./homepage/README.md)
 - [Nextcloud update runbook](./nextcloud/update-runbook.md)
 - [Immich update and backup runbook](./immich/update-runbook.md)
 - [qBittorrent seedbox runbook](./qbittorrent/README.md)
@@ -37,6 +39,7 @@ These service docs assume the base environment from the [Infrastructure HowTo](.
 
 These services currently use their main `README.md` as the primary operating reference:
 
+- [Homepage](./homepage/README.md)
 - [Plex](./plex/README.md)
 - [Audiobookshelf](./audiobookshelf/README.md)
 - [Kavita](./kavita/README.md)
@@ -48,8 +51,7 @@ These services currently use their main `README.md` as the primary operating ref
 ## Planned Work
 
 - [AIOStreams multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
-- [Homepage dashboard roadmap](../roadmaps/homepage/README.md)
 - [Usenet roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)
 
-The original Stremio/AIOStreams seven-phase implementation baseline is complete, including the explicit `6882/TCP+UDP` router-forward follow-up. Remote access is also implemented as a platform capability. Use the [Tailscale remote access runbook](../operations/tailscale-remote-access-runbook.md) for operations.
+The Homepage dashboard baseline is deployed; its original architecture roadmap is retained as a decision record. The original Stremio/AIOStreams seven-phase implementation baseline is complete, including the explicit `6882/TCP+UDP` router-forward follow-up. Remote access is also implemented as a platform capability. Use the [Tailscale remote access runbook](../operations/tailscale-remote-access-runbook.md) for operations.
