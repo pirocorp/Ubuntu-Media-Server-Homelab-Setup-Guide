@@ -21,6 +21,7 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 
 | Service | Role | Documentation |
 | --- | --- | --- |
+| Homepage | Central homelab dashboard with Docker status and native service widgets | [Homepage](../services/homepage/README.md) |
 | Plex | Media server | [Plex](../services/plex/README.md) |
 | Nextcloud | Files, calendar, contacts, and sync | [Nextcloud](../services/nextcloud/README.md) |
 | qBittorrent | Torrent downloader and seedbox | [qBittorrent](../services/qbittorrent/README.md) |
@@ -34,6 +35,8 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 | AIOStreams | Self-hosted Stremio stream aggregation/control layer | [AIOStreams](../services/aiostreams/README.md) |
 | stremio-libtorrent-server | Central BitTorrent playback, read-ahead, cache, and Stremio streaming server | [stremio-libtorrent-server](../services/stremio-libtorrent-server/README.md) |
 
+Homepage is deployed under `/srv/docker/homepage` using `ghcr.io/gethomepage/homepage:v2.4.0` plus `ghcr.io/tecnativa/docker-socket-proxy:v0.4.2`. The canonical URL `https://home.pirocorp.com` is validated. The apex/public-DNS validation for `pirocorp.com` remains an explicit follow-up after the new DNS-only apex A record was created.
+
 The combined deployed architecture and implementation status for the Stremio stack is recorded in [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md). The original seven-phase baseline and the explicit `6882/TCP+UDP` router-forward follow-up are complete.
 
 ## Planned
@@ -41,6 +44,5 @@ The combined deployed architecture and implementation status for the Stremio sta
 | Service | Status | Documentation |
 | --- | --- | --- |
 | AIOStreams multi-source P2P expansion | Planned follow-up; preserves Torrentio and evaluates STorz with Bitmagnet + DMM coverage | [Multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md) |
-| Homepage dashboard | Planned only, not deployed | [Homepage roadmap](../roadmaps/homepage/README.md) |
 | Usenet stack | Planned only, not deployed | [Usenet roadmap](../roadmaps/usenet/README.md) |
 | ShadowBroker OpenClaw integration | Planned only, not deployed | [Integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md) |
