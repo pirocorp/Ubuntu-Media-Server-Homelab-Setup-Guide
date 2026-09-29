@@ -16,6 +16,7 @@ AdGuard Home DNS
   v
 Nginx Proxy Manager
   |
+  +--> Homepage
   +--> Netdata
   +--> Portainer
   +--> AdGuard Home
@@ -25,6 +26,13 @@ Nginx Proxy Manager
   +--> Plex
   +--> ShadowBroker
   +--> other published services
+
+Homepage
+  |
+  +--> native service APIs / HTTP health
+  +--> private Docker Socket Proxy
+        |
+        +--> Docker daemon read path
 
 Ubuntu Server host (192.168.0.10)
   |
@@ -43,6 +51,7 @@ Ubuntu Server host (192.168.0.10)
 | SSH | Remote administration path |
 | Docker and Compose | Runtime for service stacks |
 | Portainer | Container visibility and management |
+| Homepage | Central operational landing page and compact service health/status surface |
 | AdGuard Home | DNS filtering and local hostname resolution |
 | Nginx Proxy Manager | Reverse proxy and HTTPS entry point |
 | Tailscale | Private VPN access and subnet routing for trusted clients |
@@ -62,6 +71,7 @@ Ubuntu Server host (192.168.0.10)
 - The repo is the source of truth for what is currently deployed.
 - Platform concerns are documented under `docs/platform/`.
 - Each application or workload gets one clear home under `docs/services/`.
-- The live Docker stack inventory currently includes 14 stack roots under `/srv/docker`.
+- The live Docker stack inventory currently includes 15 stack roots under `/srv/docker`.
+- Homepage uses a dedicated Docker Socket Proxy instead of a direct `/var/run/docker.sock` mount; the proxy is private to Docker and mutation is disabled with `POST=0`.
 - Remote access is provided by Tailscale on the host, advertising `192.168.0.0/24` to trusted clients.
 - Historical build walkthrough material is retained in `docs/archive/`.

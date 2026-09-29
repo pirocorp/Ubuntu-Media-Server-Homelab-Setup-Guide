@@ -25,6 +25,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - Immich
 - Kavita
 - NetAlertX network inventory and presence monitoring
+- Homepage central homelab dashboard at `https://home.pirocorp.com` with Docker Socket Proxy, native service widgets, and file-backed secrets
 - AIOStreams self-hosted Stremio stream aggregation/control layer
 - `stremio-libtorrent-server` central BitTorrent streaming engine with persistent read-ahead/cache
 - Stremio Web UI published internally through AdGuard Home + Nginx Proxy Manager
@@ -33,7 +34,6 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 ### Planned
 
 - [AIOStreams multi-source P2P expansion](./docs/roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
-- [Homepage dashboard architecture roadmap](./docs/roadmaps/homepage/README.md)
 - [Usenet architecture and deployment roadmap](./docs/roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./docs/roadmaps/shadowbroker-openclaw-integration.md)
 
@@ -43,6 +43,7 @@ These names are intended for local DNS resolution and trusted Tailscale VPN clie
 
 | Service | URL |
 | --- | --- |
+| Homepage dashboard | `https://home.pirocorp.com` |
 | Server monitoring (Netdata) | `https://server.pirocorp.com` |
 | Portainer | `https://portainer.pirocorp.com` |
 | AdGuard Home | `https://adguard.pirocorp.com` |
@@ -61,6 +62,8 @@ These names are intended for local DNS resolution and trusted Tailscale VPN clie
 
 `stremio.pirocorp.com` is the browser-facing Stremio Web UI only. The `stremio-libtorrent-server` media path continues to use the generated trusted `*.stremio.rocks:12470` client endpoint directly, so large media transfers do not traverse Nginx Proxy Manager.
 
+Homepage is the canonical homelab landing page. `www.pirocorp.com` and `pirocorp.com` are configured in Nginx Proxy Manager as `301` redirects to `https://home.pirocorp.com`; final authoritative/public DNS validation for the newly-created apex `pirocorp.com` record is still pending.
+
 ## Architecture Summary
 
 ```text
@@ -68,6 +71,15 @@ General homelab services
   -> AdGuard Home DNS
   -> Nginx Proxy Manager
   -> published homelab services
+
+Homepage dashboard
+  -> home.pirocorp.com
+  -> AdGuard Home / DNS-only private-address fallback
+  -> Nginx Proxy Manager
+  -> 192.168.0.10:3002
+  -> Homepage
+  -> private Docker Socket Proxy
+  -> Docker daemon
 
 Stremio discovery/control
   -> aio.pirocorp.com
@@ -116,6 +128,7 @@ Ubuntu Server host (192.168.0.10)
 - [Tailscale remote access runbook](./docs/operations/tailscale-remote-access-runbook.md)
 - [IPv6 leak validation and mitigation runbook](./docs/operations/ipv6-leak-validation-and-mitigation-runbook.md)
 - [Let's Encrypt public-domain guide](./docs/platform/lets-encrypt-public-domain.md)
+- [Homepage deployment and operations runbook](./docs/services/homepage/README.md)
 - [Nextcloud update runbook](./docs/services/nextcloud/update-runbook.md)
 - [Immich update and backup runbook](./docs/services/immich/update-runbook.md)
 - [qBittorrent seedbox runbook](./docs/services/qbittorrent/README.md)
@@ -130,6 +143,7 @@ Start with the infrastructure guide when rebuilding the base environment. Use th
 
 ## Deployed Service Docs
 
+- [Homepage](./docs/services/homepage/README.md)
 - [Plex](./docs/services/plex/README.md)
 - [Nextcloud](./docs/services/nextcloud/README.md)
 - [qBittorrent](./docs/services/qbittorrent/README.md)
