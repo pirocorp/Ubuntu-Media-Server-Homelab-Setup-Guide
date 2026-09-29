@@ -596,6 +596,8 @@ For a DNS-bypassing client path, also verify `aio.pirocorp.com` against an exter
 
 ## Implementation Status
 
+The original seven-phase Stremio/AIOStreams baseline is complete.
+
 Completed:
 
 - self-hosted AIOStreams deployment;
@@ -610,10 +612,8 @@ Completed:
 - source-result validation for usable torrent/infoHash/fileIdx data;
 - AIOStreams Stremio-account installation;
 - end-to-end proof that selected P2P streams reach the central torrent engine;
-- initial primary-TV playback through the central path.
+- full primary-TV/client acceptance including seek/resume and sustained playback;
+- explicit `6882/TCP+UDP` router forwarding and peer-path validation;
+- large-file read-ahead, seek, cache/LRU, and resilience acceptance.
 
-Still pending in later phases:
-
-- full primary-TV/client acceptance including seek/resume behaviour and sustained playback confidence;
-- router forwarding and inbound-peer validation for `6882/TCP+UDP`;
-- formal large-file read-ahead, seek, and resilience testing.
+The next planned AIOStreams work is the [multi-source P2P expansion](../../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md). It is a source-layer follow-up and does not reopen the completed seven-phase baseline.
