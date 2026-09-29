@@ -17,6 +17,7 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 
 ## Service Runbooks
 
+- [Homepage deployment and operations runbook](../services/homepage/README.md)
 - [Nextcloud update runbook](../services/nextcloud/update-runbook.md)
 - [Immich update and backup runbook](../services/immich/update-runbook.md)
 - [qBittorrent seedbox runbook](../services/qbittorrent/README.md)
