@@ -28,7 +28,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - AIOStreams self-hosted Stremio stream aggregation/control layer
 - `stremio-libtorrent-server` central BitTorrent streaming engine with persistent read-ahead/cache
 - Stremio Web UI published internally through AdGuard Home + Nginx Proxy Manager
-- [Stremio + AIOStreams self-hosted streaming architecture](./docs/overview/stremio-streaming-architecture.md) — seven-phase baseline complete; client and large-file acceptance passed, with the explicit `6882/TCP+UDP` router forward retained as a deferred operational follow-up
+- [Stremio + AIOStreams self-hosted streaming architecture](./docs/overview/stremio-streaming-architecture.md) — seven-phase baseline complete; client and large-file acceptance passed; explicit `6882/TCP+UDP` router forwarding is enabled and both peer protocols are operationally validated
 
 ### Planned
 
@@ -86,6 +86,12 @@ Stremio media path
   -> 10 GiB read-ahead
   -> 100 GiB persistent cache
   -> trusted *.stremio.rocks HTTPS :12470
+
+Stremio peer path
+  Internet TCP+UDP :6882
+  -> router forward
+  -> 192.168.0.10:6882
+  -> stremio-libtorrent-server
 
 Ubuntu Server host (192.168.0.10)
   -> Docker / Docker Compose
