@@ -86,6 +86,8 @@ The Stremio Web UI also follows the standard local publishing model: explicit Ad
 
 qBittorrent remains on `6881/TCP+UDP`; the Stremio torrent engine uses the separate `6882/TCP+UDP` assignment.
 
+The router now explicitly forwards `6882/TCP+UDP` to `192.168.0.10:6882`. Both TCP and UDP are recorded as operationally validated, while qBittorrent's existing `6881/TCP+UDP` mapping remains unchanged.
+
 ## Active Docker Stack Roots
 
 - `/srv/docker/adguard-home`
@@ -120,7 +122,7 @@ qBittorrent remains on `6881/TCP+UDP`; the Stremio torrent engine uses the separ
 | Cache eviction grace | upstream default `1800s` / 30 minutes |
 | Download rate | unlimited |
 | Adaptive picking | disabled |
-| Torrent peer port | `6882/TCP+UDP` |
+| Torrent peer port | `6882/TCP+UDP`, router-forwarded and validated |
 | qBittorrent peer port | `6881/TCP+UDP`, unchanged |
 | Transcoding | not part of normal v1 path |
 | Current implementation phase | Phases 1-7 complete |
@@ -129,13 +131,13 @@ Phase 4 end-to-end proof confirmed that selected Torrentio results contain usabl
 
 Phase 5 client acceptance is complete. The primary TV successfully uses the central streaming-server path, forward and backward seeking were exercised repeatedly, stop/reopen/resume worked, sustained 4K playback was validated, and desktop playback/seek were also confirmed. A known client-side limitation remains: the primary TV's built-in `100 Mbit/s` Ethernet link can become the bottleneck for very high-bitrate UHD BluRay REMUX files and can cause brief sub-second stalls when the media demand exceeds the practical Fast Ethernet ceiling.
 
-Phase 6 router/peer-connectivity validation is complete. `6882/TCP+UDP` is listening on the host, LAN TCP reachability was validated, and live bidirectional UDP traffic with Internet peers was observed. qBittorrent remains unchanged on `6881/TCP+UDP`. Public inbound TCP on `6882` is not currently reachable because the manual router `6882/TCP+UDP -> 192.168.0.10` forward was intentionally deferred and will be added later. The Stremio web UI, API, and trusted-media ports remain outside the public-forward scope.
+Phase 6 router/peer-connectivity validation is complete. `6882/TCP+UDP` is listening on the host, LAN TCP reachability was validated, Docker DNAT/forwarding rules for both protocols were confirmed, and live bidirectional UDP traffic with Internet peers was observed. The explicit router `6882/TCP+UDP -> 192.168.0.10:6882` mapping is now enabled. Public inbound TCP on `6882` was independently confirmed open from the Internet, and the UDP peer path is recorded as operational. qBittorrent remains unchanged on `6881/TCP+UDP`. The Stremio web UI, API, and trusted-media ports remain outside the public-forward scope.
 
 Phase 7 resilience acceptance is complete. Two full 4K films were watched through the central server path without server-side playback failure. Forward/backward seek, stop/reopen/resume, desktop long-seek behaviour, `10GiB` read-ahead configuration, and `100GiB` cache/LRU behaviour are accepted for the deployed stack. A synthetic throughput-drop test was intentionally not run; final acceptance is based on real-world sustained 4K use. The known primary-TV `100 Mbit/s` Ethernet ceiling remains the only characterized high-bitrate playback limitation.
 
 The cache budget was reduced from the original `300GiB` plan to `100GiB` after live testing showed that upstream continues filling the wanted file after playback closes. A custom fork was rejected. The current upstream-only policy retains `10GiB` read-ahead and uses size-triggered LRU cleanup. During live 4K playback the cache reached approximately `101G`; the evictor removed the older `Mayday` entry (~24G) while preserving the active `In The Grey` stream, reducing usage to approximately `78G`.
 
-See [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md) for the as-built architecture, validated preflight values, port plan, security boundaries, and completed acceptance status. See [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md) for the source configuration and end-to-end evidence. See [Phase 5 completion](../roadmaps/stremio-aiostreams/phase-5-completion.md) for client acceptance, seek/resume evidence, and the documented TV Ethernet limitation. See [Phase 6 completion](../roadmaps/stremio-aiostreams/phase-6-completion.md) for listener/firewall checks, real UDP peer evidence, the external TCP result, and the deferred router forward. See [Phase 7 completion](../roadmaps/stremio-aiostreams/phase-7-completion.md) for final sustained-4K/read-ahead/resilience acceptance. See the [Stremio Web UI publishing runbook](../services/stremio-libtorrent-server/web-ui-publishing.md) for the DNS and reverse-proxy configuration.
+See [Stremio + AIOStreams implemented architecture](./stremio-streaming-architecture.md) for the as-built architecture, validated preflight values, port plan, security boundaries, and completed acceptance status. See [Phase 4 completion](../roadmaps/stremio-aiostreams/phase-4-completion.md) for the source configuration and end-to-end evidence. See [Phase 5 completion](../roadmaps/stremio-aiostreams/phase-5-completion.md) for client acceptance, seek/resume evidence, and the documented TV Ethernet limitation. See [Phase 6 completion](../roadmaps/stremio-aiostreams/phase-6-completion.md) for listener/firewall checks, Docker rules, live UDP peer evidence, and completed TCP+UDP router-forward validation. See [Phase 7 completion](../roadmaps/stremio-aiostreams/phase-7-completion.md) for final sustained-4K/read-ahead/resilience acceptance. See the [Stremio Web UI publishing runbook](../services/stremio-libtorrent-server/web-ui-publishing.md) for the DNS and reverse-proxy configuration.
 
 ## NetAlertX Network Publishing Notes
 
@@ -203,13 +205,12 @@ AIOStreams was validated directly from the NPM container on `192.168.0.10:3001`;
 - primary-TV client acceptance through the central server path, including forward/backward seek and stop/reopen/resume
 - desktop playback and seek acceptance through the configured stack
 - primary-TV `100 Mbit/s` Ethernet ceiling characterized as a known client-network limitation for very high-bitrate UHD REMUX playback
-- Phase 6 peer-connectivity validation: `6882/TCP+UDP` listeners confirmed, LAN TCP validated, live bidirectional Internet UDP peer traffic observed, qBittorrent `6881` preserved
+- Phase 6 peer-connectivity validation: `6882/TCP+UDP` listeners confirmed, Docker DNAT/forwarding validated, live bidirectional Internet UDP peer traffic observed, explicit router forwarding enabled, public inbound TCP confirmed open, and both TCP/UDP peer paths accepted as operational
 - Phase 7 resilience acceptance: two full 4K film sessions through the central path, existing seek/resume validation carried forward, `10GiB` read-ahead and `100GiB` cache policy accepted for normal operation
 - Stremio/AIOStreams seven-phase implementation roadmap complete
 
 ### Planned
 
 - [AIOStreams multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
-- deferred router follow-up: add explicit `6882/TCP+UDP -> 192.168.0.10:6882` forwarding and re-test public inbound TCP while leaving qBittorrent `6881/TCP+UDP` unchanged
 - [Usenet stack and architecture roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)
