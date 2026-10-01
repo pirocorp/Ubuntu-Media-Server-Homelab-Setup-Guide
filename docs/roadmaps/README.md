@@ -12,6 +12,7 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 
 ## Planned Work
 
+- [Binary Artifact Upload PoC](./artifact-upload-poc.md) — single-container ASP.NET Core feasibility test for direct binary transfer from the ChatGPT sandbox to a self-hosted endpoint, validated by file size and SHA-256.
 - [AIOStreams multi-source P2P expansion](./stremio-aiostreams/multi-source-p2p-expansion.md) — follow-up source-layer design; preserves Torrentio and evaluates STorz with local Bitmagnet + DMM coverage.
 - [Usenet architecture roadmap](./usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./shadowbroker-openclaw-integration.md)
