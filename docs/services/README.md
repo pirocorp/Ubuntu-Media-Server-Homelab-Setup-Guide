@@ -50,7 +50,7 @@ These services currently use their main `README.md` as the primary operating ref
 
 ## Planned Work
 
-- [Taiwan–Russia Risk Watch Discord Bridge](../roadmaps/riskwatch-discord-bridge.md)
+- [Taiwan–Russia Risk Watch Discord Bridge](../roadmaps/riskwatch-discord-bridge/README.md)
 - [AIOStreams multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
 - [Usenet roadmap](../roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](../roadmaps/shadowbroker-openclaw-integration.md)
