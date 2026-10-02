@@ -33,6 +33,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 
 ### Planned
 
+- [Taiwan–Russia Risk Watch Discord Bridge](./docs/roadmaps/riskwatch-discord-bridge.md)
 - [AIOStreams multi-source P2P expansion](./docs/roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
 - [Usenet architecture and deployment roadmap](./docs/roadmaps/usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./docs/roadmaps/shadowbroker-openclaw-integration.md)
