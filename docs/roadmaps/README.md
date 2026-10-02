@@ -12,6 +12,7 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 
 ## Planned Work
 
+- [Taiwan–Russia Risk Watch Discord Bridge](./riskwatch-discord-bridge/README.md) — .NET 10 self-hosted publishing bridge from ChatGPT to Discord through Cloudflare Tunnel + Cloudflare Access Service Token, without router port forwarding.
 - [Binary Artifact Upload PoC](./artifact-upload-poc.md) — single-container ASP.NET Core feasibility test for direct binary transfer from the ChatGPT sandbox to a self-hosted endpoint, validated by file size and SHA-256.
 - [AIOStreams multi-source P2P expansion](./stremio-aiostreams/multi-source-p2p-expansion.md) — follow-up source-layer design; preserves Torrentio and evaluates STorz with local Bitmagnet + DMM coverage.
 - [Usenet architecture roadmap](./usenet/README.md)
