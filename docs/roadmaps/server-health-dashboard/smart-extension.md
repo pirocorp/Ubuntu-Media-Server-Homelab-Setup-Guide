@@ -1,8 +1,8 @@
 # Homepage Disk Health — Phase 2 SMART Extension
 
-Status: Planned — approved design intent; **deferred until phase-1 Server Health is working**
+Status: Planned — approved design intent; **phase 1 completed 2026-10-14; phase-2 implementation not started**
 Purpose: Add a compact, readable per-drive SMART Health overview to the existing Homepage without installing a standalone disk-monitoring platform.
-Depends on: [Phase 1 Server Health](./README.md), existing Homepage v2.4.0, host `smartctl`, existing physical drives and mount points
+Depends on: [Completed Phase 1 Server Health](../../services/server-health/README.md), existing Homepage v2.4.0, host `smartctl`, existing physical drives and mount points
 Related docs: [Roadmaps index](../README.md), [Homepage runbook](../../services/homepage/README.md), [Storage and Samba](../../platform/storage-and-samba.md)
 
 ## Decision Record and Future Implementation Brief
@@ -11,7 +11,7 @@ Related docs: [Roadmaps index](../README.md), [Homepage runbook](../../services/
 **Version:** 0.1
 **Date:** 2026-10-14
 
-This document records a **separate future extension**. Implement/validate phase 1 (CPU, RAM, file-space and UPS monitoring through Glances/PeaNUT) first. Phase 2 is **not** a prerequisite for phase 1, and this PR contains no runnable installation.
+This document records a **separate future extension**. Phase 1 (CPU, RAM, file-space and UPS monitoring through Glances/PeaNUT) was completed and accepted on 2026-10-14; [see its as-built runbook](../../services/server-health/README.md). Phase 2 is **not** a prerequisite for phase 1 and has not been deployed by this documentation PR.
 
 ## 1. User-approved goal
 
@@ -161,7 +161,7 @@ This is a **phase-2** roadmap: deploying it before the baseline monitoring has b
 
 ## 7. Future implementation order
 
-1. Validate phase-1 monitoring is accepted and backed up.
+1. Confirm the deployed phase-1 Glances + PeaNUT baseline is still working and backed up (phase 1 accepted 2026-10-14).
 2. Confirm `smartctl -j` fields for all six actual drives without triggering unintended spin-up.
 3. Map labels and mount points to stable hardware identifiers without leaking serial numbers.
 4. Build a small host-only read collector with explicit timeout/error handling and manufacturer-specific wear interpretation where needed.
@@ -174,7 +174,7 @@ This is a **phase-2** roadmap: deploying it before the baseline monitoring has b
 
 ## 8. Acceptance checklist
 
-- [ ] Phase-1 Homepage + Glances + PeaNUT monitoring remains operational.
+- [ ] Phase-1 Homepage + Glances + PeaNUT monitoring remains operational throughout any future SMART changes (baseline accepted 2026-10-14).
 - [ ] All six physical disks are correctly identified and labelled after restart.
 - [ ] Each drive displays actual used percent, available free space, temperature when supplied, and a meaningful SMART status.
 - [ ] SSD wear percent is displayed only if device-specific interpretation is supported; no invented HDD health percentages.

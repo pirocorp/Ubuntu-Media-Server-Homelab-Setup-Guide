@@ -3,7 +3,7 @@
 Status: Implemented baseline; final apex-DNS and trusted-Tailscale validation still pending
 Purpose: Document the deployed PIROCORP HOMELAB Homepage dashboard, Docker integration, publishing model, native widgets, secret handling, and operational checks.
 Depends on: [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
-Related docs: [Current state](../../overview/current-state.md), [Service inventory](../../overview/service-inventory.md), [Homepage architecture decision record](../../roadmaps/homepage/README.md)
+Related docs: [Current state](../../overview/current-state.md), [Service inventory](../../overview/service-inventory.md), [Homepage architecture decision record](../../roadmaps/homepage/README.md), [Server Health as-built runbook](../server-health/README.md)
 
 ## Deployment Snapshot
 
@@ -84,6 +84,8 @@ services:
       HOMEPAGE_FILE_KAVITA_KEY: /app/secrets/kavita_key
       HOMEPAGE_FILE_QBITTORRENT_KEY: /app/secrets/qbittorrent_key
       HOMEPAGE_FILE_NEXTCLOUD_TOKEN: /app/secrets/nextcloud_token
+      HOMEPAGE_FILE_PEANUT_USERNAME: /app/secrets/peanut_username
+      HOMEPAGE_FILE_PEANUT_PASSWORD: /app/secrets/peanut_password
       PUID: 1000
       PGID: 1000
     ports:
@@ -146,11 +148,14 @@ Validated checks:
 
 ## Dashboard Layout
 
+Server-health changes were accepted and deployed on 2026-10-14. Netdata is no longer installed and its old `server.pirocorp.com` route was removed. Phase 2 SMART Disk Health remains planned separately.
+
 The deployed dashboard has four groups:
 
 ```text
 Infrastructure
-  Server / Netdata
+  Storage (Glances six-filesystem capacity tiles)
+  UPS (PeaNUT / PowerWalker)
   Portainer
   Nginx Proxy Manager
   AdGuard Home
@@ -173,15 +178,18 @@ Cloud & Applications
   ShadowBroker
 ```
 
-The initial layout contains 15 top-level cards. Implementation-only database, Redis, worker, machine-learning, I2P, and sidecar containers remain hidden from the top-level dashboard.
+The current layout contains 16 top-level cards (15 initially; replaced the retired Netdata card with Storage + UPS). The additional Glances CPU/RAM/temperature/uptime information strip is configured in `config/widgets.yaml`. Implementation-only database, Redis, worker, machine-learning, I2P, and sidecar containers remain hidden from the top-level dashboard.
 
 The separately deployed `stash` container is intentionally not added to Homepage because it is not yet part of the documented service inventory.
 
 ## Native Widgets
 
+**As-built update (2026-10-14):** Netdata was fully removed after validation. Glances runs as a separate pinned Docker bridge service and PeaNUT runs with host networking to reach host-local NUT. Refer to the [complete Server Health runbook](../server-health/README.md) for setup, firewalls, tests and pitfalls.
+
 | Card | Integration | Deployed fields / notes |
 | --- | --- | --- |
-| Server / Netdata | Netdata native widget + HTTP monitor | `warnings`, `criticals` |
+| Storage | Glances v4 `customapi` (two widgets, three fields each) | Six compact percentage tiles; **indexed FS ordering must be checked after restarts** |
+| UPS | PeaNUT native widget | `battery_charge`, `ups_load`, `ups_status`; raw compound status `OL CHRG` |
 | Portainer | Portainer native widget + Docker | `running`, `stopped`, `total`; environment ID `3` |
 | Nginx Proxy Manager | NPM native widget + Docker | `enabled`, `disabled`, `total` |
 | AdGuard Home | AdGuard native widget + Docker | `queries`, `blocked`, `filtered`, `latency` |
@@ -218,6 +226,8 @@ audiobookshelf_key
 kavita_key
 qbittorrent_key
 nextcloud_token
+peanut_username
+peanut_password
 ```
 
 The files use mode `0600`. Real values must never be committed to this repository.
@@ -234,6 +244,13 @@ Credential choices validated during implementation:
 - Kavita: dedicated 32-character `Homepage` authorization key
 - qBittorrent `5.2.1`: regenerated 32-character API key using Bearer authentication
 - Nextcloud: dedicated 64-character `serverinfo` `NC-Token`
+- PeaNUT: authenticated API, file-backed `peanut_username` and `peanut_password`; files must **not** have trailing newlines in Homepage v2.4.0. See [server-health troubleshooting](../server-health/README.md).
+
+## Additional Host-Mode Monitoring Paths
+
+Glances joins `homepage_default`; Homepage addresses `http://glances:61208` internally. PeaNUT is a host-networked exception and Homepage uses `http://192.168.0.10:61210`. UFW allows trusted LAN `192.168.0.0/24`, NPM Docker network `172.20.0.0/16`, and Homepage Docker network `172.31.0.0/16` to `192.168.0.10:61210/tcp`. NUT remains bound to loopback `127.0.0.1:3493`. NPM publishes `glances.pirocorp.com` and `peanut.pirocorp.com` with the existing wildcard certificate; corresponding AdGuard rewrites are explicit.
+
+**PeaNUT 6.0.0 workarounds**: `AUTH_FILE_PATH=/config/auth.yaml` prevents loss of login state on container recreate, and an overridden healthcheck tests the configured LAN `WEB_HOST` rather than the built-in localhost target. Secret-file newlines and old `HOMEPAGE_VAR_*` widget placeholders caused proven API `401`s, resolved with newline-free `HOMEPAGE_FILE_*` files. [Reproduce and test](../server-health/README.md).
 
 ## NetAlertX Firewall Exception
 
@@ -321,7 +338,8 @@ Completed:
 - `2375` confirmed not published on the host
 - all 15 cards render
 - Docker status indicators and expandable CPU/RAM/RX/TX statistics work
-- Netdata native widget works
+- Glances info strip and six-tile Storage card work
+- PeaNUT native UPS widget works (authenticated API, `OL CHRG`)
 - Portainer native widget works
 - Nginx Proxy Manager native widget works
 - AdGuard Home native widget works

@@ -1,11 +1,19 @@
 # Homepage Server Health — Phase 1 (without SMART)
 
-Status: Planned — architecture recorded; not deployed
+Status: **Implemented / completed 2026-10-14** — original pre-deployment design preserved as a historical decision record; operational source of truth is the [as-built runbook](../../services/server-health/README.md)
 Purpose: Replace the heavy Netdata viewing workflow with a compact, low-maintenance server/UPS status display inside the existing Homepage.
 Depends on: Existing Ubuntu Docker host, deployed Homepage, NUT UPS monitoring, existing Docker Socket Proxy, and the current AdGuard/NPM/Tailscale ingress.
 Related docs: [Roadmaps index](../README.md), [Homepage deployment runbook](../../services/homepage/README.md), [Homepage original architecture decision record](../homepage/README.md), [UPS / Netdata runbook](../../services/ups-monitoring/README.md), [Docker and Portainer](../../platform/docker-and-portainer.md)
 
-## Decision Record and Implementation Brief
+## Deployment completion (2026-10-14)
+
+**User acceptance:** Homepage v2.4.0 now displays CPU/RAM/CPU temperature/uptime via Glances 4.5.6; six compact, named filesystem capacity tiles via two customapi blocks; and PowerWalker battery/load/raw status via PeaNUT 6.0.0. Existing NUT safe shutdown remained untouched. Glances runs in `homepage_default`; PeaNUT deliberately uses host networking to reach `127.0.0.1:3493` and an authenticated host-LAN web listener. AdGuard/NPM publish `glances.pirocorp.com` and `peanut.pirocorp.com`, with scoped UFW ingress. After acceptance, Netdata was stopped, disabled, purged and cleaned (including old DNS/NPM/UFW). `server.pirocorp.com` is retired.
+
+**Implementation notes:** PeaNUT 6.0.0 required `AUTH_FILE_PATH=/config/auth.yaml` for persistent login data and a custom healthcheck for `WEB_HOST=192.168.0.10`; Homepage secret files needed no trailing newlines and the correct `HOMEPAGE_FILE_*` placeholders. The six FS tiles depend on observed Glances array order and require revalidation if ordering changes. Detailed Netdata history/alerts are intentionally not retained. Desktop UI was demonstrated; iPhone-specific validation was not separately recorded.
+
+For **exact, tested, reproducible commands**, do **not** use the historical examples below: see the [deployed Server Health runbook](../../services/server-health/README.md). Phase 2 remains separately [planned](./smart-extension.md).
+
+## Original pre-deployment decision record (historical; proposals below are not the live configuration)
 
 **Status:** Agreed phase-1 direction; runtime configuration and acceptance tests pending  
 **Version:** 0.1  

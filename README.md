@@ -19,13 +19,14 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - Nextcloud
 - qBittorrent
 - Bitmagnet
-- UPS monitoring with NUT and Netdata
+- Host-native NUT safe shutdown with PeaNUT UPS visibility
 - ShadowBroker
 - Audiobookshelf
 - Immich
 - Kavita
 - NetAlertX network inventory and presence monitoring
 - Homepage central homelab dashboard at `https://home.pirocorp.com` with Docker Socket Proxy, native service widgets, and file-backed secrets
+- [Phase-1 Server Health Dashboard](./docs/services/server-health/README.md): Glances 4.5.6 (host and six filesystem metrics), PeaNUT 6.0.0 (PowerWalker UPS), and independent host NUT; Netdata fully decommissioned
 - AIOStreams self-hosted Stremio stream aggregation/control layer
 - `stremio-libtorrent-server` central BitTorrent streaming engine with persistent read-ahead/cache
 - Stremio Web UI published internally through AdGuard Home + Nginx Proxy Manager
@@ -33,8 +34,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 
 ### Planned
 
-- [Homepage Server Health — phase-1 monitoring](./docs/roadmaps/server-health-dashboard/README.md) — Glances + PeaNUT inside the existing Homepage; Netdata retained until validation.
-- [Homepage SMART Disk Health extension — phase 2](./docs/roadmaps/server-health-dashboard/smart-extension.md) — future six-drive SMART Health/temperature/wear card, deferred until core monitoring works.
+- [Homepage SMART Disk Health extension — phase 2](./docs/roadmaps/server-health-dashboard/smart-extension.md) — future six-drive SMART Health/temperature/wear card; phase 1 is completed.
 - [OmniMeter local energy monitoring (evaluation roadmap)](./docs/roadmaps/omnimeter/README.md)
 - [Taiwan–Russia Risk Watch Discord Bridge](./docs/roadmaps/riskwatch-discord-bridge/README.md)
 - [AIOStreams multi-source P2P expansion](./docs/roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
@@ -48,7 +48,8 @@ These names are intended for local DNS resolution and trusted Tailscale VPN clie
 | Service | URL |
 | --- | --- |
 | Homepage dashboard | `https://home.pirocorp.com` |
-| Server monitoring (Netdata) | `https://server.pirocorp.com` |
+| Glances server monitoring | `https://glances.pirocorp.com` |
+| PeaNUT / PowerWalker UPS | `https://peanut.pirocorp.com` |
 | Portainer | `https://portainer.pirocorp.com` |
 | AdGuard Home | `https://adguard.pirocorp.com` |
 | Nginx Proxy Manager admin | `http://npm.pirocorp.com:81` |
@@ -82,8 +83,9 @@ Homepage dashboard
   -> Nginx Proxy Manager
   -> 192.168.0.10:3002
   -> Homepage
-  -> private Docker Socket Proxy
-  -> Docker daemon
+  -> private Docker Socket Proxy -> Docker daemon
+  -> Glances :61208 on homepage_default -> read-only host metrics/FS
+  -> PeaNUT :61210 on Ubuntu host -> loopback NUT :3493 -> PowerWalker
 
 Stremio discovery/control
   -> aio.pirocorp.com
@@ -133,6 +135,7 @@ Ubuntu Server host (192.168.0.10)
 - [IPv6 leak validation and mitigation runbook](./docs/operations/ipv6-leak-validation-and-mitigation-runbook.md)
 - [Let's Encrypt public-domain guide](./docs/platform/lets-encrypt-public-domain.md)
 - [Homepage deployment and operations runbook](./docs/services/homepage/README.md)
+- [Server Health Dashboard: reproducible Glances + PeaNUT runbook](./docs/services/server-health/README.md)
 - [Nextcloud update runbook](./docs/services/nextcloud/update-runbook.md)
 - [Immich update and backup runbook](./docs/services/immich/update-runbook.md)
 - [qBittorrent seedbox runbook](./docs/services/qbittorrent/README.md)
@@ -155,7 +158,8 @@ Start with the infrastructure guide when rebuilding the base environment. Use th
 - [Audiobookshelf](./docs/services/audiobookshelf/README.md)
 - [Immich](./docs/services/immich/README.md)
 - [Kavita](./docs/services/kavita/README.md)
-- [UPS monitoring](./docs/services/ups-monitoring/README.md)
+- [UPS / NUT shutdown monitoring](./docs/services/ups-monitoring/README.md)
+- [Server Health Dashboard](./docs/services/server-health/README.md)
 - [ShadowBroker](./docs/services/shadowbroker/README.md)
 - [NetAlertX](./docs/services/netalertx/README.md)
 - [AIOStreams](./docs/services/aiostreams/README.md)
