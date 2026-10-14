@@ -158,8 +158,8 @@ In `/srv/docker/homepage/config/services.yaml`:
           type: peanut
           url: http://192.168.0.10:<CHECK_FOR_FREE_PORT>
           key: powerwalker
-          username: "{{HOMEPAGE_VAR_PEANUT_USER}}"
-          password: "{{HOMEPAGE_VAR_PEANUT_PASSWORD}}"
+          username: "{{HOMEPAGE_FILE_PEANUT_USER}}"
+          password: "{{HOMEPAGE_FILE_PEANUT_PASSWORD}}"
 ```
 
 **Credentials and template variable form are illustrative only:** match the *existing* Homepage file-backed secrets convention and test whether this widget accepts the substitutions. Do not commit passwords.
