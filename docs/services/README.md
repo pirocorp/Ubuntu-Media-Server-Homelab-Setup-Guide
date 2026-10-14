@@ -50,6 +50,7 @@ These services currently use their main `README.md` as the primary operating ref
 
 ## Planned Work
 
+- [Homepage Server Health — phase-1 monitoring roadmap](../roadmaps/server-health-dashboard/README.md) — planned Glances + PeaNUT integration; Netdata remains deployed until acceptance.
 - [OmniMeter local energy monitoring roadmap](../roadmaps/omnimeter/README.md) — candidate under evaluation; not deployed.
 - [Taiwan–Russia Risk Watch Discord Bridge](../roadmaps/riskwatch-discord-bridge/README.md)
 - [AIOStreams multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
