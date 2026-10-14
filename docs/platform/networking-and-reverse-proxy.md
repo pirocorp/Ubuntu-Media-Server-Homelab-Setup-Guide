@@ -5,6 +5,8 @@ Purpose: Document local DNS, ingress routing, and HTTPS publishing across the ho
 Depends on: [Base server setup](./base-server-setup.md)
 Related docs: [Infrastructure HowTo](./infrastructure-howto.md), [Current state](../overview/current-state.md), [Let's Encrypt public-domain guide](./lets-encrypt-public-domain.md), [Legacy build history](../archive/legacy-root-readme.md)
 
+**2026-10-14 Server Health update:** The old Netdata proxy/DNS target `server.pirocorp.com` was retired. Explicit AdGuard rewrites for `glances.pirocorp.com` and `peanut.pirocorp.com` point to `192.168.0.10`; NPM forwards them over HTTP to ports `61208` and `61210`, respectively, with the existing wildcard HTTPS certificate. PeaNUT is host-networked and UFW permits only trusted LAN plus the NPM/Homepage Docker subnets to `61210/tcp`; NUT remains bound to `127.0.0.1:3493`. See [the as-built monitoring runbook](../services/server-health/README.md).
+
 Use the [Infrastructure HowTo](./infrastructure-howto.md) for the ordered setup path. This page captures the steady-state DNS and reverse-proxy model after the platform is live.
 
 ## Core Components
@@ -20,7 +22,8 @@ Use the [Infrastructure HowTo](./infrastructure-howto.md) for the ordered setup 
 | Route | Purpose |
 | --- | --- |
 | `https://home.pirocorp.com` | Homepage central dashboard |
-| `https://server.pirocorp.com` | Netdata and UPS monitoring |
+| `https://glances.pirocorp.com` | Glances host metrics and filesystem capacity |
+| `https://peanut.pirocorp.com` | PeaNUT authenticated PowerWalker UPS dashboard |
 | `https://portainer.pirocorp.com` | Portainer |
 | `https://adguard.pirocorp.com` | AdGuard Home |
 | `http://npm.pirocorp.com:81` | Nginx Proxy Manager admin |

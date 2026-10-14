@@ -29,7 +29,8 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 | Audiobookshelf | Audiobook and podcast server | [Audiobookshelf](../services/audiobookshelf/README.md) |
 | Immich | Photo and video management | [Immich](../services/immich/README.md) |
 | Kavita | Reading server and library manager | [Kavita](../services/kavita/README.md) |
-| UPS monitoring | Power visibility and monitoring | [UPS monitoring](../services/ups-monitoring/README.md) |
+| Server Health (Glances + PeaNUT) | Host metrics, six filesystem-capacity tiles and UPS status in Homepage | [Reproducible deployment](../services/server-health/README.md) |
+| UPS monitoring (host NUT) | Independent PowerWalker monitoring and safe shutdown | [UPS / NUT operations](../services/ups-monitoring/README.md) |
 | ShadowBroker | Intelligence and monitoring platform | [ShadowBroker](../services/shadowbroker/README.md) |
 | NetAlertX | LAN device inventory and presence monitoring | [NetAlertX](../services/netalertx/README.md) |
 | AIOStreams | Self-hosted Stremio stream aggregation/control layer | [AIOStreams](../services/aiostreams/README.md) |

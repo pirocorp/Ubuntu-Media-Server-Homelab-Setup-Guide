@@ -23,7 +23,8 @@ Use the [Infrastructure HowTo](./infrastructure-howto.md) for the ordered rebuil
 
 - Ubuntu Server is the base operating system for the homelab.
 - SSH is the primary remote-management path.
-- Netdata provides browser-based host monitoring at `server.pirocorp.com`.
+- [Homepage + Glances + PeaNUT](../services/server-health/README.md) provide current-state host, filesystem and UPS monitoring. Netdata was removed on 2026-10-14; its old `server.pirocorp.com` endpoint is no longer active.
+- NUT remains native to Ubuntu and independently owns PowerWalker UPS safe shutdown.
 - UFW is part of the platform hardening model.
 - Docker workloads are hosted locally on the same server.
 

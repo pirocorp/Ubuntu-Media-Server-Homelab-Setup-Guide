@@ -189,7 +189,8 @@ This makes remote Tailscale clients ask AdGuard Home for names like:
 ```text
 nextcloud.pirocorp.com
 immich.pirocorp.com
-server.pirocorp.com
+glances.pirocorp.com
+peanut.pirocorp.com
 ```
 
 The expected DNS answer for those names remains the private LAN address, usually `192.168.0.10`.
@@ -237,7 +238,9 @@ ssh piroman@192.168.0.10
 Browser checks:
 
 ```text
-https://server.pirocorp.com
+https://home.pirocorp.com
+https://glances.pirocorp.com
+https://peanut.pirocorp.com
 https://nextcloud.pirocorp.com
 https://immich.pirocorp.com
 https://plex.pirocorp.com
