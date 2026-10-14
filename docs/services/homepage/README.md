@@ -86,6 +86,8 @@ services:
       HOMEPAGE_FILE_NEXTCLOUD_TOKEN: /app/secrets/nextcloud_token
       HOMEPAGE_FILE_PEANUT_USERNAME: /app/secrets/peanut_username
       HOMEPAGE_FILE_PEANUT_PASSWORD: /app/secrets/peanut_password
+      HOMEPAGE_FILE_GLANCES_USERNAME: /app/secrets/glances_username
+      HOMEPAGE_FILE_GLANCES_PASSWORD: /app/secrets/glances_password
       PUID: 1000
       PGID: 1000
     ports:
@@ -228,6 +230,8 @@ qbittorrent_key
 nextcloud_token
 peanut_username
 peanut_password
+glances_username
+glances_password
 ```
 
 The files use mode `0600`. Real values must never be committed to this repository.
@@ -245,10 +249,11 @@ Credential choices validated during implementation:
 - qBittorrent `5.2.1`: regenerated 32-character API key using Bearer authentication
 - Nextcloud: dedicated 64-character `serverinfo` `NC-Token`
 - PeaNUT: authenticated API, file-backed `peanut_username` and `peanut_password`; files must **not** have trailing newlines in Homepage v2.4.0. See [server-health troubleshooting](../server-health/README.md).
+- Glances: native HTTP Basic Authentication; file-backed `glances_username` and `glances_password` apply to the Glances info strip **and both** customapi Storage blocks. Username `glances`; Glances stores a separate password hash at `/srv/docker/glances/auth/glances.pwd` (root owned, mode `0600`). Files for Homepage have UID/GID 1000, mode `0600`, without trailing newlines.
 
 ## Additional Host-Mode Monitoring Paths
 
-Glances joins `homepage_default`; Homepage addresses `http://glances:61208` internally. PeaNUT is a host-networked exception and Homepage uses `http://192.168.0.10:61210`. UFW allows trusted LAN `192.168.0.0/24`, NPM Docker network `172.20.0.0/16`, and Homepage Docker network `172.31.0.0/16` to `192.168.0.10:61210/tcp`. NUT remains bound to loopback `127.0.0.1:3493`. NPM publishes `glances.pirocorp.com` and `peanut.pirocorp.com` with the existing wildcard certificate; corresponding AdGuard rewrites are explicit.
+Glances joins `homepage_default`; Homepage addresses `http://glances:61208` internally using its file-backed HTTP Basic credentials. Glances uses `pid: host` for a complete host process view and demands native authentication when opened through NPM. No NPM Access List or new Docker network is required. PeaNUT is a host-networked exception and Homepage uses `http://192.168.0.10:61210`. UFW allows trusted LAN `192.168.0.0/24`, NPM Docker network `172.20.0.0/16`, and Homepage Docker network `172.31.0.0/16` to `192.168.0.10:61210/tcp`. NUT remains bound to loopback `127.0.0.1:3493`. NPM publishes `glances.pirocorp.com` and `peanut.pirocorp.com` with the existing wildcard certificate; corresponding AdGuard rewrites are explicit.
 
 **PeaNUT 6.0.0 workarounds**: `AUTH_FILE_PATH=/config/auth.yaml` prevents loss of login state on container recreate, and an overridden healthcheck tests the configured LAN `WEB_HOST` rather than the built-in localhost target. Secret-file newlines and old `HOMEPAGE_VAR_*` widget placeholders caused proven API `401`s, resolved with newline-free `HOMEPAGE_FILE_*` files. [Reproduce and test](../server-health/README.md).
 
@@ -338,7 +343,7 @@ Completed:
 - `2375` confirmed not published on the host
 - all 16 current cards render (post-Server-Health deployment)
 - Docker status indicators and expandable CPU/RAM/RX/TX statistics work
-- Glances info strip and six-tile Storage card work
+- Authenticated Glances info strip and six-tile Storage card work without browser login to Homepage; recheck FS index mapping after Glances recreation
 - PeaNUT native UPS widget works (authenticated API, `OL CHRG`)
 - Portainer native widget works
 - Nginx Proxy Manager native widget works

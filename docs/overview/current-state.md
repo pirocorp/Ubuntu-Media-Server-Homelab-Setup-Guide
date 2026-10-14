@@ -140,11 +140,11 @@ Homepage preflight found port `3000` already occupied by AdGuard Home, so the ap
 
 The Docker integration is validated end-to-end: Homepage reaches the private socket proxy, Docker `_ping` returns `OK`, Docker API version `29.1.3` was read successfully, container discovery works, and green status indicators expand on demand to CPU, memory, RX, and TX statistics.
 
-**Server Health update (2026-10-14):** Homepage + Glances 4.5.6 + PeaNUT 6.0.0 replaced Netdata for the agreed current-state metrics. The host NUT safe-shutdown role was not changed. Netdata packages, historical directories and `server.pirocorp.com` NPM/DNS route were retired. See the [reproducible as-built runbook](../services/server-health/README.md). SMART diagnostics remain separate phase-2 work.
+**Server Health update (2026-10-14):** Homepage + Glances 4.5.6 + PeaNUT 6.0.0 replaced Netdata for the agreed current-state metrics. The host NUT safe-shutdown role was not changed. Netdata packages, historical directories and `server.pirocorp.com` NPM/DNS route were retired. **Same-day extension:** Glances now uses `pid: host` and native HTTP Basic Auth (`401` without credentials / `200` with valid credentials) for approximately 440 Ubuntu processes. Homepage uses `HOMEPAGE_FILE_GLANCES_*` secrets in its info strip and both Storage customapi instances without browser login. NPM, firewall and Docker networks were not changed. See the [reproducible as-built runbook](../services/server-health/README.md). SMART diagnostics remain separate phase-2 work.
 
 Native widgets validated in the deployed dashboard:
 
-- Glances v4: CPU, memory, CPU temperature and uptime in the Homepage info strip; six disk-capacity blocks through Glances FS `customapi`
+- Glances v4: CPU, memory, CPU temperature and uptime in the Homepage info strip; six disk-capacity blocks through Glances FS `customapi` with file-backed Basic credentials; full process view after Glances login (FS index order may change during container recreation).
 - PeaNUT: `battery_charge`, `ups_load`, `ups_status` (raw `OL CHRG` for online/charging)
 - Portainer: `running`, `stopped`, `total`; environment ID `3`
 - Nginx Proxy Manager: `enabled`, `disabled`, `total`

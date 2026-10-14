@@ -14,7 +14,7 @@ The requirement was a **single simple, low-maintenance Homepage dashboard** for 
 | Role | Implementation | Tested version | Endpoint |
 | --- | --- | --- | --- |
 | User interface and existing Docker status | Existing Homepage and private Docker Socket Proxy | Homepage `v2.4.0` | `https://home.pirocorp.com`, host `192.168.0.10:3002` |
-| Host CPU, RAM, temperature, uptime and space | Glances in its own Docker Compose stack | `nicolargo/glances:4.5.6` | `https://glances.pirocorp.com`, API `:61208` |
+| Host CPU, RAM, temperature, uptime, space and host processes | Glances in Docker with native HTTP Basic Auth | `nicolargo/glances:4.5.6` | `https://glances.pirocorp.com`, authenticated API `:61208` |
 | UPS visualisation | PeaNUT in its own Compose stack | `brandawg93/peanut:6.0.0` | `https://peanut.pirocorp.com`, API `:61210` |
 | **UPS shutdown authority** | **Existing NUT on Ubuntu, not in Docker** | Existing installation unchanged | `powerwalker@127.0.0.1:3493` |
 | Reverse proxy, certificates, DNS | Existing NPM, wildcard Let's Encrypt and AdGuard Home | Existing installation unchanged | Explicit per-host DNS rewrites |
@@ -23,7 +23,7 @@ The requirement was a **single simple, low-maintenance Homepage dashboard** for 
 ```text
 Trusted browser (LAN / trusted VPN)
   |--> HTTPS home.pirocorp.com --> NPM --> Homepage :3002
-  |                                    |--> http://glances:61208 (Docker bridge)
+  |                                    |--> http://glances:61208 (bridge + Basic Auth)
   |                                    '--> http://192.168.0.10:61210 (UFW)
   |                                                |
   |                                                v
@@ -32,7 +32,7 @@ Trusted browser (LAN / trusted VPN)
   |                                                v
   |                                         NUT 127.0.0.1:3493 --> PowerWalker
   |
-  |--> HTTPS glances.pirocorp.com --> NPM --> 192.168.0.10:61208
+  |--> HTTPS glances.pirocorp.com --> NPM --> 192.168.0.10:61208 (Basic Auth)
   '--> HTTPS peanut.pirocorp.com  --> NPM --> 192.168.0.10:61210
 
 NUT + upsmon handle safe shutdown independently of Homepage, Glances and PeaNUT.
@@ -41,6 +41,7 @@ NUT + upsmon handle safe shutdown independently of Homepage, Glances and PeaNUT.
 **Architecture choices:**
 
 - Glances uses **Docker bridge** and joins the already-existing `homepage_default` network, NOT `homepage_docker_api`. That private network is reserved for the Docker Socket Proxy. Glances never mounts the Docker socket or writes to monitored disks.
+- **Post-acceptance security extension (2026-10-14):** `pid: host` exposes the Ubuntu process list (about 440 tasks) to Glances; native **HTTP Basic Authentication** restricts the Web UI's data and REST API. Homepage continues fetching through its existing bridge network using file-backed credentials. No NPM Access List, firewall/network changes, Docker socket or `privileged: true` were introduced. Authenticated users can see process command-line arguments.
 - PeaNUT deliberately uses **`network_mode: host`**. NUT only listens on the host's localhost; a normal bridge-container localhost would refer to the container, not the Ubuntu NUT daemon. We considered exposing NUT on a host/bridge/LAN address and rejected it: changing a safety-critical UPS shutdown configuration for a dashboard was unnecessary.
 - PeaNUT listens only on Ubuntu's **`192.168.0.10:61210`** and requires authentication; UFW selectively allows LAN, NPM and Homepage to reach it. `3493` stays loopback-only; there are no router forwards for either monitoring API.
 - Each application's HTTPS URL is terminated by the existing NPM wildcard certificate. The **browser-facing `href` is not the server-to-server API `url`** in Homepage.
@@ -82,6 +83,7 @@ Prepare the independent stack (ports and directories are specific to this deploy
 
 ```bash
 sudo mkdir -p /srv/docker/glances
+sudo install -d -m 700 -o 0 -g 0 /srv/docker/glances/auth
 cd /srv/docker/glances
 sudo ss -lntp '( sport = :61208 )'   # must be free before first deployment
 ```
@@ -100,12 +102,14 @@ services:
     image: nicolargo/glances:${GLANCES_VERSION}
     container_name: glances
     restart: unless-stopped
+    pid: host
 
     ports:
       - "192.168.0.10:61208:61208"
 
     environment:
-      GLANCES_OPT: "-w -C /etc/glances/glances.conf"
+      GLANCES_OPT: "-w -C /etc/glances/glances.conf -u glances"
+      PYTHONDONTWRITEBYTECODE: "1"
 
     read_only: true
     cap_drop:
@@ -122,6 +126,7 @@ services:
       - /mnt/comp:/mnt/comp:ro
       - /etc/os-release:/etc/os-release:ro
       - ./glances.conf:/etc/glances/glances.conf:ro
+      - ./auth:/etc/glances/auth:ro
 
     tmpfs:
       - /tmp
@@ -141,6 +146,13 @@ networks:
 [fs]
 show=/host-system,/mnt/iac,/mnt/lp,/mnt/data,/mnt/ia,/mnt/comp
 alias=/host-system:System SSD,/mnt/iac:iac,/mnt/lp:lp,/mnt/data:data,/mnt/ia:ia,/mnt/comp:comp
+
+[processlist]
+# Keep the command column; disable_stats=cmdline was ineffective at removing arguments from the API.
+#disable_stats=cmdline
+
+[passwords]
+local_password_path=/etc/glances/auth
 ```
 
 Important: mount `/srv/docker/glances` on the **same root filesystem** as `/`; otherwise `/host-system` will report the capacity of a different filesystem. Glances's FS reporting concerns mounted **filesystem capacity**, not directory size.
@@ -153,12 +165,96 @@ sudo docker compose config --quiet
 sudo docker compose pull
 sudo docker compose up -d
 sudo docker compose ps
-curl -fsS http://192.168.0.10:61208/api/4/fs
-sudo docker exec homepage node -e 'fetch("http://glances:61208/api/4/fs").then(r=>r.json()).then(x=>console.log(x.map(v=>[v.mnt_point,v.percent])))'
+# The protected FS API now returns 401 without authentication; see section 3.2.
+curl -sS -o /dev/null -w 'Glances no auth: HTTP %{http_code}\n' http://192.168.0.10:61208/api/4/fs
 df -h / /mnt/iac /mnt/lp /mnt/data /mnt/ia /mnt/comp
 ```
 
-**Validation performed:** six FS records; host CPU/RAM/`coretemp Package id 0` temperature about 37°C and uptime appeared in Homepage, with plausible CPU percentages after warm-up. One early `0.0%` CPU result was transient; a later sample series showed activity. The container process list did not represent the full host task tree; do not claim that process-level visibility is complete.
+**Validation performed:** six FS records, host CPU/RAM/CPU temperature and uptime were validated in Homepage. One early `0.0%` CPU result was transient. Initially PID-isolated Glances showed `TASKS 1`; after the authenticated `pid: host` extension it showed approximately 440 Ubuntu tasks. The actual login, process names and commands, plus `401/200` API behavior, were separately confirmed in section 3.2.
+
+
+### 3.1. Provision Glances authentication and Homepage credentials
+
+Glances 4.5.6 native authentication is activated by **`-u glances`** in `GLANCES_OPT`. With `[passwords] local_password_path=/etc/glances/auth` and the read-only `./auth` mount, it loads a persisted, salted PBKDF2 hash from `/srv/docker/glances/auth/glances.pwd`. This is a *Glances-specific* hash format; do not substitute an NPM `htpasswd` or PeaNUT auth file. Glances executes as root in this container, so keep the auth directory root-owned `0700` and the hash file `0600`.
+
+At the same time, Homepage requires the **plaintext password** for HTTP Basic authentication (its server-side proxy automatically sends Basic credentials). Store the username/password in the **existing** Homepage secrets folder with ownership UID/GID 1000, mode `0600`, and *no trailing CR/LF*. Never commit these files or print their contents.
+
+The following is the **actual validated one-time provisioning procedure**; it refuses to overwrite existing credential files:
+
+```bash
+sudo python3 - <<'PY'
+import os
+import hashlib
+import secrets
+import getpass
+import hmac
+from pathlib import Path
+
+auth_dir = Path("/srv/docker/glances/auth")
+homepage_dir = Path("/srv/docker/homepage/secrets")
+targets = [
+    auth_dir / "glances.pwd",
+    homepage_dir / "glances_username",
+    homepage_dir / "glances_password",
+]
+
+if any(p.exists() for p in targets):
+    raise SystemExit("STOP: Glances credential files already exist.")
+if not homepage_dir.is_dir():
+    raise SystemExit("STOP: Homepage secrets directory missing.")
+
+password = getpass.getpass("New Glances password: ")
+confirm = getpass.getpass("Confirm Glances password: ")
+if not password or not hmac.compare_digest(password, confirm):
+    raise SystemExit("STOP: Empty password or passwords do not match.")
+
+auth_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+os.chmod(auth_dir, 0o700)
+first_hash = hashlib.pbkdf2_hmac(
+    "sha256", password.encode(), b"", 100000, dklen=128
+).hex()
+salt = secrets.token_hex(16)
+second_hash = hashlib.pbkdf2_hmac(
+    "sha256", first_hash.encode(), salt.encode(), 100000, dklen=128
+).hex()
+
+def write_secret(path, data, uid=0, gid=0):
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "wb") as f:
+        f.write(data)
+    os.chown(path, uid, gid)
+
+write_secret(auth_dir / "glances.pwd", (salt + "$" + second_hash).encode())
+write_secret(homepage_dir / "glances_username", b"glances", 1000, 1000)
+write_secret(homepage_dir / "glances_password", password.encode(), 1000, 1000)
+print("Glances credentials created successfully.")
+PY
+```
+
+**Safe order when upgrading an already-running unauthenticated Glances:** provision the files, **configure Homepage credentials for the Glances info strip and both Storage widgets (section 4), check Homepage**, then add `[passwords]`, mount `auth/`, enable `-u glances` and recreate *only* Glances. On a fresh deployment, create files before starting Glances with the final protected Compose. Never change NUT, PeaNUT or Homepage Docker Socket Proxy to enable Glances login.
+
+### 3.2. Authentication and process-display acceptance
+
+```bash
+cd /srv/docker/glances
+sudo docker compose config --quiet
+sudo docker compose up -d glances
+sudo docker compose ps
+
+# No credentials -> HTTP 401 (protects the actual REST resource).
+curl -sS -o /dev/null -w 'Without auth: HTTP %{http_code}\n' \
+  http://192.168.0.10:61208/api/4/fs
+
+# Interactive password prompt; no credential values in shell history -> HTTP 200.
+curl -sS -o /dev/null -w 'With auth: HTTP %{http_code}\n' \
+  -u glances http://192.168.0.10:61208/api/4/fs
+```
+
+**Observed:** `401 / 200`; the HTTPS web page displayed a browser credential prompt and, after login, showed ~442 host tasks **with full Command strings**. Homepage continued showing CPU/RAM/temperature/uptime, all six Storage percentages, and UPS, without a browser login. `read_only: true`, `cap_drop: ALL` and `no-new-privileges:true` remained enabled.
+
+**Why not `disable_stats=cmdline`?** In Glances 4.5.6, the setting removed the entire UI Command column, not merely arguments, while two independent API checks found `cmdline` fields in *all* 447–448 process entries. Inspection of the version's process cache explains the discrepancy: the cached fields include `cmdline` even when standard process attributes exclude it. **Do not use this setting as an authentication or secrets-protection measure.** Native Glances auth protects the process API, but an *authenticated* observer may still see command-line secrets if applications were launched with them.
+
+**Transport/security limitation:** The browser's `https://glances.pirocorp.com` uses the existing TLS reverse proxy. The directly published `http://192.168.0.10:61208` listener and the internal `http://glances:61208` bridge are **HTTP Basic Auth without TLS**. Any network principal able to read local HTTP traffic could potentially see Basic credentials. The authenticated API is accessible to clients on those trusted paths and to containers on the shared Docker network; this is **not** a per-container access restriction. No NPM, firewall or network changes were made in this follow-up.
 
 ## 4. Add Glances to Homepage, retaining the existing layout
 
@@ -167,6 +263,8 @@ In `/srv/docker/homepage/config/widgets.yaml` (existing file previously `[]`), d
 ```yaml
 - glances:
     url: http://glances:61208
+    username: "{{HOMEPAGE_FILE_GLANCES_USERNAME}}"
+    password: "{{HOMEPAGE_FILE_GLANCES_PASSWORD}}"
     href: https://glances.pirocorp.com
     version: 4
     cpu: true
@@ -188,6 +286,8 @@ In the **existing** `Infrastructure` group of `/srv/docker/homepage/config/servi
         widgets:
           - type: customapi
             url: http://glances:61208/api/4/fs
+            username: "{{HOMEPAGE_FILE_GLANCES_USERNAME}}"
+            password: "{{HOMEPAGE_FILE_GLANCES_PASSWORD}}"
             display: block
             refreshInterval: 30000
             mappings:
@@ -202,6 +302,8 @@ In the **existing** `Infrastructure` group of `/srv/docker/homepage/config/servi
                 format: percent
           - type: customapi
             url: http://glances:61208/api/4/fs
+            username: "{{HOMEPAGE_FILE_GLANCES_USERNAME}}"
+            password: "{{HOMEPAGE_FILE_GLANCES_PASSWORD}}"
             display: block
             refreshInterval: 30000
             mappings:
@@ -216,7 +318,35 @@ In the **existing** `Infrastructure` group of `/srv/docker/homepage/config/servi
                 format: percent
 ```
 
-**Critical caveat: positional mapping.** These six labels reflect the **observed order on the deployed `/api/4/fs` response**, not a guaranteed API sorting contract and **not** the order written in `show=`. Re-check `mnt_point`/`alias` vs index **after every Glances restart, update or filesystem change**, otherwise tiles can silently display the right percentages under the **wrong disk labels**. This native six-tile layout was preferred and accepted, but it is not a stable-identity mapping. A future identity-based fix is separate work; do not misrepresent the indexed layout as permanently stable.
+**Critical caveat: positional mapping.** These six labels reflect the **observed order on the deployed `/api/4/fs` response**, not a guaranteed API sorting contract and **not** the order written in `show=`. Re-check `mnt_point`/`alias` vs index **after every Glances restart, update or filesystem change**, otherwise tiles can silently display the right percentages under the **wrong disk labels**. During the October 14 authentication/recreate sequence, one Homepage screenshot temporarily showed percentage values corresponding to *other* mounts; a later screenshot showed the expected label-to-value alignment again. This is **observed**, not theoretical. The native six-tile layout remains user-accepted but is not a stable-identity mapping. A future identity-based fix is separate work.
+
+
+### Homepage — file-backed Glances credentials
+
+In the **existing** `/srv/docker/homepage/compose.yaml` service `environment:` add:
+
+```yaml
+      HOMEPAGE_FILE_GLANCES_USERNAME: /app/secrets/glances_username
+      HOMEPAGE_FILE_GLANCES_PASSWORD: /app/secrets/glances_password
+```
+
+Retain the **existing** `./secrets:/app/secrets:ro` mount; the files have been created in section 3.1. Use `HOMEPAGE_FILE_*`, **not** `HOMEPAGE_VAR_*`, with no trailing newlines. All **three** Glances consumers must pass these credentials: the top info strip in `widgets.yaml` and the two `customapi` blocks in `services.yaml`.
+
+```bash
+cd /srv/docker/homepage
+sudo docker compose config --quiet
+sudo docker compose up -d homepage
+sudo docker exec homepage node -e '
+const fs=require("fs");
+for(const k of ["GLANCES_USERNAME","GLANCES_PASSWORD"]){
+ const p=process.env["HOMEPAGE_FILE_"+k];
+ if(!p||!fs.existsSync(p)){console.log(k+": MISSING");continue}
+ const v=fs.readFileSync(p,"utf8");
+ console.log(k+": "+(v.length>0&&!/[\r\n]$/.test(v)?"OK":"CHECK"))
+}'
+```
+
+Expected: `GLANCES_USERNAME: OK` and `GLANCES_PASSWORD: OK`; no secret values printed. The info strip and Storage data were visually verified after Glances began requiring login.
 
 ## 5. Reproduce PeaNUT without disturbing NUT
 
@@ -457,8 +587,8 @@ curl -fsS http://192.168.0.10:61208/api/4/fs
 # D. Homepage container's route across UFW:
 sudo docker exec homepage node -e 'fetch("http://192.168.0.10:61210/api/ping",{signal:AbortSignal.timeout(5000)}).then(async r=>console.log(r.status,await r.text()))'
 
-# E. Check filesystem labels against actual Glances API order:
-curl -fsS http://192.168.0.10:61208/api/4/fs
+# E. Check authenticated Glances API and filesystem labels against actual FS order:
+curl -sS -u glances http://192.168.0.10:61208/api/4/fs  # prompts for password; returns FS records
 
 # F. Ensure NUT is not newly exposed to LAN:
 sudo ss -lntp '( sport = :3493 )'
@@ -474,7 +604,7 @@ curl -sS -o /dev/null -w 'HTTP %{http_code}\n' -u admin http://192.168.0.10:6121
 # expected: HTTP 200
 ```
 
-Browser acceptance (desktop observed): `https://home.pirocorp.com` displays the server strip, six compact usage tiles and the three-field UPS tile; `https://glances.pirocorp.com` loads the full Glances UI; `https://peanut.pirocorp.com` loads the protected PeaNUT UI. **An iPhone-specific screenshot/acceptance was not established in these logs**; do not imply separately validated mobile layout.
+Browser acceptance (desktop observed): `https://home.pirocorp.com` displays the server strip, six compact usage tiles and the three-field UPS tile without extra login; `https://glances.pirocorp.com` now asks for native Glances credentials and then shows ~442 host processes and their full Command strings; `https://peanut.pirocorp.com` loads the protected PeaNUT UI. **An iPhone-specific screenshot/acceptance was not established in these logs**; do not imply separately validated mobile layout.
 
 PowerWalker observed `battery.charge=100`, `ups.load=8–10`, `ups.status=OL CHRG` across verification. Treat these as historical snapshots, not constants.
 
@@ -541,7 +671,7 @@ Revert Homepage only: remove the new `UPS` and `Storage` cards and the Glances i
 - Six filesystem **capacity** readings do **not** measure SMART health, bad sectors, disk wear or per-disk temperature. Implement those later under [Phase 2](../../roadmaps/server-health-dashboard/smart-extension.md); do not confuse the two.
 - The six storage labels depend on observed Glances FS array order. Re-check after any topology/restart changes.
 - PeaNUT HTTP is accessible from trusted LAN and both specified Docker networks, not solely one container; maintain authentication and no router forwarding. PeaNUT `6.0.0` is pinned, with two documented workarounds.
-- Glances and PeaNUT are not substitutes for Netdata's alert history and detailed collectors. Their **user-accepted** scope is current-state metrics only.
+- Glances and PeaNUT are not substitutes for Netdata's alert history and detailed collectors. Their **user-accepted** scope is current-state metrics **plus** an authenticated Glances process view. `pid: host` reveals sensitive process metadata and command-line arguments to authenticated users.
 - Keep all monitored NTFS/Samba data read-only from Glances and keep NUT host-native/loopback-only.
 - When reconstructing on another host, verify image/tag availability, USB/NUT configuration, actual UID, host network addresses, fs ordering and reverse-proxy reachability rather than blindly copying `192.168.0.10` or `172.20/31`.
 
