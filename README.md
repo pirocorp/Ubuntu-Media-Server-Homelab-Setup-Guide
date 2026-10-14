@@ -33,6 +33,8 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 
 ### Planned
 
+- [Homepage Server Health — phase-1 monitoring](./docs/roadmaps/server-health-dashboard/README.md) — Glances + PeaNUT inside the existing Homepage; Netdata retained until validation.
+- [Homepage SMART Disk Health extension — phase 2](./docs/roadmaps/server-health-dashboard/smart-extension.md) — future six-drive SMART Health/temperature/wear card, deferred until core monitoring works.
 - [OmniMeter local energy monitoring (evaluation roadmap)](./docs/roadmaps/omnimeter/README.md)
 - [Taiwan–Russia Risk Watch Discord Bridge](./docs/roadmaps/riskwatch-discord-bridge/README.md)
 - [AIOStreams multi-source P2P expansion](./docs/roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
