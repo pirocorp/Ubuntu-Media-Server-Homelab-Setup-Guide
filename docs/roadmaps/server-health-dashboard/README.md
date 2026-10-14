@@ -13,6 +13,8 @@ Related docs: [Roadmaps index](../README.md), [Homepage deployment runbook](../.
 
 For **exact, tested, reproducible commands**, do **not** use the historical examples below: see the [deployed Server Health runbook](../../services/server-health/README.md). Phase 2 remains separately [planned](./smart-extension.md).
 
+**Same-day post-acceptance improvement:** native Glances HTTP Basic Authentication and `pid: host` were verified. Homepage credentials were configured in the existing file-backed secret system for all three Glances widgets. Unauthenticated API returned `401`, valid credentials `200`; browser login and the full ~442-process view were confirmed. The original design discussion below remains preserved as history.
+
 ## Original pre-deployment decision record (historical; proposals below are not the live configuration)
 
 **Status:** Agreed phase-1 direction; runtime configuration and acceptance tests pending  
