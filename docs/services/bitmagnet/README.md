@@ -492,137 +492,23 @@ docker stats bitmagnet-postgres
 
 ---
 
-## Netdata Monitoring
+## Current Host and Container Monitoring (Homepage + Glances)
 
-Bitmagnet is primarily:
+Netdata was retired on 2026-10-14, after the [Homepage / Glances / PeaNUT Server Health Dashboard](../server-health/README.md) was validated. Do not follow the former Netdata navigation instructions.
 
-* CPU intensive during crawling
-* Disk intensive during indexing
-* PostgreSQL intensive as the database grows
+Bitmagnet may use substantial CPU while crawling, storage I/O while indexing and PostgreSQL disk space as its database grows. The current compact dashboard covers host CPU/RAM, root filesystem capacity, and existing Docker container status with on-demand CPU/RAM/network figures. **It is not a replacement for historical PostgreSQL or per-process I/O tracing.**
 
-### Recommended Netdata Checks
+Check present conditions using:
 
-#### CPU Usage
-
-Navigate to:
-
-```text
-Netdata
-→ System Overview
-→ CPU
+```bash
+cd /srv/docker/bitmagnet
+docker compose ps
+docker stats --no-stream bitmagnet bitmagnet-postgres
+df -h /
+du -sh /srv/docker/bitmagnet/postgres
 ```
 
-Watch for:
-
-* Sustained high CPU usage
-* CPU spikes during crawling
-* CPU saturation
-
-Expected on Xeon E3-1231 v3:
-
-```text
-Occasional spikes are normal.
-Sustained 100% usage is not.
-```
-
----
-
-#### Memory Usage
-
-Navigate to:
-
-```text
-Netdata
-→ System Overview
-→ Memory
-```
-
-Watch for:
-
-* RAM consumption
-* Swap usage
-
-Current baseline:
-
-```text
-30 GB RAM
-8 GB Swap
-```
-
-Bitmagnet should not require large amounts of RAM for a personal homelab deployment.
-
----
-
-#### Disk Usage
-
-Navigate to:
-
-```text
-Netdata
-→ Disks
-→ Space Usage
-```
-
-Monitor:
-
-```text
-/
-```
-
-Expected:
-
-```text
-1.8 TB NVMe SSD
-```
-
-Recommended alert threshold:
-
-```text
-80% utilization
-```
-
----
-
-#### Disk I/O
-
-Navigate to:
-
-```text
-Netdata
-→ Disks
-→ I/O
-```
-
-Watch for:
-
-* High write activity
-* PostgreSQL indexing activity
-* SSD bottlenecks
-
----
-
-#### Docker Containers
-
-Navigate to:
-
-```text
-Netdata
-→ Containers
-```
-
-Monitor:
-
-```text
-bitmagnet
-bitmagnet-postgres
-```
-
-Key metrics:
-
-* CPU
-* Memory
-* Network
-* Disk I/O
+The system SSD is a Samsung SATA SSD; do not describe it as the former 1.8 TB NVMe device. For deeper storage I/O troubleshooting use existing Ubuntu tools on demand rather than reinstalling Netdata merely to display one extra dashboard card.
 
 ---
 

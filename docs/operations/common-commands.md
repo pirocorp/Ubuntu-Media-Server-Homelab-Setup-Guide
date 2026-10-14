@@ -104,11 +104,13 @@ ss -tulpn
 | CPU                | Intel Xeon E3-1231 v3 @ 3.40GHz |
 | Logical CPUs       | 8                               |
 | RAM                | 32 GB                           |
-| System Drive       | 2 TB NVMe SSD                   |
+| System Drive       | 2 TB Samsung 870 SATA SSD       |
 | Data Drives        | Multiple NTFS HDDs              |
 | Container Platform | Docker + Docker Compose         |
-| Management         | Portainer + Netdata             |
+| Management         | Portainer + Homepage/Glances/PeaNUT |
 | DNS                | AdGuard Home                    |
 | Reverse Proxy      | Nginx Proxy Manager             |
+
+Current monitoring runbook: [Server Health Dashboard](../services/server-health/README.md). Quick checks: `docker compose ps` in `/srv/docker/glances` and `/srv/docker/peanut`, `systemctl is-active nut-server`, `upsc powerwalker@127.0.0.1 ups.status`. Netdata is not installed; its former port `19999` is retired.
 
 This baseline can be updated in the future after hardware upgrades or infrastructure changes.

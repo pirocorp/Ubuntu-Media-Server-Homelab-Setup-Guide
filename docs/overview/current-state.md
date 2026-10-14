@@ -29,7 +29,8 @@ These service names normally resolve through the current AdGuard local DNS desig
 | Service | URL |
 | --- | --- |
 | Homepage dashboard | `https://home.pirocorp.com` |
-| Server monitoring (Netdata) | `https://server.pirocorp.com` |
+| Server monitoring (Glances) | `https://glances.pirocorp.com` |
+| UPS monitoring (PeaNUT) | `https://peanut.pirocorp.com` |
 | Portainer | `https://portainer.pirocorp.com` |
 | AdGuard Home | `https://adguard.pirocorp.com` |
 | Nginx Proxy Manager admin | `http://npm.pirocorp.com:81` |
@@ -75,7 +76,8 @@ The Stremio Web UI also follows the standard local publishing model: explicit Ad
 | Homepage | `192.168.0.10:3002` |
 | Nginx Proxy Manager admin | `192.168.0.10:81` |
 | Portainer | `192.168.0.10:9443` |
-| Netdata | `192.168.0.10:19999` |
+| Glances API / Web | `192.168.0.10:61208` |
+| PeaNUT API / Web | `192.168.0.10:61210` |
 | Plex | `192.168.0.10:32400` |
 | qBittorrent web UI | `192.168.0.10:8080` |
 | Bitmagnet web/API | `192.168.0.10:3333-3334` |
@@ -138,9 +140,12 @@ Homepage preflight found port `3000` already occupied by AdGuard Home, so the ap
 
 The Docker integration is validated end-to-end: Homepage reaches the private socket proxy, Docker `_ping` returns `OK`, Docker API version `29.1.3` was read successfully, container discovery works, and green status indicators expand on demand to CPU, memory, RX, and TX statistics.
 
+**Server Health update (2026-10-14):** Homepage + Glances 4.5.6 + PeaNUT 6.0.0 replaced Netdata for the agreed current-state metrics. The host NUT safe-shutdown role was not changed. Netdata packages, historical directories and `server.pirocorp.com` NPM/DNS route were retired. See the [reproducible as-built runbook](../services/server-health/README.md). SMART diagnostics remain separate phase-2 work.
+
 Native widgets validated in the deployed dashboard:
 
-- Netdata: `warnings`, `criticals`
+- Glances v4: CPU, memory, CPU temperature and uptime in the Homepage info strip; six disk-capacity blocks through Glances FS `customapi`
+- PeaNUT: `battery_charge`, `ups_load`, `ups_status` (raw `OL CHRG` for online/charging)
 - Portainer: `running`, `stopped`, `total`; environment ID `3`
 - Nginx Proxy Manager: `enabled`, `disabled`, `total`
 - AdGuard Home: `queries`, `blocked`, `filtered`, `latency`
@@ -260,7 +265,7 @@ AIOStreams was validated directly from the NPM container on `192.168.0.10:3001`;
 - Audiobookshelf
 - Immich
 - Kavita
-- UPS monitoring with NUT and Netdata
+- UPS safe shutdown through host NUT, with authenticated PeaNUT status visualisation and Glances host monitoring
 - ShadowBroker
 - NetAlertX LAN device inventory and presence monitoring with HTTPS access through `netalertx.pirocorp.com`
 - AIOStreams self-hosted control/discovery layer at `https://aio.pirocorp.com`
