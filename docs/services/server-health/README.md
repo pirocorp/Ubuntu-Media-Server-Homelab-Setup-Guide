@@ -157,21 +157,6 @@ local_password_path=/etc/glances/auth
 
 Important: mount `/srv/docker/glances` on the **same root filesystem** as `/`; otherwise `/host-system` will report the capacity of a different filesystem. Glances's FS reporting concerns mounted **filesystem capacity**, not directory size.
 
-Start and test:
-
-```bash
-cd /srv/docker/glances
-sudo docker compose config --quiet
-sudo docker compose pull
-sudo docker compose up -d
-sudo docker compose ps
-# The protected FS API now returns 401 without authentication; see section 3.2.
-curl -sS -o /dev/null -w 'Glances no auth: HTTP %{http_code}\n' http://192.168.0.10:61208/api/4/fs
-df -h / /mnt/iac /mnt/lp /mnt/data /mnt/ia /mnt/comp
-```
-
-**Validation performed:** six FS records, host CPU/RAM/CPU temperature and uptime were validated in Homepage. One early `0.0%` CPU result was transient. Initially PID-isolated Glances showed `TASKS 1`; after the authenticated `pid: host` extension it showed approximately 440 Ubuntu tasks. The actual login, process names and commands, plus `401/200` API behavior, were separately confirmed in section 3.2.
-
 
 ### 3.1. Provision Glances authentication and Homepage credentials
 
@@ -238,6 +223,7 @@ PY
 ```bash
 cd /srv/docker/glances
 sudo docker compose config --quiet
+sudo docker compose pull
 sudo docker compose up -d glances
 sudo docker compose ps
 
@@ -255,6 +241,8 @@ curl -sS -o /dev/null -w 'With auth: HTTP %{http_code}\n' \
 **Why not `disable_stats=cmdline`?** In Glances 4.5.6, the setting removed the entire UI Command column, not merely arguments, while two independent API checks found `cmdline` fields in *all* 447–448 process entries. Inspection of the version's process cache explains the discrepancy: the cached fields include `cmdline` even when standard process attributes exclude it. **Do not use this setting as an authentication or secrets-protection measure.** Native Glances auth protects the process API, but an *authenticated* observer may still see command-line secrets if applications were launched with them.
 
 **Transport/security limitation:** The browser's `https://glances.pirocorp.com` uses the existing TLS reverse proxy. The directly published `http://192.168.0.10:61208` listener and the internal `http://glances:61208` bridge are **HTTP Basic Auth without TLS**. Any network principal able to read local HTTP traffic could potentially see Basic credentials. The authenticated API is accessible to clients on those trusted paths and to containers on the shared Docker network; this is **not** a per-container access restriction. No NPM, firewall or network changes were made in this follow-up.
+
+**Validation performed:** six FS records, host CPU/RAM/CPU temperature and uptime were validated in Homepage. One early `0.0%` CPU result was transient. Initially PID-isolated Glances showed `TASKS 1`; after the authenticated `pid: host` extension it showed approximately 440 Ubuntu tasks. The actual login, process names and commands, plus `401/200` API behavior, were separately confirmed in section 3.2.
 
 ## 4. Add Glances to Homepage, retaining the existing layout
 
@@ -580,9 +568,10 @@ cd /srv/docker/glances && sudo docker compose ps
 cd /srv/docker/peanut  && sudo docker compose ps
 sudo docker inspect peanut --format '{{.State.Health.Status}}'
 
-# C. Each origin is reachable:
+# C. Origins and Glances native authorization:
 curl -fsS http://192.168.0.10:61210/api/ping
-curl -fsS http://192.168.0.10:61208/api/4/fs
+curl -sS -o /dev/null -w 'Glances no auth: HTTP %{http_code}\n' http://192.168.0.10:61208/api/4/fs  # expect 401
+curl -sS -o /dev/null -w 'Glances with auth: HTTP %{http_code}\n' -u glances http://192.168.0.10:61208/api/4/fs  # expect 200
 
 # D. Homepage container's route across UFW:
 sudo docker exec homepage node -e 'fetch("http://192.168.0.10:61210/api/ping",{signal:AbortSignal.timeout(5000)}).then(async r=>console.log(r.status,await r.text()))'
