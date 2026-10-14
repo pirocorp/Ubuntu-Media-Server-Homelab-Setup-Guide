@@ -19,7 +19,7 @@ User goal: one **simple** dashboard for CPU, RAM, CPU temperature, disk free spa
 
 **Phase 1 — baseline (this roadmap):** Homepage + Glances + PeaNUT, with server metrics and UPS values verified on desktop and iPhone.
 
-**Phase 2 — optional extension, separately implemented:** SMART Health, physical-drive temperature, and SSD wear indicator for the six drives. The separate SMART solution previously discussed is host `smartctl` -> normalized read-only JSON -> Homepage card. Do **not** make its implementation a prerequisite for phase 1.
+**Phase 2 — optional extension, separately implemented:** [SMART Disk Health roadmap](./smart-extension.md) documents the six-drive Health/temperature/usage/wear card and host `smartctl` -> normalized read-only JSON -> Homepage architecture. It is a **separate planned workstream**, not a prerequisite for phase 1.
 
 **Phase 3 — only after phase-1 sign-off:** decide whether to retire Netdata; document cleanup and monitoring/alert trade-offs separately.
 
