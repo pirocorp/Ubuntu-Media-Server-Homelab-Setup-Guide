@@ -12,7 +12,8 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 
 ## Planned Work
 
-- [Homepage Server Health — phase 1](./server-health-dashboard/README.md) — lightweight Ubuntu CPU/RAM/temperature/filesystem and PowerWalker UPS status in the existing Homepage via Glances + PeaNUT; SMART is a later extension.
+- [Homepage Server Health — phase 1](./server-health-dashboard/README.md) — lightweight Ubuntu CPU/RAM/temperature/filesystem and PowerWalker UPS status in existing Homepage via Glances + PeaNUT.
+- [Homepage Disk Health — SMART extension, phase 2](./server-health-dashboard/smart-extension.md) — separate future six-drive SMART Health, temperature, used-space and supported SSD wear indicators, only after phase 1.
 - [OmniMeter local energy monitoring](./omnimeter/README.md) — proposed self-hosted HomeWizard electricity/gas history, API v2 validation, tariff/Belgian peak assessment, SQLite persistence and backup; documentation-only.
 - [Taiwan–Russia Risk Watch Discord Bridge](./riskwatch-discord-bridge/README.md) — .NET 10 self-hosted publishing bridge from ChatGPT to Discord through Cloudflare Tunnel + Cloudflare Access Service Token, without router port forwarding.
 - [Binary Artifact Upload PoC](./artifact-upload-poc.md) — single-container ASP.NET Core feasibility test for direct binary transfer from the ChatGPT sandbox to a self-hosted endpoint, validated by file size and SHA-256.
