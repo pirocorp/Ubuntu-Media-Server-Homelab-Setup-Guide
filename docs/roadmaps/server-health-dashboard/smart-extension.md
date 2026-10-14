@@ -155,7 +155,7 @@ Target conceptual table/card:
 
 **In scope:** six-drive diagnostics and card only; read-only measurements; limited private JSON transport; visual warnings/unknown; documentation and rollback.
 
-**Out of scope:** Phase-1 CPU/RAM/Glances/PeaNUT deployment; immediate Netdata removal; drive writes and filesystem changes; NTFS conversion; Samba changes; disk firmware operations; all-in-one monitoring databases; commercial or proprietary health-score algorithms.
+**Out of scope:** Phase-1 CPU/RAM/Glances/PeaNUT deployment; Netdata reinstallation; drive writes and filesystem changes; NTFS conversion; Samba changes; disk firmware operations; all-in-one monitoring databases; commercial or proprietary health-score algorithms.
 
 This is a **phase-2** roadmap: deploying it before the baseline monitoring has been accepted would contradict the intended sequence.
 

@@ -2,7 +2,7 @@
 
 Status: **Archived; superseded 2026-10-14. Do not follow this guide for a new deployment.**
 
-The installation documented below was replaced by the [current NUT runbook](../services/ups-monitoring/README.md) and [Homepage + Glances + PeaNUT implementation](../services/server-health/README.md). Netdata, its NPM route and its AdGuard rewrite were removed on 2026-10-14. The original text is preserved verbatim below as history, including outdated instructions that would re-install or publicly open Netdata; **do not execute them**.
+The installation documented below was replaced by the [current NUT runbook](../services/ups-monitoring/README.md) and [Homepage + Glances + PeaNUT implementation](../services/server-health/README.md). Netdata, its NPM route and its AdGuard rewrite were removed on 2026-10-14. The original historical narrative is preserved below (with relative documentation links rebased for the archive location). It includes outdated instructions that would re-install or broadly expose Netdata; **do not execute them**.
 
 ---
 
@@ -10,8 +10,8 @@ The installation documented below was replaced by the [current NUT runbook](../s
 
 Status: Implemented
 Purpose: Deployment guide for UPS monitoring, NUT, and Netdata access through the homelab ingress stack.
-Depends on: [Base server setup](../../platform/base-server-setup.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
-Related docs: [Services index](../README.md), [Common commands](../../operations/common-commands.md)
+Depends on: [Base server setup](../platform/base-server-setup.md), [Networking and reverse proxy](../platform/networking-and-reverse-proxy.md)
+Related docs: [Services index](../services/README.md), [Common commands](../operations/common-commands.md)
 
 # Overview
 

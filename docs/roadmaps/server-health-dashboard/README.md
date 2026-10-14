@@ -3,7 +3,7 @@
 Status: **Implemented / completed 2026-10-14** — original pre-deployment design preserved as a historical decision record; operational source of truth is the [as-built runbook](../../services/server-health/README.md)
 Purpose: Replace the heavy Netdata viewing workflow with a compact, low-maintenance server/UPS status display inside the existing Homepage.
 Depends on: Existing Ubuntu Docker host, deployed Homepage, NUT UPS monitoring, existing Docker Socket Proxy, and the current AdGuard/NPM/Tailscale ingress.
-Related docs: [Roadmaps index](../README.md), [Homepage deployment runbook](../../services/homepage/README.md), [Homepage original architecture decision record](../homepage/README.md), [UPS / Netdata runbook](../../services/ups-monitoring/README.md), [Docker and Portainer](../../platform/docker-and-portainer.md)
+Related docs: [Roadmaps index](../README.md), [Homepage deployment runbook](../../services/homepage/README.md), [Homepage original architecture decision record](../homepage/README.md), [Current host NUT operations](../../services/ups-monitoring/README.md), [Docker and Portainer](../../platform/docker-and-portainer.md)
 
 ## Deployment completion (2026-10-14)
 

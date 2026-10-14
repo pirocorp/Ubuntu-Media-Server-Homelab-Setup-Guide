@@ -336,7 +336,7 @@ Completed:
 - direct `192.168.0.10:3002` access returns HTTP `200`
 - Docker socket proxy read path validated
 - `2375` confirmed not published on the host
-- all 15 cards render
+- all 16 current cards render (post-Server-Health deployment)
 - Docker status indicators and expandable CPU/RAM/RX/TX statistics work
 - Glances info strip and six-tile Storage card work
 - PeaNUT native UPS widget works (authenticated API, `OL CHRG`)
