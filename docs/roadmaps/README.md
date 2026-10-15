@@ -9,11 +9,11 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 - [Remote access over VPN roadmap](./remote-access/README.md)
 - [Homepage dashboard architecture roadmap](./homepage/README.md) — deployed baseline retained as the original architecture decision record; see the [Homepage runbook](../services/homepage/README.md) for the live implementation and remaining validation items.
 - [Server Health Phase 1 decision record](./server-health-dashboard/README.md) — implemented 2026-10-14 using Glances + PeaNUT; consult the [as-built deployment guide](../services/server-health/README.md) for reproducible installation, fixes and Netdata retirement.
+- [Server Health Phase 2 / SMART design record](./server-health-dashboard/smart-extension.md) — core six-drive SMART monitoring deployed 2026-10-15; consult the [as-built Disk Health runbook](../services/disk-health/README.md) for the implemented layout, data path, timer status and remaining verification.
 - [Stremio + AIOStreams self-hosted streaming architecture roadmap](./stremio-aiostreams/README.md) — seven-phase baseline completed and retained as the original implementation decision record. See the [as-built architecture](../overview/stremio-streaming-architecture.md) and the phase completion records in the same roadmap directory.
 
 ## Planned Work
 
-- [Homepage Disk Health — SMART extension, phase 2](./server-health-dashboard/smart-extension.md) — planned six-drive SMART health/temperature/wear indicators; phase 1 is already complete.
 - [OmniMeter local energy monitoring](./omnimeter/README.md) — proposed self-hosted HomeWizard electricity/gas history, API v2 validation, tariff/Belgian peak assessment, SQLite persistence and backup; documentation-only.
 - [Taiwan–Russia Risk Watch Discord Bridge](./riskwatch-discord-bridge/README.md) — .NET 10 self-hosted publishing bridge from ChatGPT to Discord through Cloudflare Tunnel + Cloudflare Access Service Token, without router port forwarding.
 - [Binary Artifact Upload PoC](./artifact-upload-poc.md) — single-container ASP.NET Core feasibility test for direct binary transfer from the ChatGPT sandbox to a self-hosted endpoint, validated by file size and SHA-256.
