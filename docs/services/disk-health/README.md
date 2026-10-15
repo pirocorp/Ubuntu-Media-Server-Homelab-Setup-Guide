@@ -1,6 +1,6 @@
 # SMART Disk Health — Phase 2 deployed operations runbook
 
-Status: **Deployed on 2026-10-15; scheduled timer enabled, first automatic fire still awaiting separate confirmation**  
+Status: **Deployed on 2026-10-15; first timer-triggered run independently confirmed at 21:40 UTC (23:40 CEST)**  
 Purpose: Describe the actual six-drive SMART collector, immutable baseline, local JSON publication and native Homepage cards.  
 Depends on: [Phase-1 Server Health](../server-health/README.md), [Homepage](../homepage/README.md), existing host `smartctl 7.5`, mounted storage.  
 Design history: [original SMART extension roadmap](../../roadmaps/server-health-dashboard/smart-extension.md).
@@ -10,9 +10,9 @@ Design history: [original SMART extension roadmap](../../roadmaps/server-health-
 ## Implementation and acceptance status
 
 - **Confirmed live:** six physical devices identified by validated ATA `/dev/disk/by-id/` links and mount-point cross-check; `smartctl -j -d sat -H -A` works on six drives; initial baseline created and protected; collector v0.6 manual `--write` succeeded; protected `last-observed.json` and public `status.json` generated atomically per file; Homepage v2.4.0 reads the static JSON and refreshes its native tile widgets without restarting.
-- **Confirmed systemd:** `disk-health.service` linked, loaded and ran once successfully via `systemctl start` (2026-10-15, 21:33 UTC); `disk-health.timer` linked, `enabled` and `active`, first next execution scheduled for 21:40 UTC (23:40 CEST). **Do not claim a timer-triggered invocation was observed until the journal confirms it.**
+- **Confirmed systemd:** `disk-health.service` linked, loaded and ran successfully via manual `systemctl start` (2026-10-15, 21:33 UTC). `disk-health.timer` is `enabled` and `active`; its **first fully automatic run was independently observed** at 21:40:02–21:40:03 UTC (23:40 CEST): journal shows all six Healthy samples, `STATE + STATUS WRITTEN. Baseline unchanged.` and successful service completion. `systemctl list-timers` reported LAST 21:40:02 UTC and NEXT 21:50 UTC; the open Homepage dashboard updated LAST UPDATED to 23:40.
 - **Simulated:** SMART standby skip -> Sleeping; unsupported power-mode -> Unknown; SMART 188 counter increase -> Warning; Warning retained through subsequent Sleeping; last successful temperature/time retained through Sleeping or Unknown; failed second-file publish leaves previous complete public JSON in place; file permissions and atomic individual replacement.
-- **Pending:** observation of first scheduled run and reboot persistence; real standby hardware test (the observed Seagate modes IDLE_A/IDLE_B do not prove true standby); calibrated drive-specific temperature and Samsung SSD wear thresholds; full fault/critical escalation tests and acknowledgement workflow; iPhone layout acceptance.
+- **Pending:** reboot persistence; real standby hardware test (the observed Seagate modes IDLE_A/IDLE_B do not prove true standby); calibrated drive-specific temperature and Samsung SSD wear thresholds; full fault/critical escalation tests and acknowledgement workflow; iPhone layout acceptance.
 
 The host remains the only SMART diagnostic reader. No new Docker container, HTTP listener, reverse-proxy host, DNS rewrite, Docker socket access, device mount or firewall rule was added for this feature. Host disks and NTFS/Samba shares were not modified by the monitoring work.
 
@@ -198,7 +198,7 @@ sudo python3 -m json.tool /srv/docker/disk-health/data/status.json >/dev/null
 sudo docker exec homepage wget -S -O /dev/null http://127.0.0.1:3000/disk-health/status.json
 ```
 
-Expected oneshot result after completion: `Result=success`, `ExecMainStatus=0`, `ActiveState=inactive`; journal contains six disk lines and `STATE + STATUS WRITTEN. Baseline unchanged.`. Homepage's LAST UPDATED advances after a successful collector run, subject to its 30-second widget refresh. Record an **automatic** journal invocation before marking that acceptance gate complete.
+Expected oneshot result after completion: `Result=success`, `ExecMainStatus=0`, `ActiveState=inactive`; journal contains six disk lines and `STATE + STATUS WRITTEN. Baseline unchanged.`. Homepage's LAST UPDATED advances after a successful collector run, subject to its 30-second widget refresh. The first **automatic** journal invocation is verified (2026-10-15, 21:40 UTC). Keep checking subsequent runs and LAST UPDATED for failures.
 
 A deliberate one-shot check can be launched with `sudo systemctl start disk-health.service`. Preview without file writes uses `sudo python3 -B /srv/docker/disk-health/collector/collect-v0.6.py --preview`; **preview still reads the drives**.
 
@@ -218,7 +218,7 @@ Do not use `--init-baseline` as a maintenance command, commit local JSON data, g
 
 ## Further work (not yet delivered)
 
-1. Verify the **first automatic 10-minute run** from the journal, followed by an observed restart/reboot persistence check.
+1. Verify timer persistence and successful scheduled SMART checks **after a later host reboot**; the first automatic 10-minute run on 2026-10-15 is already confirmed.
 2. Validate the standby protection with an HDD actually reporting STANDBY.
 3. Agree per-drive temperature warning/critical bands and SSD wear semantics; implement and test threshold alerts.
 4. Implement an explicit reviewed alert acknowledgement/reference-reset workflow.
