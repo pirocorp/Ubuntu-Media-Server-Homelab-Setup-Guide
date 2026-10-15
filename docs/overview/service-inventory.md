@@ -30,6 +30,7 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 | Immich | Photo and video management | [Immich](../services/immich/README.md) |
 | Kavita | Reading server and library manager | [Kavita](../services/kavita/README.md) |
 | Server Health (Glances + PeaNUT) | Host metrics, six filesystem-capacity tiles and UPS status in Homepage | [Reproducible deployment](../services/server-health/README.md) |
+| SMART Disk Health (host-native Python + smartctl) | Six-drive SMART diagnostic and temperature tile, fixed baseline and 10-minute systemd timer (scheduled-fire verification pending) | [Phase-2 deployed runbook](../services/disk-health/README.md) |
 | UPS monitoring (host NUT) | Independent PowerWalker monitoring and safe shutdown | [UPS / NUT operations](../services/ups-monitoring/README.md) |
 | ShadowBroker | Intelligence and monitoring platform | [ShadowBroker](../services/shadowbroker/README.md) |
 | NetAlertX | LAN device inventory and presence monitoring | [NetAlertX](../services/netalertx/README.md) |
