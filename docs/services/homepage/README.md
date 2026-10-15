@@ -3,7 +3,7 @@
 Status: Implemented baseline; final apex-DNS and trusted-Tailscale validation still pending
 Purpose: Document the deployed PIROCORP HOMELAB Homepage dashboard, Docker integration, publishing model, native widgets, secret handling, and operational checks.
 Depends on: [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
-Related docs: [Current state](../../overview/current-state.md), [Service inventory](../../overview/service-inventory.md), [Homepage architecture decision record](../../roadmaps/homepage/README.md), [Server Health as-built runbook](../server-health/README.md)
+Related docs: [Current state](../../overview/current-state.md), [Service inventory](../../overview/service-inventory.md), [Homepage architecture decision record](../../roadmaps/homepage/README.md), [Server Health Phase-1 runbook](../server-health/README.md), [SMART Disk Health Phase-2 runbook](../disk-health/README.md)
 
 ## Deployment Snapshot
 
@@ -95,6 +95,7 @@ services:
     volumes:
       - ./config:/app/config
       - ./secrets:/app/secrets:ro
+      - /srv/docker/disk-health/data:/app/public/disk-health:ro
     networks:
       - default
       - docker-api
@@ -150,13 +151,16 @@ Validated checks:
 
 ## Dashboard Layout
 
-Server-health changes were accepted and deployed on 2026-10-14. Netdata is no longer installed and its old `server.pirocorp.com` route was removed. Phase 2 SMART Disk Health remains planned separately.
+Phase 1 was accepted 2026-10-14 and Netdata removed. Phase 2 SMART Disk Health was installed 2026-10-15: an Ubuntu host-native collector periodically writes a redacted JSON file served by the existing Homepage container. The automatic timer is enabled; its first scheduled firing was pending confirmation at the last acceptance snapshot.
 
-The deployed dashboard has four groups:
+The deployed dashboard has five groups:
 
 ```text
+Storage
+  Disk Space (Glances six-filesystem capacity tiles)
+  Disk Health (host SMART, six physical drives, last updated)
+
 Infrastructure
-  Storage (Glances six-filesystem capacity tiles)
   UPS (PeaNUT / PowerWalker)
   Portainer
   Nginx Proxy Manager
@@ -180,7 +184,7 @@ Cloud & Applications
   ShadowBroker
 ```
 
-The current layout contains 16 top-level cards (15 initially; replaced the retired Netdata card with Storage + UPS). The additional Glances CPU/RAM/temperature/uptime information strip is configured in `config/widgets.yaml`. Implementation-only database, Redis, worker, machine-learning, I2P, and sidecar containers remain hidden from the top-level dashboard.
+The current layout contains 17 top-level cards (16 after Phase 1, plus the Phase-2 Disk Health card). `Storage` is now a two-column group and `Infrastructure` remains five columns. The original Storage card is renamed to `Disk Space`. The additional Glances CPU/RAM/temperature/uptime information strip is configured in `config/widgets.yaml`. Implementation-only database, Redis, worker, machine-learning, I2P, and sidecar containers remain hidden from the top-level dashboard.
 
 The separately deployed `stash` container is intentionally not added to Homepage because it is not yet part of the documented service inventory.
 
@@ -190,7 +194,8 @@ The separately deployed `stash` container is intentionally not added to Homepage
 
 | Card | Integration | Deployed fields / notes |
 | --- | --- | --- |
-| Storage | Glances v4 `customapi` (two widgets, three fields each) | Six compact percentage tiles; **indexed FS ordering must be checked after restarts** |
+| Disk Space | Glances v4 `customapi` (two widgets, three fields each) | Six compact filesystem percentage tiles; **indexed FS ordering must be checked after restarts** |
+| Disk Health | Native `customapi` (three blocks) + host SMART JSON | Six temperature/Healthy/Warning/Unknown tiles in 3×2 layout plus LAST UPDATED; [Phase-2 runbook](../disk-health/README.md) |
 | UPS | PeaNUT native widget | `battery_charge`, `ups_load`, `ups_status`; raw compound status `OL CHRG` |
 | Portainer | Portainer native widget + Docker | `running`, `stopped`, `total`; environment ID `3` |
 | Nginx Proxy Manager | NPM native widget + Docker | `enabled`, `disabled`, `total` |
@@ -341,9 +346,10 @@ Completed:
 - direct `192.168.0.10:3002` access returns HTTP `200`
 - Docker socket proxy read path validated
 - `2375` confirmed not published on the host
-- all 16 current cards render (post-Server-Health deployment)
+- all 17 current cards render (including SMART Disk Health)
 - Docker status indicators and expandable CPU/RAM/RX/TX statistics work
-- Authenticated Glances info strip and six-tile Storage card work without browser login to Homepage; recheck FS index mapping after Glances recreation
+- Authenticated Glances info strip and six-tile Disk Space card work without browser login to Homepage; recheck FS index mapping after Glances recreation
+- Phase-2 SMART Disk Health displays six physical drives with native Homepage tiles and LAST UPDATED from the host collector; container-local JSON endpoint responds HTTP 200 and manually updated JSON refreshed on screen without reload
 - PeaNUT native UPS widget works (authenticated API, `OL CHRG`)
 - Portainer native widget works
 - Nginx Proxy Manager native widget works
@@ -404,3 +410,4 @@ curl -I https://home.pirocorp.com
 - No real API keys, passwords, or tokens belong in Git.
 - NetAlertX API access from Docker is restricted to the Homepage default subnet instead of all Docker networks.
 - Homepage is intended for LAN and trusted Tailscale use; Cloudflare DNS-only private-address records are not public application exposure.
+- `/app/public/disk-health/` is readable via the Homepage HTTP route; never place disk IDs/serials, private SMART state or secrets under the exposed host `data/` directory. The mount is read-only to the container, not an authentication control.
