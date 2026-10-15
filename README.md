@@ -27,6 +27,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - NetAlertX network inventory and presence monitoring
 - Homepage central homelab dashboard at `https://home.pirocorp.com` with Docker Socket Proxy, native service widgets, and file-backed secrets
 - [Phase-1 Server Health Dashboard](./docs/services/server-health/README.md): Glances 4.5.6 (host and six filesystem metrics), PeaNUT 6.0.0 (PowerWalker UPS), and independent host NUT; Netdata fully decommissioned
+- [Phase-2 SMART Disk Health](./docs/services/disk-health/README.md): host-native Python/smartctl collector, stable six-disk identity, fixed SMART baseline, 10-minute systemd timer (enabled; first scheduled invocation not yet independently confirmed), and native Homepage Disk Health card with 30-second refresh
 - AIOStreams self-hosted Stremio stream aggregation/control layer
 - `stremio-libtorrent-server` central BitTorrent streaming engine with persistent read-ahead/cache
 - Stremio Web UI published internally through AdGuard Home + Nginx Proxy Manager
@@ -34,7 +35,6 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 
 ### Planned
 
-- [Homepage SMART Disk Health extension — phase 2](./docs/roadmaps/server-health-dashboard/smart-extension.md) — future six-drive SMART Health/temperature/wear card; phase 1 is completed.
 - [OmniMeter local energy monitoring (evaluation roadmap)](./docs/roadmaps/omnimeter/README.md)
 - [Taiwan–Russia Risk Watch Discord Bridge](./docs/roadmaps/riskwatch-discord-bridge/README.md)
 - [AIOStreams multi-source P2P expansion](./docs/roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
@@ -86,6 +86,9 @@ Homepage dashboard
   -> private Docker Socket Proxy -> Docker daemon
   -> Glances :61208 on homepage_default -> read-only host metrics/FS
   -> PeaNUT :61210 on Ubuntu host -> loopback NUT :3493 -> PowerWalker
+  -> read-only /app/public/disk-health/status.json
+       <- host-native smartctl/Python collector (systemd 10-minute timer)
+       <- private baseline and last-observed state under /srv/docker/disk-health/state
 
 Stremio discovery/control
   -> aio.pirocorp.com
@@ -137,6 +140,7 @@ Ubuntu Server host (192.168.0.10)
 - [Let's Encrypt public-domain guide](./docs/platform/lets-encrypt-public-domain.md)
 - [Homepage deployment and operations runbook](./docs/services/homepage/README.md)
 - [Server Health Dashboard: reproducible Glances + PeaNUT runbook](./docs/services/server-health/README.md)
+- [SMART Disk Health: Phase-2 deployed runbook](./docs/services/disk-health/README.md)
 - [Nextcloud update runbook](./docs/services/nextcloud/update-runbook.md)
 - [Immich update and backup runbook](./docs/services/immich/update-runbook.md)
 - [qBittorrent seedbox runbook](./docs/services/qbittorrent/README.md)
@@ -161,6 +165,7 @@ Start with the infrastructure guide when rebuilding the base environment. Use th
 - [Kavita](./docs/services/kavita/README.md)
 - [UPS / NUT shutdown monitoring](./docs/services/ups-monitoring/README.md)
 - [Server Health Dashboard](./docs/services/server-health/README.md)
+- [SMART Disk Health](./docs/services/disk-health/README.md)
 - [ShadowBroker](./docs/services/shadowbroker/README.md)
 - [NetAlertX](./docs/services/netalertx/README.md)
 - [AIOStreams](./docs/services/aiostreams/README.md)
