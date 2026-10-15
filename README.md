@@ -131,6 +131,7 @@ Ubuntu Server host (192.168.0.10)
 
 - [Infrastructure HowTo](./docs/platform/infrastructure-howto.md)
 - [Operations and common commands](./docs/operations/README.md)
+- [Ubuntu swap expansion runbook (8 → 16 GiB)](./docs/operations/swap-expansion-runbook.md)
 - [Tailscale remote access runbook](./docs/operations/tailscale-remote-access-runbook.md)
 - [IPv6 leak validation and mitigation runbook](./docs/operations/ipv6-leak-validation-and-mitigation-runbook.md)
 - [Let's Encrypt public-domain guide](./docs/platform/lets-encrypt-public-domain.md)
