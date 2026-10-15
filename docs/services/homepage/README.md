@@ -151,7 +151,7 @@ Validated checks:
 
 ## Dashboard Layout
 
-Phase 1 was accepted 2026-10-14 and Netdata removed. Phase 2 SMART Disk Health was installed 2026-10-15: an Ubuntu host-native collector periodically writes a redacted JSON file served by the existing Homepage container. The automatic timer is enabled, and its first scheduled run at 21:40 UTC on 2026-10-15 was verified in journal and on the Homepage LAST UPDATED widget. **On 2026-10-16 CEST, collector v0.7 and the Disk Space widget migrated to the same JSON source, replacing fragile Glances array indexes; a manual v0.7 production cycle, the HTTP endpoint and both Storage cards were verified.**
+Phase 1 was accepted 2026-10-14 and Netdata removed. Phase 2 SMART Disk Health was installed 2026-10-15: an Ubuntu host-native collector periodically writes a redacted JSON file served by the existing Homepage container. The automatic timer is enabled, and its first scheduled run at 21:40 UTC on 2026-10-15 was verified in journal and on the Homepage LAST UPDATED widget. **On 2026-10-16 CEST, collector v0.7 and the Disk Space widget migrated to the same JSON source, replacing fragile Glances array indexes; manual and automatic v0.7 production cycles, the HTTP endpoint and both Storage cards were verified; Homepage LAST UPDATED advanced to 00:40 CEST after the automatically scheduled 22:40:06–22:40:07 UTC run.**
 
 The deployed dashboard has five groups:
 
