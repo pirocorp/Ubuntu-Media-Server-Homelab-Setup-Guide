@@ -1,17 +1,17 @@
 # Homepage Disk Health — Phase 2 SMART Extension
 
-Status: Planned — approved design intent; **phase 1 completed 2026-10-14; phase-2 implementation not started**
+Status: **Implemented core monitoring on 2026-10-15**; this file preserves the original 2026-10-14 pre-deployment plan. See the [Phase-2 as-built runbook](../../services/disk-health/README.md) for the deployed system and remaining acceptance gates.
 Purpose: Add a compact, readable per-drive SMART Health overview to the existing Homepage without installing a standalone disk-monitoring platform.
 Depends on: [Completed Phase 1 Server Health](../../services/server-health/README.md), existing Homepage v2.4.0, host `smartctl`, existing physical drives and mount points
 Related docs: [Roadmaps index](../README.md), [Homepage runbook](../../services/homepage/README.md), [Storage and Samba](../../platform/storage-and-samba.md)
 
-## Decision Record and Future Implementation Brief
+## Historical Decision Record and Original Implementation Brief
 
 **Status:** Planned extension, implementation not started
 **Version:** 0.1
 **Date:** 2026-10-14
 
-This document records a **separate future extension**. Phase 1 (CPU, RAM, file-space and UPS monitoring through Glances/PeaNUT) was completed and accepted on 2026-10-14; [see its as-built runbook](../../services/server-health/README.md). Phase 2 is **not** a prerequisite for phase 1 and has not been deployed by this documentation PR.
+This section is the **original proposal written before implementation**, not a description of the current runtime. Phase 1 (CPU, RAM, file-space and UPS monitoring through Glances/PeaNUT) was completed and accepted on 2026-10-14; [see its runbook](../../services/server-health/README.md). Phase 2 was deployed separately on 2026-10-15; this documentation PR records the *as-built* result and does not itself deploy anything. The original suggestions (thin HTTP server, possible iframe, four-column design, stale handling) were superseded by the deployed native Homepage approach, documented in the [Phase-2 runbook](../../services/disk-health/README.md).
 
 ## 1. User-approved goal
 
@@ -194,4 +194,4 @@ This is a **phase-2** roadmap: deploying it before the baseline monitoring has b
 - [Homepage v2.4.0 iframe widget](https://github.com/gethomepage/homepage/tree/v2.4.0/docs/widgets/services)
 - [smartmontools / smartctl](https://www.smartmontools.org/)
 
-**Guardrail:** Plan only. Defer all implementation to a later explicitly authorized step, **after** the phase-1 monitoring baseline.
+**Historical guardrail:** The 2026-10-14 roadmap deferred implementation until after Phase 1 acceptance. That prerequisite was met; for the implementation actually performed on 2026-10-15, use the [as-built runbook](../../services/disk-health/README.md).
