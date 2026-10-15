@@ -151,7 +151,7 @@ Validated checks:
 
 ## Dashboard Layout
 
-Phase 1 was accepted 2026-10-14 and Netdata removed. Phase 2 SMART Disk Health was installed 2026-10-15: an Ubuntu host-native collector periodically writes a redacted JSON file served by the existing Homepage container. The automatic timer is enabled; its first scheduled firing was pending confirmation at the last acceptance snapshot.
+Phase 1 was accepted 2026-10-14 and Netdata removed. Phase 2 SMART Disk Health was installed 2026-10-15: an Ubuntu host-native collector periodically writes a redacted JSON file served by the existing Homepage container. The automatic timer is enabled, and its first scheduled run at 21:40 UTC on 2026-10-15 was verified in journal and on the Homepage LAST UPDATED widget.
 
 The deployed dashboard has five groups:
 
