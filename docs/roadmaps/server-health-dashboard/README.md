@@ -11,7 +11,7 @@ Related docs: [Roadmaps index](../README.md), [Homepage deployment runbook](../.
 
 **Implementation notes:** PeaNUT 6.0.0 required `AUTH_FILE_PATH=/config/auth.yaml` for persistent login data and a custom healthcheck for `WEB_HOST=192.168.0.10`; Homepage secret files needed no trailing newlines and the correct `HOMEPAGE_FILE_*` placeholders. The six FS tiles depend on observed Glances array order and require revalidation if ordering changes. Detailed Netdata history/alerts are intentionally not retained. Desktop UI was demonstrated; iPhone-specific validation was not separately recorded.
 
-For **exact, tested, reproducible commands**, do **not** use the historical examples below: see the [deployed Server Health runbook](../../services/server-health/README.md). Phase 2 remains separately [planned](./smart-extension.md).
+For **exact, tested, reproducible commands**, do **not** use the historical examples below: see the [deployed Server Health runbook](../../services/server-health/README.md). Phase 2 is now separately [deployed as host-native SMART Disk Health](../../services/disk-health/README.md); its [original design brief](./smart-extension.md) is retained as history.
 
 **Same-day post-acceptance improvement:** native Glances HTTP Basic Authentication and `pid: host` were verified. Homepage credentials were configured in the existing file-backed secret system for all three Glances widgets. Unauthenticated API returned `401`, valid credentials `200`; browser login and the full ~442-process view were confirmed. The original design discussion below remains preserved as history.
 
