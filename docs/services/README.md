@@ -20,6 +20,7 @@ The original [phase-1 decision record](../roadmaps/server-health-dashboard/READM
 - [Kavita](./kavita/README.md)
 - [UPS monitoring / host NUT](./ups-monitoring/README.md)
 - [Server Health Dashboard (Glances + PeaNUT)](./server-health/README.md)
+- [SMART Disk Health — Phase 2](./disk-health/README.md)
 - [ShadowBroker](./shadowbroker/README.md)
 - [NetAlertX](./netalertx/README.md)
 - [AIOStreams](./aiostreams/README.md)
@@ -29,6 +30,7 @@ The original [phase-1 decision record](../roadmaps/server-health-dashboard/READM
 
 - [Homepage deployment and operations runbook](./homepage/README.md)
 - [Server Health Dashboard — reproducing the deployed phase-1 configuration](./server-health/README.md)
+- [SMART Disk Health — deployed phase-2 operations runbook](./disk-health/README.md)
 - [Nextcloud update runbook](./nextcloud/update-runbook.md)
 - [Immich update and backup runbook](./immich/update-runbook.md)
 - [qBittorrent seedbox runbook](./qbittorrent/README.md)
@@ -55,7 +57,6 @@ These services currently use their main `README.md` as the primary operating ref
 
 ## Planned Work
 
-- [Homepage Disk Health — phase-2 SMART roadmap](../roadmaps/server-health-dashboard/smart-extension.md) — separate future SMART card; phase-1 Glances + PeaNUT deployment completed and Netdata retired.
 - [OmniMeter local energy monitoring roadmap](../roadmaps/omnimeter/README.md) — candidate under evaluation; not deployed.
 - [Taiwan–Russia Risk Watch Discord Bridge](../roadmaps/riskwatch-discord-bridge/README.md)
 - [AIOStreams multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
