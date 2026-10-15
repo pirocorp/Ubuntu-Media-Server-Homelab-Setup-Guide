@@ -3,7 +3,7 @@
 Status: **Implemented and accepted — 2026-10-14**  
 Purpose: Reproduce the deployed **Homepage + Glances + PeaNUT** solution for Ubuntu host resources, six filesystem-capacity indicators and PowerWalker UPS visibility, and explain its trade-offs and tested failure fixes.  
 Depends on: [Homepage](../homepage/README.md), [host NUT UPS](../ups-monitoring/README.md), [networking and reverse proxy](../../platform/networking-and-reverse-proxy.md).  
-Decision history: [Phase-1 architecture roadmap](../../roadmaps/server-health-dashboard/README.md). Future work: [separate Phase-2 SMART plan](../../roadmaps/server-health-dashboard/smart-extension.md).
+Decision history: [Phase-1 architecture roadmap](../../roadmaps/server-health-dashboard/README.md). Phase 2 is separately [deployed and documented](../disk-health/README.md) (historical [SMART design roadmap](../../roadmaps/server-health-dashboard/smart-extension.md)).
 
 > This is **as-built documentation**, not a script that was executed by GitHub. The configuration examples below reconstruct the successful 2026-10-14 deployment from the validated Compose settings and interactive tests. Always compare the local files, paths, IP ranges and images with your host before reproducing. Never commit actual credentials.
 
@@ -657,7 +657,7 @@ Revert Homepage only: remove the new `UPS` and `Storage` cards and the Glances i
 
 ## 11. Limitations and next phase
 
-- Six filesystem **capacity** readings do **not** measure SMART health, bad sectors, disk wear or per-disk temperature. Implement those later under [Phase 2](../../roadmaps/server-health-dashboard/smart-extension.md); do not confuse the two.
+- These six Glances filesystem **capacity** readings do **not** themselves measure SMART health, bad sectors or per-disk temperature. The separate [Phase-2 SMART Disk Health collector](../disk-health/README.md) now supplies that information to a distinct native Homepage card; do not confuse the two sources.
 - The six storage labels depend on observed Glances FS array order. Re-check after any topology/restart changes.
 - PeaNUT HTTP is accessible from trusted LAN and both specified Docker networks, not solely one container; maintain authentication and no router forwarding. PeaNUT `6.0.0` is pinned, with two documented workarounds.
 - Glances and PeaNUT are not substitutes for Netdata's alert history and detailed collectors. Their **user-accepted** scope is current-state metrics **plus** an authenticated Glances process view. `pid: host` reveals sensitive process metadata and command-line arguments to authenticated users.
