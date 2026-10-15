@@ -8,6 +8,7 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 
 - [Infrastructure HowTo](../platform/infrastructure-howto.md)
 - [Common commands](./common-commands.md)
+- [Swap expansion runbook (8 → 16 GiB)](./swap-expansion-runbook.md)
 - [Tailscale remote access runbook](./tailscale-remote-access-runbook.md)
 - [IPv6 leak validation and mitigation runbook](./ipv6-leak-validation-and-mitigation-runbook.md)
 - [Let's Encrypt public-domain guide](../platform/lets-encrypt-public-domain.md)
