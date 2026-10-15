@@ -1,7 +1,7 @@
 # SMART Disk Health — Phase 2 deployed operations runbook
 
-Status: **Deployed on 2026-10-15; first timer-triggered run independently confirmed at 21:40 UTC (23:40 CEST)**  
-Purpose: Describe the actual six-drive SMART collector, immutable baseline, local JSON publication and native Homepage cards.  
+Status: **Deployed 2026-10-15; v0.7 SMART + stable Disk Space collector and both Homepage Storage cards verified 2026-10-16 (CEST)**  
+Purpose: Describe the six-drive host-native SMART + filesystem-capacity collector, immutable SMART baseline, local JSON publication, systemd scheduling and the two native Homepage Storage cards.  
 Depends on: [Phase-1 Server Health](../server-health/README.md), [Homepage](../homepage/README.md), existing host `smartctl 7.5`, mounted storage.  
 Design history: [original SMART extension roadmap](../../roadmaps/server-health-dashboard/smart-extension.md).
 
@@ -9,9 +9,10 @@ Design history: [original SMART extension roadmap](../../roadmaps/server-health-
 
 ## Implementation and acceptance status
 
-- **Confirmed live:** six physical devices identified by validated ATA `/dev/disk/by-id/` links and mount-point cross-check; `smartctl -j -d sat -H -A` works on six drives; initial baseline created and protected; collector v0.6 manual `--write` succeeded; protected `last-observed.json` and public `status.json` generated atomically per file; Homepage v2.4.0 reads the static JSON and refreshes its native tile widgets without restarting.
+- **Confirmed live:** six physical devices identified by validated ATA `/dev/disk/by-id/` links and mount-point cross-check; `smartctl -j -d sat -H -A` works on six drives; initial baseline created and protected. Collector **v0.7** passed `--preview`, isolated staging `--write`, and real `systemctl start disk-health.service` at **2026-10-15 22:31:24–22:31:25 UTC** (00:31 CEST, 16 Oct). The journal showed six Healthy SMART drives, six Available filesystem readings, `STATE + STATUS WRITTEN. Baseline unchanged.` and successful oneshot completion. HTTP GET inside Homepage returned 200 with six `disks` and six `space` entries; the user-confirmed Homepage screenshot shows both working `Storage` cards.
 - **Confirmed systemd:** `disk-health.service` linked, loaded and ran successfully via manual `systemctl start` (2026-10-15, 21:33 UTC). `disk-health.timer` is `enabled` and `active`; its **first fully automatic run was independently observed** at 21:40:02–21:40:03 UTC (23:40 CEST): journal shows all six Healthy samples, `STATE + STATUS WRITTEN. Baseline unchanged.` and successful service completion. `systemctl list-timers` reported LAST 21:40:02 UTC and NEXT 21:50 UTC; the open Homepage dashboard updated LAST UPDATED to 23:40.
 - **Simulated:** SMART standby skip -> Sleeping; unsupported power-mode -> Unknown; SMART 188 counter increase -> Warning; Warning retained through subsequent Sleeping; last successful temperature/time retained through Sleeping or Unknown; failed second-file publish leaves previous complete public JSON in place; file permissions and atomic individual replacement.
+- **Confirmed automatic v0.7:** first timer-triggered cycle at **2026-10-15 22:40:06–22:40:07 UTC (2026-10-16 00:40 CEST)**; journal shows all six SMART disks Healthy, six disk-space mounts Available, `STATE + STATUS WRITTEN. Baseline unchanged.`, and successful oneshot completion. Homepage LAST UPDATED advanced from 00:31 to 00:40 without manual collector invocation.
 - **Pending:** reboot persistence; real standby hardware test (the observed Seagate modes IDLE_A/IDLE_B do not prove true standby); calibrated drive-specific temperature and Samsung SSD wear thresholds; full fault/critical escalation tests and acknowledgement workflow; iPhone layout acceptance.
 
 The host remains the only SMART diagnostic reader. No new Docker container, HTTP listener, reverse-proxy host, DNS rewrite, Docker socket access, device mount or firewall rule was added for this feature. Host disks and NTFS/Samba shares were not modified by the monitoring work.
@@ -38,8 +39,8 @@ The initial baseline deliberately includes historical IAC SMART 188 `[0,1,1]`, I
 ## Runtime architecture
 
 ```text
-Ubuntu smartctl 7.5 + stable by-id config
-   -> /srv/docker/disk-health/collector/collect-v0.6.py --write
+Ubuntu smartctl 7.5 + stable by-id config; host os.statvfs for six mounts
+   -> /srv/docker/disk-health/collector/collect-v0.7.py --write
       ^ systemd disk-health.service (oneshot, root, journal)
       ^ systemd disk-health.timer (every 10 minutes)
    -> /srv/docker/disk-health/state/baseline.json      [private, immutable by policy]
@@ -47,7 +48,9 @@ Ubuntu smartctl 7.5 + stable by-id config
    -> /srv/docker/disk-health/data/status.json         [public to Homepage, atomic replace]
       -> read-only Docker bind mount: /app/public/disk-health/
       -> Homepage HTTP http://127.0.0.1:3000/disk-health/status.json
-      -> native Homepage customapi widgets (30-second refresh)
+      -> native Homepage customapi widgets (30-second browser refresh)
+      -> Disk Health (six SMART tiles + timestamp)
+      -> Disk Space (six fixed-identity filesystem tiles)
       -> https://home.pirocorp.com
 ```
 
@@ -62,11 +65,11 @@ Host paths and rights:
 | `data/status.json` | `644 root:root` | Redacted display data for Homepage |
 | `systemd/disk-health.service`, `disk-health.timer` | `644 root:root` | Host unit source files |
 
-**Baseline policy:** `collect-v0.2.py --init-baseline` was explicitly run once after a validated six-drive preview. Never schedule it or re-run it to suppress alerts. A disk replacement or intentionally accepted new reference requires separate manual review, identity validation and history handling. The v0.6 collector reads (does not change) the baseline.
+**Baseline policy:** `collect-v0.2.py --init-baseline` was explicitly run once after a validated six-drive preview. Never schedule it or re-run it to suppress alerts. A disk replacement or intentionally accepted new reference requires separate manual review, identity validation and history handling. Collectors v0.6 and v0.7 read (do not change) the baseline.
 
 **Sample vs publication times:** `generated_at` records the completed collector cycle in UTC and `last_updated` formats that time for `Europe/Brussels`. Each disk retains its own `last_smart_at`. A sleeping or unreadable disk must not be represented as a fresh temperature/SMART reading; the card can use `last_temperature_c` with an explicit Sleeping/Unknown label. Under the approved native-widget design, if the entire timer stops, the last published Healthy tiles may remain visible: users must inspect the displayed **LAST UPDATED** time. There is no independent automatic stale-state evaluator.
 
-**Alert policy (current v0.6):** compare tracked SMART counters against the fixed baseline, flag increases/decreases and nonzero 197/198, classify SMART overall-health failure as Critical, preserve unresolved Warning/Critical across future reads including standby/Unknown. Alert acknowledgements are **not implemented**; do not edit the private JSON to hide a problem. Temperature and SSD wear **threshold alerts are not yet implemented**. `SMART PASSED` is not a substitute for counter trend checks.
+**Alert policy (v0.6 unchanged in v0.7):** compare tracked SMART counters against the fixed baseline, flag increases/decreases and nonzero 197/198, classify SMART overall-health failure as Critical, preserve unresolved Warning/Critical across future reads including standby/Unknown. Alert acknowledgements are **not implemented**; do not edit the private JSON to hide a problem. Temperature and SSD wear **threshold alerts are not yet implemented**. `SMART PASSED` is not a substitute for counter trend checks.
 
 **File consistency:** both state and status writes use temporary files, `fsync`, permissions and atomic `os.replace`. The private state is written first and public status last; **the pair is not a single cross-file transaction**. On a failed status publish, the prior public status remains complete with its older timestamp; the private state may be newer. Investigate journal errors and re-run after correcting the cause.
 
@@ -95,7 +98,7 @@ layout:
     columns: 5
 ```
 
-`services.yaml` now has two service cards under `- Storage:`: **Disk Space** (the original two Glances FS capacity widgets) and **Disk Health** (three native Custom API widgets). `- Infrastructure:` starts with UPS, followed by Portainer, Nginx Proxy Manager, AdGuard Home and NetAlertX; all other groups keep their previous layout. Disk Health is a **3 x 2 block**, plus the timestamp tile:
+`services.yaml` now has two service cards under `- Storage:`: **Disk Space** (two Custom API widgets reading v0.7 `space` by stable ID, replacing Phase-1 positional Glances mappings) and **Disk Health** (three native Custom API widgets reading existing `disks` and `last_updated`). `- Infrastructure:` starts with UPS, followed by Portainer, Nginx Proxy Manager, AdGuard Home and NetAlertX; all other groups keep their previous layout. Disk Health is a **3 x 2 block**, plus the timestamp tile:
 
 ```yaml
     - Disk Health:
@@ -135,7 +138,7 @@ layout:
                 format: text
 ```
 
-The index mapping above depends on the collector output order `system, iac, lp, data, ia, comp`; check it after changes to `collector/config.json`. The separate **Disk Space** tiles still depend on Glances `/api/4/fs` index order and show a *different* existing disk order.
+The **Disk Health** `disks.N.label` mappings still depend on the collector's deliberately configured row order `system, iac, lp, data, ia, comp`. **Disk Space no longer depends on the Glances FS-array order**; it resolves fixed keys `space.system`, `space.lp`, `space.data`, `space.ia`, `space.comp`, `space.iac` from the same published JSON.
 
 **Static file discovery caveat (observed):** existing `poc.json` responded to atomic replacements without restart, but newly created `status.json` initially returned HTTP 404 despite being present in the bind mount. A **Homepage-only container restart** made it return HTTP 200. After that, an ordinary v0.6 manual run updated LAST UPDATED on the open Homepage screen without a container restart or browser reload. Do not schedule Homepage restarts on every SMART cycle.
 
@@ -143,7 +146,7 @@ The index mapping above depends on the collector output order `system, iac, lp, 
 
 ## systemd units actually installed
 
-Unit sources are kept at `/srv/docker/disk-health/systemd/` and linked into `/etc/systemd/system/`. The service was validated with `systemd-analyze verify` and manually executed successfully:
+Unit sources are kept at `/srv/docker/disk-health/systemd/` and linked into `/etc/systemd/system/`. The **original v0.6 unit source remains unchanged**; the current v0.7 command is selected through a host-local drop-in override. The original service was validated with `systemd-analyze verify` and manually executed successfully:
 
 ```ini
 # disk-health.service
@@ -178,7 +181,15 @@ Unit=disk-health.service
 WantedBy=timers.target
 ```
 
-Registered with `systemctl link`, `systemctl daemon-reload`, and activated with `systemctl enable --now disk-health.timer`. **Only the timer is enabled**, not the oneshot service. `Persistent=true` allows a missed timer event to be triggered once after the timer becomes active again; systemd calendar times are interpreted in the host's local time zone.
+The active deployment has this additional systemd drop-in **`/etc/systemd/system/disk-health.service.d/10-collector-v07.conf`**:
+
+```ini
+[Service]
+ExecStart=
+ExecStart=/usr/bin/python3 -B /srv/docker/disk-health/collector/collect-v0.7.py --write
+```
+
+The blank `ExecStart=` clears the v0.6 line in the original unit; the next line selects v0.7. This was confirmed with `sudo systemctl cat disk-health.service` after `daemon-reload`. No change to `disk-health.timer` was made; the 10-minute schedule still applies. Registered originally with `systemctl link`, `systemctl daemon-reload`, and activated with `systemctl enable --now disk-health.timer`. **Only the timer is enabled**, not the oneshot service. `Persistent=true` allows a missed timer event to be triggered once after the timer becomes active again; systemd calendar times are interpreted in the host's local time zone.
 
 ## Day-to-day validation
 
@@ -198,9 +209,63 @@ sudo python3 -m json.tool /srv/docker/disk-health/data/status.json >/dev/null
 sudo docker exec homepage wget -S -O /dev/null http://127.0.0.1:3000/disk-health/status.json
 ```
 
-Expected oneshot result after completion: `Result=success`, `ExecMainStatus=0`, `ActiveState=inactive`; journal contains six disk lines and `STATE + STATUS WRITTEN. Baseline unchanged.`. Homepage's LAST UPDATED advances after a successful collector run, subject to its 30-second widget refresh. The first **automatic** journal invocation is verified (2026-10-15, 21:40 UTC). Keep checking subsequent runs and LAST UPDATED for failures.
+Expected oneshot result after completion: `Result=success`, `ExecMainStatus=0`, `ActiveState=inactive`; journal contains six SMART disk lines, six `space/...` lines and `STATE + STATUS WRITTEN. Baseline unchanged.`. Homepage's LAST UPDATED advances after a successful collector run, subject to its 30-second widget refresh. The first **automatic** journal invocation is verified (2026-10-15, 21:40 UTC). Keep checking subsequent runs and LAST UPDATED for failures.
 
-A deliberate one-shot check can be launched with `sudo systemctl start disk-health.service`. Preview without file writes uses `sudo python3 -B /srv/docker/disk-health/collector/collect-v0.6.py --preview`; **preview still reads the drives**.
+A deliberate one-shot check can be launched with `sudo systemctl start disk-health.service`. Preview without file writes uses `sudo python3 -B /srv/docker/disk-health/collector/collect-v0.7.py --preview`; **preview still reads the drives**.
+
+## Stable Disk Space integration (v0.7, deployed 2026-10-16 CEST)
+
+Previously Phase-1 Homepage used Glances `/api/4/fs` with `0.percent` through `5.percent`. This was **not a stable mapping**: Glances returns an array whose position can change after restart or mount changes, causing a percentage to appear under the wrong disk label. Read-only checks matched all six Glances mount-point records exactly once, and host `os.statvfs()` matched their capacity percentages for all six disks (`11.1`, `51.9`, `46.2`, `80.0`, `33.9`, `51.4` at acceptance).
+
+v0.7 measures filesystem space **on the Ubuntu host**, independently of SMART collection and without querying Glances. It uses the fixed mount mapping: `system:/`, `lp:/mnt/lp`, `data:/mnt/data`, `ia:/mnt/ia`, `comp:/mnt/comp`, `iac:/mnt/iac`. For each mount it checks `os.path.ismount()`, then calculates used percentage using `os.statvfs()` with user-available blocks (matching Glances/psutil semantics). If a mount is missing or invalid, it publishes `state: Unavailable`, `percent: null`, `label: Unavailable` **instead of silently measuring the parent filesystem or inventing 0%**. A filesystem failure must not suppress SMART output or reset the SMART baseline.
+
+The **additive** `space` object in public `status.json` leaves the existing `schema_version: 1`, `disks`, `generated_at`, `last_updated`, private SMART state, sticky alerts and atomic publication order unchanged. Illustrative shape (numbers vary):
+
+```json
+{
+  "space": {
+    "system": {"state": "Available", "percent": 11.1, "label": "11.1%"},
+    "lp": {"state": "Available", "percent": 51.9, "label": "51.9%"},
+    "data": {"state": "Available", "percent": 46.2, "label": "46.2%"},
+    "ia": {"state": "Available", "percent": 80.0, "label": "80.0%"},
+    "comp": {"state": "Available", "percent": 33.9, "label": "33.9%"},
+    "iac": {"state": "Available", "percent": 51.4, "label": "51.4%"}
+  }
+}
+```
+
+The deployed **Disk Space** section in `/srv/docker/homepage/config/services.yaml` keeps two `customapi` widgets of three blocks each; both use `url: http://127.0.0.1:3000/disk-health/status.json`, `refreshInterval: 30000`, and **no Glances credentials**:
+
+```yaml
+- Storage:
+    - Disk Space:
+        icon: mdi-database-outline
+        href: https://glances.pirocorp.com
+        description: Disk space · 6 filesystems
+        widgets:
+          - type: customapi
+            url: http://127.0.0.1:3000/disk-health/status.json
+            display: block
+            refreshInterval: 30000
+            mappings:
+              - { field: space.system.label, label: SYSTEM SSD, format: text }
+              - { field: space.lp.label, label: LP, format: text }
+              - { field: space.data.label, label: DATA, format: text }
+          - type: customapi
+            url: http://127.0.0.1:3000/disk-health/status.json
+            display: block
+            refreshInterval: 30000
+            mappings:
+              - { field: space.ia.label, label: IA, format: text }
+              - { field: space.comp.label, label: COMP, format: text }
+              - { field: space.iac.label, label: IAC, format: text }
+```
+
+`format: text` is intentional: labels include `%` or `Unavailable`; a numeric percent formatter could misrepresent failures. Homepage re-reads every 30 seconds, but **new measurements are generated every 10 minutes** by the systemd timer. The screen at 2026-10-16 00:31 CEST confirmed the six correct percentages and unchanged healthy SMART tiles. A subsequent Homepage screenshot at **00:40 CEST** showed an advanced LAST UPDATED timestamp, independently corroborated by the **22:40:06–22:40:07 UTC systemd journal** recording the first successful automatically fired v0.7 cycle.
+
+**Acceptance evidence:** v0.7 `--preview`: six healthy SMART and six available space readings; isolated staging `--write` with cloned private history: `STAGING WRITE TEST PASSED`, original status/state untouched, unknown mount yields Unavailable; manual `systemctl start disk-health.service`: journal 22:31:24–22:31:25 UTC shows all twelve samples and successful publication; `docker exec homepage node ... fetch('http://127.0.0.1:3000/disk-health/status.json')`: HTTP 200, six SMART records, six keyed space objects; screenshot displays both Storage cards normally. The SMART baseline was **not reinitialized**. **Automatic scheduling evidence:** `journalctl -u disk-health.service` at 22:40:06–22:40:07 UTC reports six Healthy SMART readings, six Available filesystem readings, `STATE + STATUS WRITTEN. Baseline unchanged.`, and successful service completion; Homepage's LAST UPDATED also advanced to 16.10.2026 00:40 CEST.
+
+**Safe v0.7 rollback sequence:** first restore the backed-up **Phase-1 Disk Space** widget configuration in Homepage (two Glances `customapi` blocks using array indexes), and verify the display. Then remove **only** `/etc/systemd/system/disk-health.service.d/10-collector-v07.conf` and run `sudo systemctl daemon-reload` to fall back to the untouched v0.6 service; `sudo systemctl cat disk-health.service` must show only the original v0.6 `ExecStart`. Do not delete other drop-ins, do not change the timer, baseline or history; note that v0.6 publications omit `space` and would otherwise break the migrated Disk Space widget. Restore from the timestamped Homepage `services.yaml.bak-space-*` backup only after verifying its contents and current changes, to avoid discarding later configuration edits.
 
 ## Troubleshooting, rollback and guardrails
 
@@ -218,7 +283,7 @@ Do not use `--init-baseline` as a maintenance command, commit local JSON data, g
 
 ## Further work (not yet delivered)
 
-1. Verify timer persistence and successful scheduled SMART checks **after a later host reboot**; the first automatic 10-minute run on 2026-10-15 is already confirmed.
+1. Verify timer persistence and successful scheduled SMART + Disk Space checks **after a later host reboot**; first automatic v0.6 run at 21:40 UTC and first automatic v0.7 run at 22:40 UTC on 2026-10-15 are both confirmed.
 2. Validate the standby protection with an HDD actually reporting STANDBY.
 3. Agree per-drive temperature warning/critical bands and SSD wear semantics; implement and test threshold alerts.
 4. Implement an explicit reviewed alert acknowledgement/reference-reset workflow.

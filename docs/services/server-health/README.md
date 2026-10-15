@@ -5,7 +5,7 @@ Purpose: Reproduce the deployed **Homepage + Glances + PeaNUT** solution for Ubu
 Depends on: [Homepage](../homepage/README.md), [host NUT UPS](../ups-monitoring/README.md), [networking and reverse proxy](../../platform/networking-and-reverse-proxy.md).  
 Decision history: [Phase-1 architecture roadmap](../../roadmaps/server-health-dashboard/README.md). Phase 2 is separately [deployed and documented](../disk-health/README.md) (historical [SMART design roadmap](../../roadmaps/server-health-dashboard/smart-extension.md)).
 
-> This is **as-built documentation**, not a script that was executed by GitHub. The configuration examples below reconstruct the successful 2026-10-14 deployment from the validated Compose settings and interactive tests. Always compare the local files, paths, IP ranges and images with your host before reproducing. Never commit actual credentials.
+> This is **Phase-1 as-built history**, not a script that was executed by GitHub. The configuration examples below reconstruct the successful **2026-10-14** deployment from validated Compose settings and interactive tests. Always compare local files, paths, IP ranges and images before reproducing; never commit credentials. **Current deployment update (2026-10-16 CEST):** the six Disk Space tiles now read host `os.statvfs()` data from the v0.7 Disk Health collector's `status.json`, keyed by stable filesystem ID, NOT the historical Glances index mappings reproduced below. Glances still handles Homepage's CPU/RAM/temperature/uptime strip and its own authenticated web UI. See [the current Disk Health + Disk Space runbook](../disk-health/README.md).
 
 ## 1. What we built and why
 
@@ -244,7 +244,7 @@ curl -sS -o /dev/null -w 'With auth: HTTP %{http_code}\n' \
 
 **Validation performed:** six FS records, host CPU/RAM/CPU temperature and uptime were validated in Homepage. One early `0.0%` CPU result was transient. Initially PID-isolated Glances showed `TASKS 1`; after the authenticated `pid: host` extension it showed approximately 440 Ubuntu tasks. The actual login, process names and commands, plus `401/200` API behavior, were separately confirmed in section 3.2.
 
-## 4. Add Glances to Homepage, retaining the existing layout
+## 4. Historical Phase-1 Glances-to-Homepage setup (2026-10-14; Storage replaced by v0.7)
 
 In `/srv/docker/homepage/config/widgets.yaml` (existing file previously `[]`), deploy the info strip:
 
@@ -265,7 +265,7 @@ In `/srv/docker/homepage/config/widgets.yaml` (existing file previously `[]`), d
 
 The `url` is internal Docker DNS; `href` is the URL users open in their browser.
 
-In the **existing** `Infrastructure` group of `/srv/docker/homepage/config/services.yaml`, insert **one** `Storage` card with **two native customapi widgets** (no CSS, no custom JavaScript):
+**Historical Phase-1 example only — do not apply these index-based mappings to the current Homepage.** In the original **`Infrastructure`** group, this setup inserted one `Storage` card with two native Custom API widgets (no CSS, no custom JavaScript):
 
 ```yaml
     - Storage:
@@ -306,7 +306,7 @@ In the **existing** `Infrastructure` group of `/srv/docker/homepage/config/servi
                 format: percent
 ```
 
-**Critical caveat: positional mapping.** These six labels reflect the **observed order on the deployed `/api/4/fs` response**, not a guaranteed API sorting contract and **not** the order written in `show=`. Re-check `mnt_point`/`alias` vs index **after every Glances restart, update or filesystem change**, otherwise tiles can silently display the right percentages under the **wrong disk labels**. During the October 14 authentication/recreate sequence, one Homepage screenshot temporarily showed percentage values corresponding to *other* mounts; a later screenshot showed the expected label-to-value alignment again. This is **observed**, not theoretical. The native six-tile layout remains user-accepted but is not a stable-identity mapping. A future identity-based fix is separate work.
+**Critical caveat: positional mapping.** These six labels reflect the **observed order on the deployed `/api/4/fs` response**, not a guaranteed API sorting contract and **not** the order written in `show=`. Re-check `mnt_point`/`alias` vs index **after every Glances restart, update or filesystem change**, otherwise tiles can silently display the right percentages under the **wrong disk labels**. During the October 14 authentication/recreate sequence, one Homepage screenshot temporarily showed percentage values corresponding to *other* mounts; a later screenshot showed the expected label-to-value alignment again. This is **observed**, not theoretical. The native six-tile layout remains user-accepted but is not a stable-identity mapping. The identity-based fix was subsequently **implemented and validated on 2026-10-16 CEST** using host-native collector v0.7 `space.<id>.label` values instead of Glances array positions; see the [v0.7 migration](../disk-health/README.md#stable-disk-space-integration-v07-deployed-2026-10-16-cest). Retain this section only as a record of the original Phase-1 deployment.
 
 
 ### Homepage — file-backed Glances credentials
@@ -318,7 +318,7 @@ In the **existing** `/srv/docker/homepage/compose.yaml` service `environment:` a
       HOMEPAGE_FILE_GLANCES_PASSWORD: /app/secrets/glances_password
 ```
 
-Retain the **existing** `./secrets:/app/secrets:ro` mount; the files have been created in section 3.1. Use `HOMEPAGE_FILE_*`, **not** `HOMEPAGE_VAR_*`, with no trailing newlines. All **three** Glances consumers must pass these credentials: the top info strip in `widgets.yaml` and the two `customapi` blocks in `services.yaml`.
+Retain the **existing** `./secrets:/app/secrets:ro` mount; the files have been created in section 3.1. Use `HOMEPAGE_FILE_*`, **not** `HOMEPAGE_VAR_*`, with no trailing newlines. At the **original Phase-1 acceptance**, all **three** Glances consumers required these credentials: the top info strip in `widgets.yaml` and the two historical `customapi` blocks in `services.yaml`. **Current state:** the top info strip still requires the Glances secrets, but the Disk Space widgets no longer use Glances or pass its credentials.
 
 ```bash
 cd /srv/docker/homepage

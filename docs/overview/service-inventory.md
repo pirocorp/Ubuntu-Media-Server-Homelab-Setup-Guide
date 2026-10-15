@@ -29,8 +29,8 @@ Related docs: [Services](../services/README.md), [Platform](../platform/README.m
 | Audiobookshelf | Audiobook and podcast server | [Audiobookshelf](../services/audiobookshelf/README.md) |
 | Immich | Photo and video management | [Immich](../services/immich/README.md) |
 | Kavita | Reading server and library manager | [Kavita](../services/kavita/README.md) |
-| Server Health (Glances + PeaNUT) | Host metrics, six filesystem-capacity tiles and UPS status in Homepage | [Reproducible deployment](../services/server-health/README.md) |
-| SMART Disk Health (host-native Python + smartctl) | Six-drive SMART diagnostic and temperature tile, fixed baseline and 10-minute systemd timer (first automatic run verified 2026-10-15) | [Phase-2 deployed runbook](../services/disk-health/README.md) |
+| Server Health (Glances + PeaNUT) | Glances host metrics and PowerWalker UPS status in Homepage; six filesystem-capacity tiles now sourced from Disk Health v0.7 | [Reproducible deployment](../services/server-health/README.md) |
+| SMART + Disk Space (host-native Python v0.7 + smartctl + statvfs) | Six-drive SMART diagnostics and six stable-ID filesystem capacity tiles; locked baseline, 10-minute timer, two Homepage Storage cards (v0.7 manual and automatically timed production cycles verified 2026-10-16 CEST) | [Phase-2 deployed runbook](../services/disk-health/README.md) |
 | UPS monitoring (host NUT) | Independent PowerWalker monitoring and safe shutdown | [UPS / NUT operations](../services/ups-monitoring/README.md) |
 | ShadowBroker | Intelligence and monitoring platform | [ShadowBroker](../services/shadowbroker/README.md) |
 | NetAlertX | LAN device inventory and presence monitoring | [NetAlertX](../services/netalertx/README.md) |
