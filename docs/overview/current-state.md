@@ -133,14 +133,16 @@ The router now explicitly forwards `6882/TCP+UDP` to `192.168.0.10:6882`. Both T
 | Private Docker API network | `homepage_docker_api`, internal |
 | Config root | `/srv/docker/homepage/config` |
 | Secret root | `/srv/docker/homepage/secrets`, mounted read-only, files mode `0600` |
-| Dashboard groups | Infrastructure; Media & Libraries; Downloads & Discovery; Cloud & Applications |
-| Top-level cards | 15 |
+| Dashboard groups | Storage; Infrastructure; Media & Libraries; Downloads & Discovery; Cloud & Applications |
+| Top-level cards | 17 (including Disk Space and Disk Health) |
 
 Homepage preflight found port `3000` already occupied by AdGuard Home, so the approved roadmap's planned host port was changed to `3002` without changing the internal Homepage port. `3001` remains assigned to AIOStreams.
 
 The Docker integration is validated end-to-end: Homepage reaches the private socket proxy, Docker `_ping` returns `OK`, Docker API version `29.1.3` was read successfully, container discovery works, and green status indicators expand on demand to CPU, memory, RX, and TX statistics.
 
-**Server Health update (2026-10-14):** Homepage + Glances 4.5.6 + PeaNUT 6.0.0 replaced Netdata for the agreed current-state metrics. The host NUT safe-shutdown role was not changed. Netdata packages, historical directories and `server.pirocorp.com` NPM/DNS route were retired. **Same-day extension:** Glances now uses `pid: host` and native HTTP Basic Auth (`401` without credentials / `200` with valid credentials) for approximately 440 Ubuntu processes. Homepage uses `HOMEPAGE_FILE_GLANCES_*` secrets in its info strip and both Storage customapi instances without browser login. NPM, firewall and Docker networks were not changed. See the [reproducible as-built runbook](../services/server-health/README.md). SMART diagnostics remain separate phase-2 work.
+**Server Health update (2026-10-14):** Homepage + Glances 4.5.6 + PeaNUT 6.0.0 replaced Netdata for the agreed current-state metrics. The host NUT safe-shutdown role was not changed. Netdata packages, historical directories and `server.pirocorp.com` NPM/DNS route were retired. **Same-day extension:** Glances now uses `pid: host` and native HTTP Basic Auth (`401` without credentials / `200` with valid credentials) for approximately 440 Ubuntu processes. Homepage uses `HOMEPAGE_FILE_GLANCES_*` secrets in its info strip and both Storage customapi instances without browser login. NPM, firewall and Docker networks were not changed. See the [reproducible as-built runbook](../services/server-health/README.md). Phase 2 SMART diagnostics are now deployed separately (2026-10-15); see the [SMART Disk Health runbook](../services/disk-health/README.md).
+
+**SMART Disk Health update (2026-10-15):** host-native Python v0.6 and `smartctl` monitor six physical disks using fixed by-id identities, a locked baseline and private last-observed state. A 10-minute systemd timer is enabled; the first timer-triggered run was still awaiting journal confirmation at documentation time. Native Homepage Disk Health displays six temperature/health tiles in two rows of three and LAST UPDATED, with a read-only bind mount of redacted JSON. The `Storage` section now has `Disk Space` and `Disk Health` as two wide cards; `Infrastructure` retains UPS/Portainer/NPM/AdGuard/NetAlertX. No additional HTTP container or port was introduced.
 
 Native widgets validated in the deployed dashboard:
 
