@@ -27,7 +27,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - NetAlertX network inventory and presence monitoring
 - Homepage central homelab dashboard at `https://home.pirocorp.com` with Docker Socket Proxy, native service widgets, and file-backed secrets
 - [Phase-1 Server Health Dashboard](./docs/services/server-health/README.md): Glances 4.5.6 (host and six filesystem metrics), PeaNUT 6.0.0 (PowerWalker UPS), and independent host NUT; Netdata fully decommissioned
-- [Phase-2 SMART Disk Health](./docs/services/disk-health/README.md): host-native Python/smartctl collector, stable six-disk identity, fixed SMART baseline, 10-minute systemd timer (enabled; first scheduled invocation not yet independently confirmed), and native Homepage Disk Health card with 30-second refresh
+- [Phase-2 SMART Disk Health](./docs/services/disk-health/README.md): host-native Python/smartctl collector, stable six-disk identity, fixed SMART baseline, 10-minute systemd timer (first automatic run verified on 2026-10-15 at 21:40 UTC), and native Homepage Disk Health card with 30-second refresh
 - AIOStreams self-hosted Stremio stream aggregation/control layer
 - `stremio-libtorrent-server` central BitTorrent streaming engine with persistent read-ahead/cache
 - Stremio Web UI published internally through AdGuard Home + Nginx Proxy Manager
