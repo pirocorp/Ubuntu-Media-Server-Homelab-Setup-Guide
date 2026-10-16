@@ -14,9 +14,13 @@ Related docs: [Overview](../overview/README.md), [Services](../services/README.m
 
 ## Planned Work
 
-- [OmniMeter local energy monitoring](./omnimeter/README.md) — proposed self-hosted HomeWizard electricity/gas history, API v2 validation, tariff/Belgian peak assessment, SQLite persistence and backup; documentation-only.
+- [Home Energy Monitoring — Home Assistant Container](./home-energy-monitoring/README.md) — approved architecture, HomeWizard P1 + Belgian electricity/gas cost integrations, capacity tariff and optional best-effort Fluvius history; implementation not approved.
 - [Taiwan–Russia Risk Watch Discord Bridge](./riskwatch-discord-bridge/README.md) — .NET 10 self-hosted publishing bridge from ChatGPT to Discord through Cloudflare Tunnel + Cloudflare Access Service Token, without router port forwarding.
 - [Binary Artifact Upload PoC](./artifact-upload-poc.md) — single-container ASP.NET Core feasibility test for direct binary transfer from the ChatGPT sandbox to a self-hosted endpoint, validated by file size and SHA-256.
 - [AIOStreams multi-source P2P expansion](./stremio-aiostreams/multi-source-p2p-expansion.md) — follow-up source-layer design; preserves Torrentio and evaluates STorz with local Bitmagnet + DMM coverage.
 - [Usenet architecture roadmap](./usenet/README.md)
 - [ShadowBroker OpenClaw integration roadmap](./shadowbroker-openclaw-integration.md)
+
+## Superseded Candidate Evaluations
+
+- [OmniMeter local energy monitoring](./omnimeter/README.md) — historical evaluation, not the selected deployment architecture; its device-side API v2 findings are also in the separate [draft PR #30](https://github.com/pirocorp/Ubuntu-Media-Server-Homelab-Setup-Guide/pull/30).
