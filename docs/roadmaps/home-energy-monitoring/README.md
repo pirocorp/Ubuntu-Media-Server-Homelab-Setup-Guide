@@ -3,7 +3,7 @@
 Status: Planned — **Architecture GO approved 2026-10-16; PoC/deployment not authorized**
 Purpose: Record the selected, ready-made self-hosted solution for local electricity and gas monitoring, Belgian cost estimates and capacity tariff on the existing Ubuntu/Docker homelab.
 Depends on: Existing Docker/Compose host, working HomeWizard P1 Meter connected to the enabled Fluvius P1 port, local LAN connectivity, and the existing trusted-only reverse-proxy/DNS model.
-Related docs: [Roadmaps index](../README.md), [Previous OmniMeter evaluation](../omnimeter/README.md), [Services index](../../services/README.md), [Homepage runbook](../../services/homepage/README.md), [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md).
+Related docs: [Roadmaps index](../README.md), [Services index](../../services/README.md), [Homepage runbook](../../services/homepage/README.md), [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md).
 
 ## Locked Architecture Decision and AI Implementation Brief
 
@@ -160,7 +160,7 @@ Safety/correctness checks before importing:
 
 **Architecture decisions — accepted 2026-10-16**
 
-- [x] Home Assistant Container selected over OmniMeter.
+- [x] Home Assistant Container selected for the home energy monitoring project.
 - [x] SQLite, one application container, no Grafana/InfluxDB/database server.
 - [x] Official HomeWizard integration and ready-made Belgian electricity/gas price integrations selected for evaluation in PoC.
 - [x] Preserve T1/T2 data but use one contract price for both.
@@ -180,11 +180,18 @@ Safety/correctness checks before importing:
 - [ ] Historical import attempted and documented as successful, partial or skipped (**not a blocking acceptance gate**).
 - [ ] No unrelated services or equipment changed.
 
-## 10. Previous candidate and documentation transition
+## 10. API v2 validation record and documentation transition
 
-The earlier [OmniMeter roadmap](../omnimeter/README.md) is retained as a **historical architecture evaluation**, not a second active energy-monitoring deployment proposal. Its older “candidate” wording records the state when it was written, not the current approved decision. The gap was insufficient ready-made Belgian cost/capacity support relative to Home Assistant.
+**Device-side validation on 2026-10-16, before any Home Assistant deployment:**
 
-[Draft PR #30](https://github.com/pirocorp/Ubuntu-Media-Server-Homelab-Setup-Guide/pull/30) separately records independent HomeWizard API v2 testing and OmniMeter field-mapping gaps. This roadmap does not modify that PR or its file; reconcile/archive that draft separately so historical evidence is not lost.
+- The P1 device's HTTPS Local API v2 rejected unauthenticated requests (HTTP 401), demonstrating that authentication is required.
+- Physical pairing was required before a local API user/token could be created; the authenticated `GET /api/measurement` returned HTTP 200.
+- The measurement payload provided cumulative electricity import (including T1/T2), live power, 15-minute average power, current-month peak/timestamp and the connected gas meter's cumulative volume/timestamp.
+- Validation used relaxed TLS certificate checks; proper certificate/hostname verification remains a later connection/security gate if required by the selected integration.
+- Device credentials, household readings, EANs and serial numbers are **not** part of this public record.
+- This proves the device's API v2 availability, **not** that the official Home Assistant integration has already been configured or tested end-to-end.
+
+There is **one planned home-energy roadmap: this document**. No parallel energy-monitoring project is planned.
 
 Only **after implementation is validated**: create `docs/services/home-energy-monitoring/README.md`; record actual installed image/version, Compose service, persistence, network/authentication, backup/restore and costs/peak limitations; then move this roadmap and indexes from Planned to Implemented. Do not create an as-built service entry before deployment.
 
