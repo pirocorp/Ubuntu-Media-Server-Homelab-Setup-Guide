@@ -1,11 +1,15 @@
 # SMART Disk Health — Phase 2 deployed operations runbook
 
-Status: **Deployed 2026-10-15; v0.7 SMART + stable Disk Space collector and both Homepage Storage cards verified 2026-10-16 (CEST)**  
-Purpose: Describe the six-drive host-native SMART + filesystem-capacity collector, immutable SMART baseline, local JSON publication, systemd scheduling and the two native Homepage Storage cards.  
+Status: **Deployed 2026-10-15; unified Storage v0.8 and single Homepage card accepted 2026-10-16 (CEST)**  
+Purpose: Explain the six-drive SMART + filesystem-capacity collector, locked baseline and timer; preserve the v0.6/v0.7 rollout history and link to the current unified v0.8 Homepage deployment.  
 Depends on: [Phase-1 Server Health](../server-health/README.md), [Homepage](../homepage/README.md), existing host `smartctl 7.5`, mounted storage.  
 Design history: [original SMART extension roadmap](../../roadmaps/server-health-dashboard/smart-extension.md).
 
 > **As-built reference, not an executable installer.** The collector's Python code and actual disk configuration live **only on the Ubuntu host**, under `/srv/docker/disk-health/`; this repository intentionally does not contain device serials, by-id symlinks, baseline data, or an unverified reproduction of the current Python source. Keep host copies and backups for disaster recovery. Do not run code from this document without checking the live machine.
+
+## Current deployment: unified Storage v0.8
+
+**Current as-built instructions, JSON schema, exact Homepage `services.yaml`/`settings.yaml`, active systemd override, verification and rollback are in [Unified Storage v0.8](./storage-v08-unified.md).** As of 2026-10-16 CEST, **one** Storage card replaces the former two, showing **six combined disk tiles plus LAST UPDATED**. The runbook sections below preserve the original v0.6/v0.7 deployment as **historical acceptance evidence**; their old references to two cards and the v0.7 drop-in are not current configuration instructions. v0.8 retains the same locked baseline, private state, redacted status publishing and ten-minute timer.
 
 ## Implementation and acceptance status
 
@@ -73,7 +77,7 @@ Host paths and rights:
 
 **File consistency:** both state and status writes use temporary files, `fsync`, permissions and atomic `os.replace`. The private state is written first and public status last; **the pair is not a single cross-file transaction**. On a failed status publish, the prior public status remains complete with its older timestamp; the private state may be newer. Investigate journal errors and re-run after correcting the cause.
 
-## Homepage as-built integration
+## Historical Homepage integration (v0.7, superseded by unified v0.8)
 
 Homepage Compose (`/srv/docker/homepage/compose.yaml`) has **one extra read-only volume on the existing `homepage` service**:
 
@@ -144,7 +148,7 @@ The **Disk Health** `disks.N.label` mappings still depend on the collector's del
 
 **Publication/privacy caveat:** everything under `/app/public/disk-health/` is served via the Homepage hostname to anyone able to reach that route, independently of the private state files. Keep it free of device paths, serials, hashes, secrets, raw smartctl JSON and sensitive alerts. The feature is intended for the already established trusted LAN/VPN route; the read-only mount does *not* add authentication to static files.
 
-## systemd units actually installed
+## Historical systemd v0.6/v0.7 unit and drop-in (v0.8 adds a later override)
 
 Unit sources are kept at `/srv/docker/disk-health/systemd/` and linked into `/etc/systemd/system/`. The **original v0.6 unit source remains unchanged**; the current v0.7 command is selected through a host-local drop-in override. The original service was validated with `systemd-analyze verify` and manually executed successfully:
 
@@ -213,7 +217,7 @@ Expected oneshot result after completion: `Result=success`, `ExecMainStatus=0`, 
 
 A deliberate one-shot check can be launched with `sudo systemctl start disk-health.service`. Preview without file writes uses `sudo python3 -B /srv/docker/disk-health/collector/collect-v0.7.py --preview`; **preview still reads the drives**.
 
-## Stable Disk Space integration (v0.7, deployed 2026-10-16 CEST)
+## Historical stable Disk Space integration (v0.7, deployed 2026-10-16 CEST)
 
 Previously Phase-1 Homepage used Glances `/api/4/fs` with `0.percent` through `5.percent`. This was **not a stable mapping**: Glances returns an array whose position can change after restart or mount changes, causing a percentage to appear under the wrong disk label. Read-only checks matched all six Glances mount-point records exactly once, and host `os.statvfs()` matched their capacity percentages for all six disks (`11.1`, `51.9`, `46.2`, `80.0`, `33.9`, `51.4` at acceptance).
 
@@ -287,7 +291,7 @@ Do not use `--init-baseline` as a maintenance command, commit local JSON data, g
 2. Validate the standby protection with an HDD actually reporting STANDBY.
 3. Agree per-drive temperature warning/critical bands and SSD wear semantics; implement and test threshold alerts.
 4. Implement an explicit reviewed alert acknowledgement/reference-reset workflow.
-5. Verify narrow-screen/iPhone appearance and revisit the different Disk Space / Disk Health ordering if desired.
+5. Verify narrow-screen/iPhone appearance of the now-unified v0.8 Storage card; desktop acceptance is complete.
 6. Establish a **private backup** for the host-only collector code, disk identity config and state; these are not recoverable from this documentation PR alone.
 
 ## References

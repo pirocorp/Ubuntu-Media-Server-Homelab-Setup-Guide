@@ -5,7 +5,7 @@ Purpose: Reproduce the deployed **Homepage + Glances + PeaNUT** solution for Ubu
 Depends on: [Homepage](../homepage/README.md), [host NUT UPS](../ups-monitoring/README.md), [networking and reverse proxy](../../platform/networking-and-reverse-proxy.md).  
 Decision history: [Phase-1 architecture roadmap](../../roadmaps/server-health-dashboard/README.md). Phase 2 is separately [deployed and documented](../disk-health/README.md) (historical [SMART design roadmap](../../roadmaps/server-health-dashboard/smart-extension.md)).
 
-> This is **Phase-1 as-built history**, not a script that was executed by GitHub. The configuration examples below reconstruct the successful **2026-10-14** deployment from validated Compose settings and interactive tests. Always compare local files, paths, IP ranges and images before reproducing; never commit credentials. **Current deployment update (2026-10-16 CEST):** the six Disk Space tiles now read host `os.statvfs()` data from the v0.7 Disk Health collector's `status.json`, keyed by stable filesystem ID, NOT the historical Glances index mappings reproduced below. Glances still handles Homepage's CPU/RAM/temperature/uptime strip and its own authenticated web UI. See [the current Disk Health + Disk Space runbook](../disk-health/README.md).
+> This is **Phase-1 as-built history**, not a script that was executed by GitHub. The configuration examples below reconstruct the successful **2026-10-14** deployment from validated Compose settings and interactive tests. Always compare local files, paths, IP ranges and images before reproducing; never commit credentials. **Current deployment update (2026-10-16 CEST):** the combined six Storage tiles now use v0.8 `overview.<id>.label` (host `os.statvfs()` usage plus SMART temperature/status), with a separate full-width LAST UPDATED seventh tile. The Glances positional mapping below is historical; see [unified v0.8](../disk-health/storage-v08-unified.md). Glances still handles Homepage's CPU/RAM/temperature/uptime strip and its own authenticated web UI. See [the current Disk Health + Disk Space runbook](../disk-health/README.md).
 
 ## 1. What we built and why
 
@@ -244,7 +244,7 @@ curl -sS -o /dev/null -w 'With auth: HTTP %{http_code}\n' \
 
 **Validation performed:** six FS records, host CPU/RAM/CPU temperature and uptime were validated in Homepage. One early `0.0%` CPU result was transient. Initially PID-isolated Glances showed `TASKS 1`; after the authenticated `pid: host` extension it showed approximately 440 Ubuntu tasks. The actual login, process names and commands, plus `401/200` API behavior, were separately confirmed in section 3.2.
 
-## 4. Historical Phase-1 Glances-to-Homepage setup (2026-10-14; Storage replaced by v0.7)
+## 4. Historical Phase-1 Glances-to-Homepage setup (2026-10-14; replaced by v0.7 then v0.8)
 
 In `/srv/docker/homepage/config/widgets.yaml` (existing file previously `[]`), deploy the info strip:
 
@@ -650,15 +650,15 @@ Final actual result: zero installed Netdata packages, zero Netdata unit files, n
 | PeaNUT API `401` with correct account; auth vanishes on recreate | Check `AUTH_FILE_PATH` and persisted `/config/auth.yaml`; v6 may save under `/app/config` without the fix. |
 | Homepage widget `401` while `curl -u admin` gives `200` | Inspect secret files for trailing CR/LF and ensure `services.yaml` uses `HOMEPAGE_FILE_*` **not** stale `HOMEPAGE_VAR_*`. |
 | UPS widget says `OL CHRG` | Expected raw compound status: online and charging. Homepage v2.4.0 does not normalize this compound string to the word “Online”. |
-| Storage tile label does not match mount | Inspect `/api/4/fs` array index/order; indexed customapi labels are **not inherently stable**. |
+| Storage tile label does not match mount | In current v0.8 inspect `overview.<id>.label`, `space.<id>.label` and SMART ID. Glances `/api/4/fs` index order concerns historical Phase-1 only. |
 | Glances `0.0%` CPU briefly after startup | Sample again once initialized and compare with Ubuntu. Do not conclude that system-wide metrics are broken from one startup sample. |
 
 Revert Homepage only: remove the new `UPS` and `Storage` cards and the Glances info strip, then `sudo docker compose restart homepage`. Stop optional dashboards independently with `sudo docker compose stop` within their own stack directory. **Never stop NUT to debug PeaNUT**. Netdata cannot be brought back with `systemctl start` after its APT purge; reinstall would be a separate deliberate action.
 
 ## 11. Limitations and next phase
 
-- These six Glances filesystem **capacity** readings do **not** themselves measure SMART health, bad sectors or per-disk temperature. The separate [Phase-2 SMART Disk Health collector](../disk-health/README.md) now supplies that information to a distinct native Homepage card; do not confuse the two sources.
-- The six storage labels depend on observed Glances FS array order. Re-check after any topology/restart changes.
+- The historical six Glances filesystem **capacity** readings did not measure SMART health or per-disk temperature. The [current v0.8 collector](../disk-health/storage-v08-unified.md) combines native host capacity readings with SMART temperature/health in one Homepage card.
+- The six Glances FS-array labels belonged to the historical Phase-1 implementation; the current storage display uses stable `overview.<id>` mappings.
 - PeaNUT HTTP is accessible from trusted LAN and both specified Docker networks, not solely one container; maintain authentication and no router forwarding. PeaNUT `6.0.0` is pinned, with two documented workarounds.
 - Glances and PeaNUT are not substitutes for Netdata's alert history and detailed collectors. Their **user-accepted** scope is current-state metrics **plus** an authenticated Glances process view. `pid: host` reveals sensitive process metadata and command-line arguments to authenticated users.
 - Keep all monitored NTFS/Samba data read-only from Glances and keep NUT host-native/loopback-only.
