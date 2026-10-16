@@ -27,7 +27,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - NetAlertX network inventory and presence monitoring
 - Homepage central homelab dashboard at `https://home.pirocorp.com` with Docker Socket Proxy, native service widgets, and file-backed secrets
 - [Phase-1 Server Health Dashboard](./docs/services/server-health/README.md): Glances 4.5.6 (host info strip and its own authenticated FS API), PeaNUT 6.0.0 (PowerWalker UPS), and independent host NUT; Netdata fully decommissioned
-- [Phase-2 SMART + Disk Space](./docs/services/disk-health/README.md): host-native Python v0.7 collects SMART and six stable-ID filesystem capacity measurements (`os.statvfs`) on one 10-minute systemd timer; both native Homepage Storage cards read the redacted JSON every 30 seconds. Initial v0.6 automatic scheduling verified 2026-10-15; v0.7 manual and timer-triggered production cycles plus Homepage accepted 2026-10-16 CEST
+- [Phase-2 SMART + Disk Space](./docs/services/disk-health/README.md): host-native Python **v0.8** collects SMART and stable-ID filesystem usage (`os.statvfs`) on the existing 10-minute timer; a **single native Homepage Storage card** displays six combined percentage/temperature/SMART tiles (3×2) plus a separate LAST UPDATED tile, refreshing every 30 seconds. v0.8 production and desktop acceptance verified 2026-10-16 CEST; [unified Storage as-built](./docs/services/disk-health/storage-v08-unified.md)
 - AIOStreams self-hosted Stremio stream aggregation/control layer
 - `stremio-libtorrent-server` central BitTorrent streaming engine with persistent read-ahead/cache
 - Stremio Web UI published internally through AdGuard Home + Nginx Proxy Manager
@@ -87,7 +87,7 @@ Homepage dashboard
   -> Glances :61208 on homepage_default -> authenticated host info strip; Glances Web FS view remains available
   -> PeaNUT :61210 on Ubuntu host -> loopback NUT :3493 -> PowerWalker
   -> read-only /app/public/disk-health/status.json
-       <- host-native smartctl + os.statvfs / Python v0.7 collector (10-minute timer)
+       <- host-native smartctl + os.statvfs / Python v0.8 collector (10-minute timer)
        <- private baseline and last-observed state under /srv/docker/disk-health/state
 
 Stremio discovery/control
