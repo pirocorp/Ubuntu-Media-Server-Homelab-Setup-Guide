@@ -2,7 +2,7 @@
 
 Status: Planned — candidate evaluation only; deployment not approved
 Purpose: Preserve the proposed lightweight self-hosted electricity and gas history project, using HomeWizard P1 as the local source and OmniMeter as the application candidate.
-Depends on: Existing Ubuntu Docker host, active Fluvius P1 user port, operational HomeWizard P1 Meter, working LAN access to the device, and validation of its API v2 support
+Depends on: Existing Ubuntu Docker host, active Fluvius P1 user port, operational HomeWizard P1 Meter, working LAN access, and operational HomeWizard local API v2 (validated 2026-10-16). OmniMeter compatibility and deployment remain unapproved.
 Related docs: [Roadmaps index](../README.md), [Services index](../../services/README.md), [Homepage runbook](../../services/homepage/README.md), [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)
 
 ## Decision Record and AI Implementation Brief
@@ -42,12 +42,29 @@ The application must be simple enough to justify its upkeep.
 - HomeWizard P1 Meter: `192.168.0.222` on the LAN at time of discussion (a DHCP reservation/static allocation is to be checked before implementation).
 - The Fluvius user P1 port has been enabled, and the P1 device now receives power directly from the meter.
 - HomeWizard Energy already shows live electrical power and receives electricity/gas readings.
-- HomeWizard **Local API is enabled**; `http://192.168.0.222/api/v1/data` was tested successfully. This proves v1 availability **only**, not v2 support/activation on this particular device.
+- HomeWizard **Local API v1 is enabled**; `http://192.168.0.222/api/v1/data` was tested successfully. **API v2 subsequently validated on 2026-10-16**, including physical pairing and an authenticated `GET /api/measurement` returning HTTP 200; see validation record below.
 - HomeWizard records cumulative electricity and gas data. The effective rate start date for the current supplier contract is not yet confirmed; `2026-01-01` has been used as a **temporary placeholder in the HomeWizard app**, not as a verified contract effective date.
 - Existing local publishing model: explicit AdGuard Home rewrites (no wildcard DNS rewrite) -> Nginx Proxy Manager (NPM) with existing wildcard Let's Encrypt certificate, for LAN/trusted Tailscale clients.
 - Homepage at `https://home.pirocorp.com` is the central homelab landing page.
 
 Do not put meter identifiers, EANs, supplier account identifiers, credentials, or personal billing records into this public repository.
+
+### 2026-10-16 — HomeWizard local API v2 validation (completed)
+
+This is **device-side validation only**. It does not constitute an OmniMeter deployment or prove end-to-end collector/dashboard behavior.
+
+- Unauthenticated `GET https://192.168.0.222/api` with `X-Api-Version: 2` returned HTTP **401** and `user:unauthorized`: API v2 is reachable over HTTPS and requires authentication.
+- Before physical confirmation, `POST /api/user` with `name=local/omnimeter-validation` returned HTTP **403** and `user:creation-not-enabled`: pairing security works.
+- After pressing the device button, a one-shot `POST /api/user` returned HTTP **200**. The issued Bearer token was saved on the Ubuntu host at `~/.config/homewizard/omnimeter-validation.json` with restrictive filesystem permissions. **Never commit or print the token.**
+- Using that token, authenticated `GET /api/measurement` returned HTTP **200**. Observed available fields: `timestamp`, `protocol_version` (50 / DSMR 5.0), `tariff`, `power_w`, `energy_import_kwh`, `energy_import_t1_kwh`, `energy_import_t2_kwh`, `energy_export_kwh`, `average_power_15m_w`, `monthly_power_peak_w`, `monthly_power_peak_timestamp`, and `external[]` with `type=gas_meter`, cumulative `value`, `unit=m3`, and gas timestamp.
+- Tariff-register sum was internally consistent with the combined import total. The gas measurement timestamp can differ from the electricity telegram timestamp.
+- No household cumulative readings, serials, meter identifiers, EANs, bills, or secrets are included in this public record.
+- Diagnostic requests used `curl -k` / an unverified Python SSL context; **certificate chain and hostname verification remain an explicit deployment gate** (using HomeWizard's CA and device identity).
+- The meter directly reports 15-minute average demand and the current monthly peak, so the *hardware/API* supports relevant Belgian capacity-tariff inputs. The actual billed capacity charge depends on monthly/rolling-average rules and network tariff; an instantaneous monthly peak is not itself the invoice total.
+
+**Upstream OmniMeter source review, 2026-10-16:** `src/meter_ingest.py` currently maps the P1's import/export cumulative counters, phase power values and `external[].gas_meter.value` into SQLite readings, but the P1 field map / persistence targets **do not include** `power_w`, `average_power_15m_w`, `monthly_power_peak_w` or `monthly_power_peak_timestamp`. Consequently do **not** claim native preservation or graphing of those fields. Decide whether native peak tracking is essential and assess upstream capability or alternatives before approving deployment. Upstream links: [meter ingestion](https://github.com/t-philip/omnimeter/blob/main/src/meter_ingest.py), [collector loop](https://github.com/t-philip/omnimeter/blob/main/src/meter_poller.py).
+
+**Remaining acceptance gates:** actual OmniMeter collection, field mapping, dashboard quality, Belgian cost model, validated TLS/hostname, retention/gaps, hosting/access controls, backup/restore. No software deployment approved.
 
 ## 3. Candidate project: OmniMeter
 
@@ -151,9 +168,9 @@ HomeWizard P1 Meter (192.168.0.222)
 ## 8. Open decisions / validation gates
 
 1. **Product decision:** does OmniMeter meet the desired quality/feature bar versus other focused applications?
-2. **API v2:** does this specific P1 Meter expose v2, and is the pairing flow reliable?
+2. **API v2 — verified 2026-10-16:** this P1 Meter exposes v2, accepts physical pairing, and returns authenticated electricity/gas measurements (HTTP 200). Certificate verification and OmniMeter integration remain open.
 3. **Belgian pricing:** day/night electricity, gas units, VAT/network charges and effective-dated rates.
-4. **Capacity tariff:** are 15-minute average/peak displays natively supported and accurate enough?
+4. **Capacity tariff — meter confirmed / app gap:** P1 reports actual 15-minute average and monthly peak, but currently reviewed OmniMeter ingestion does not persist these fields. Are native graphs/retention required, and can the app be extended without excessive complexity?
 5. **History:** sample interval, retention, gap handling, CSV backfill and cost of database growth.
 6. **Operations:** exact version/pinning strategy, Docker service composition, volumes and rollback/restore.
 7. **Access:** proposed `energy.pirocorp.com` hostname, local port, NPM configuration and authentication model.
@@ -163,7 +180,7 @@ Unresolved decisions are **not** approvals to implement additional components.
 
 ## 9. Proposed implementation order (later, upon approval)
 
-1. Inspect HomeWizard device firmware/API v2 toggle; verify HTTPS discovery/pairing without changing the working v1 setup.
+1. ~~Verify HomeWizard API v2 availability, pairing, and authenticated measurements~~ — completed 2026-10-16. Before deployment, verify device firmware/identity and TLS certificate chain + hostname without changing the working v1 setup.
 2. Review a specific upstream OmniMeter release and its documentation/dependencies/security model.
 3. Prove electricity and gas capture, day/night counters, gaps and timestamps in an isolated trial.
 4. Verify cost/tariff support and 15-minute peak requirements; choose whether limitations are acceptable.
@@ -175,7 +192,7 @@ Unresolved decisions are **not** approvals to implement additional components.
 ## 10. Acceptance checklist
 
 - [ ] User explicitly chooses OmniMeter after validation.
-- [ ] API v2 confirmed and authenticated with this exact P1 Meter, or revised architecture explicitly approved.
+- [x] API v2 confirmed and authenticated with this exact P1 Meter (2026-10-16); TLS validation and application integration are still pending.
 - [ ] Real-time electricity and gas ingestion verified against HomeWizard readings.
 - [ ] Tariff 1/2 and gas consumption recorded without unit mistakes.
 - [ ] Historical data survives container restart/recreation.
