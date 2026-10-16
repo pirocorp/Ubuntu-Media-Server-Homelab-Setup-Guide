@@ -35,7 +35,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 
 ### Planned
 
-- [OmniMeter local energy monitoring (evaluation roadmap)](./docs/roadmaps/omnimeter/README.md)
+- [Home Energy Monitoring — Home Assistant Container (approved architecture; not deployed)](./docs/roadmaps/home-energy-monitoring/README.md)
 - [Taiwan–Russia Risk Watch Discord Bridge](./docs/roadmaps/riskwatch-discord-bridge/README.md)
 - [AIOStreams multi-source P2P expansion](./docs/roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
 - [Usenet architecture and deployment roadmap](./docs/roadmaps/usenet/README.md)

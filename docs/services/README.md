@@ -57,7 +57,7 @@ These services currently use their main `README.md` as the primary operating ref
 
 ## Planned Work
 
-- [OmniMeter local energy monitoring roadmap](../roadmaps/omnimeter/README.md) — candidate under evaluation; not deployed.
+- [Home Energy Monitoring — Home Assistant Container roadmap](../roadmaps/home-energy-monitoring/README.md) — architecture approved, not yet deployed.
 - [Taiwan–Russia Risk Watch Discord Bridge](../roadmaps/riskwatch-discord-bridge/README.md)
 - [AIOStreams multi-source P2P expansion](../roadmaps/stremio-aiostreams/multi-source-p2p-expansion.md)
 - [Usenet roadmap](../roadmaps/usenet/README.md)
