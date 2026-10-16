@@ -151,14 +151,13 @@ Validated checks:
 
 ## Dashboard Layout
 
-Phase 1 was accepted 2026-10-14 and Netdata removed. Phase 2 SMART Disk Health was installed 2026-10-15: an Ubuntu host-native collector periodically writes a redacted JSON file served by the existing Homepage container. The automatic timer is enabled, and its first scheduled run at 21:40 UTC on 2026-10-15 was verified in journal and on the Homepage LAST UPDATED widget. **On 2026-10-16 CEST, collector v0.7 and the Disk Space widget migrated to the same JSON source, replacing fragile Glances array indexes; manual and automatic v0.7 production cycles, the HTTP endpoint and both Storage cards were verified; Homepage LAST UPDATED advanced to 00:40 CEST after the automatically scheduled 22:40:06–22:40:07 UTC run.**
+Phase 1 was accepted 2026-10-14 and Netdata removed. Phase 2 SMART Disk Health was installed 2026-10-15: an Ubuntu host-native collector periodically writes a redacted JSON file served by the existing Homepage container. The automatic timer is enabled, and its first scheduled run at 21:40 UTC on 2026-10-15 was verified in journal and on the Homepage LAST UPDATED widget. **On 2026-10-16 CEST, collector v0.7 historically migrated Disk Space off the fragile Glances array indexes and passed scheduled acceptance. Later the same day, v0.8 added combined `overview.<id>.label` fields and the two Storage cards were replaced by one 6+1 native card. Manual production and final desktop visual acceptance were verified; see [unified v0.8 runbook](../disk-health/storage-v08-unified.md).**
 
 The deployed dashboard has five groups:
 
 ```text
 Storage
-  Disk Space (host statvfs six-filesystem capacity tiles via disk-health/status.json)
-  Disk Health (host SMART, six physical drives, last updated)
+  Storage (six combined host statvfs + SMART tiles and a full-width LAST UPDATED tile)
 
 Infrastructure
   UPS (PeaNUT / PowerWalker)
@@ -184,11 +183,11 @@ Cloud & Applications
   ShadowBroker
 ```
 
-The current layout contains 17 top-level cards (16 after Phase 1, plus the Phase-2 Disk Health card). `Storage` is now a two-column group and `Infrastructure` remains five columns. The original Storage card is renamed to `Disk Space`. The additional Glances CPU/RAM/temperature/uptime information strip is configured in `config/widgets.yaml`. Implementation-only database, Redis, worker, machine-learning, I2P, and sidecar containers remain hidden from the top-level dashboard.
+The current layout contains **16 top-level cards**. `Storage` is one full-width service card (`columns: 1`) rather than two side-by-side cards, while `Infrastructure` remains five columns. The additional Glances CPU/RAM/temperature/uptime information strip is configured in `config/widgets.yaml`. Implementation-only database, Redis, worker, machine-learning, I2P, and sidecar containers remain hidden from the top-level dashboard.
 
 The separately deployed `stash` container is intentionally not added to Homepage because it is not yet part of the documented service inventory.
 
-**Icons (2026-10-15 visual acceptance):** all 17 service cards have an explicit `icon:` property, while existing widgets and card layout remain unchanged. Homepage's supported Dashboard Icons / selfh.st / MDI icon references were used: `mdi-database-outline` (Disk Space), `mdi-harddisk` (Disk Health), `peanut.png` (UPS), `portainer.png`, `nginx-proxy-manager.png`, `adguard-home.png`, `netalertx.png`, `plex.png`, `immich.png`, `audiobookshelf.png`, `kavita.png`, `stremio.png`, `sh-aiostreams-light.svg`, `qbittorrent.png`, `bitmagnet.png`, `nextcloud.png` and `mdi-radar` (ShadowBroker; thematic icon, not a claimed official logo). Remote icon CDN reachability/browser caching may affect icon visibility; existing native widgets continue independently.
+**Icons (updated 2026-10-16):** all 16 current service cards have an explicit `icon:` property. Homepage's supported Dashboard Icons / selfh.st / MDI icon references are used: `mdi-harddisk` (unified Storage), `peanut.png` (UPS), `portainer.png`, `nginx-proxy-manager.png`, `adguard-home.png`, `netalertx.png`, `plex.png`, `immich.png`, `audiobookshelf.png`, `kavita.png`, `stremio.png`, `sh-aiostreams-light.svg`, `qbittorrent.png`, `bitmagnet.png`, `nextcloud.png` and `mdi-radar` (ShadowBroker; thematic icon, not a claimed official logo). Remote icon CDN reachability/browser caching may affect icon visibility; existing native widgets continue independently.
 
 ## Native Widgets
 
@@ -196,8 +195,7 @@ The separately deployed `stash` container is intentionally not added to Homepage
 
 | Card | Integration | Deployed fields / notes |
 | --- | --- | --- |
-| Disk Space | Native `customapi` (two widgets, three fields each) + host v0.7 `space` JSON | Fixed `space.system.label`, `space.lp.label`, `space.data.label`, `space.ia.label`, `space.comp.label`, `space.iac.label`; 3×2 layout, `format: text`, 30-second fetch / 10-minute data sampling; no Glances FS-order dependency |
-| Disk Health | Native `customapi` (three blocks) + host SMART JSON | Six temperature/Healthy/Warning/Unknown tiles in 3×2 layout plus LAST UPDATED; [Phase-2 runbook](../disk-health/README.md) |
+| Storage | Three native `customapi` blocks reading host v0.8 JSON | Two blocks of three mappings each (`overview.system/lp/data/ia/comp/iac.label`) show 6 combined usage %, temperature and SMART status tiles in 3×2 layout; a third block displays `last_updated` as a seventh full-width tile. `format: text`, 30-second refresh / 10-minute sampling; [v0.8 as-built](../disk-health/storage-v08-unified.md) |
 | UPS | PeaNUT native widget | `battery_charge`, `ups_load`, `ups_status`; raw compound status `OL CHRG` |
 | Portainer | Portainer native widget + Docker | `running`, `stopped`, `total`; environment ID `3` |
 | Nginx Proxy Manager | NPM native widget + Docker | `enabled`, `disabled`, `total` |
@@ -256,7 +254,7 @@ Credential choices validated during implementation:
 - qBittorrent `5.2.1`: regenerated 32-character API key using Bearer authentication
 - Nextcloud: dedicated 64-character `serverinfo` `NC-Token`
 - PeaNUT: authenticated API, file-backed `peanut_username` and `peanut_password`; files must **not** have trailing newlines in Homepage v2.4.0. See [server-health troubleshooting](../server-health/README.md).
-- Glances: native HTTP Basic Authentication; file-backed `glances_username` and `glances_password` **still apply to the Glances info strip**. After the v0.7 migration the two Disk Space `customapi` widgets no longer contact Glances and do not require these credentials. Username `glances`; Glances stores a separate password hash at `/srv/docker/glances/auth/glances.pwd` (root owned, mode `0600`). Files for Homepage have UID/GID 1000, mode `0600`, without trailing newlines.
+- Glances: native HTTP Basic Authentication; file-backed `glances_username` and `glances_password` **still apply to the Glances info strip**. Since v0.7 and the subsequent v0.8 unification, Storage `customapi` widgets do not contact Glances and do not require these credentials. Username `glances`; Glances stores a separate password hash at `/srv/docker/glances/auth/glances.pwd` (root owned, mode `0600`). Files for Homepage have UID/GID 1000, mode `0600`, without trailing newlines.
 
 ## Additional Host-Mode Monitoring Paths
 
@@ -348,10 +346,10 @@ Completed:
 - direct `192.168.0.10:3002` access returns HTTP `200`
 - Docker socket proxy read path validated
 - `2375` confirmed not published on the host
-- all 17 current cards render (including SMART Disk Health)
+- all 16 current cards render (including unified Storage)
 - Docker status indicators and expandable CPU/RAM/RX/TX statistics work
-- Authenticated Glances info strip works without browser login to Homepage; six-tile Disk Space now uses v0.7 host `statvfs` + stable `space.<id>.label` mappings and no longer needs revalidation of Glances array positions
-- Phase-2 SMART Disk Health displays six physical drives with native Homepage tiles and LAST UPDATED from the host collector; container-local JSON endpoint responds HTTP 200 and manually updated JSON refreshed on screen without reload
+- Authenticated Glances info strip works without browser login to Homepage; unified Storage now uses v0.8 `overview.<id>.label` keyed by disk identity, with no Glances array-position dependency
+- Phase-2 Storage displays six physical drives in combined 3×2 tiles and a separate LAST UPDATED row; manually started v0.8 systemd and the final 11:50 CEST desktop screenshot were accepted. Prior v0.7 endpoint HTTP 200 and timer-triggered acceptance remain historical
 - PeaNUT native UPS widget works (authenticated API, `OL CHRG`)
 - Portainer native widget works
 - Nginx Proxy Manager native widget works
