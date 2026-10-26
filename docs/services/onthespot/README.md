@@ -309,3 +309,97 @@ docker compose stop onthespot
 If retiring it, remove or disable **only** the OnTheSpot NPM proxy host and Homepage card, and restore the pre-edit Homepage `services.yaml` backup if necessary. Preserve `/srv/docker/onthespot/otsdata/Config` and `/mnt/data/Music/Spotify` until separately reviewed for deletion. Do not remove shared NPM/AdGuard/Homepage services or change the NTFS mount.
 
 This repository contains **documentation and sanitized example configuration only**: no running-host Compose files, real `.env`, passwords, tokens, music, images or other private app state were uploaded. This PR itself makes **no production changes**.
+
+
+## 8. Spotify Premium application setup — verified configuration, blocked audio
+
+**Status (2026-10-26): configuration and metadata PASS; Spotify audio download BLOCKED by `Failed fetching audio key!`.** This section records what worked and what remains unresolved. It is **not** a successful MP3 download runbook yet.
+
+### 8.1 Pair a Premium account using Windows Companion
+
+The **Web UI → Media Accounts → Add Account → Spotify (device) → Remote access** path worked. The alternative *Local network* was labelled *Coming Soon* in `v2.0.2beta4`.
+
+Run the temporary companion on the **same Windows PC as the official Spotify Desktop application**, not on the Ubuntu server. Prerequisites: Git, `uv`, Spotify Desktop with the Premium account signed in, and LAN access to the OnTheSpot HTTPS UI.
+
+```powershell
+git --version
+uv --version
+cd $HOME
+git clone --depth 1 --branch v2.0.2beta4 `
+  https://github.com/ots-downloader/onthespot.git OnTheSpot-companion
+cd .\OnTheSpot-companion\companion
+uv sync
+uv run python --version
+```
+
+Observed: Git `2.56.0.windows.3`, uv `0.13.5`, Python `3.15.1` (uv-managed), companion `0.1.0`. In OnTheSpot, start remote sign-in and obtain the **short-lived pairing code / generated command** from the *same* HTTPS URL `https://onthespot.pirocorp.com`. Run **the exact generated command** in this PowerShell directory (do not store it or its pairing token in Git). In Spotify Desktop, open *Connect to a device* and select **OnTheSpot Companion**. The successful session showed **Spotify Connect: Connected** and account **Premium / Authenticated / 320k**.
+
+A pairing code expires after about **10 minutes**. Do not create one before the helper is prepared. The companion is intended for one-time pairing, not a permanent Windows service.
+
+**Persistence test:** after `docker compose restart onthespot`, the saved Spotify account was loaded again from the configured persistent state: logs showed `Login successful`, and after the brief worker initialization / browser refresh the UI returned to **5 authenticated / 5 configured**. The temporarily displayed **0/5** after pressing *Reconnect* was transient, not account deletion. Do not re-pair or delete an account based on this intermediate count.
+
+### 8.2 Configure Spotify Web API separately
+
+At `Settings → Services & Auth`, configure the **Spotify Override Client ID** and **Spotify Override Client Secret** using an *existing* Spotify Developer application's own Web API credentials. These are **not** the same as device pairing credentials. Use an appropriate application already present at [Spotify for Developers](https://developer.spotify.com/dashboard); the observed application was in Development mode, with Web API enabled. A Redirect URI is **not used by** simple client-credentials metadata retrieval.
+
+Save settings in the Web UI. **Never publish Client Secret, pairing code, account session, access tokens or live private config.** The log message `[AUTH] Using Web API credentials (OAuth) for Spotify metadata/search` and the retrieved title, artist, album and artwork confirmed that the override was active. Prior to this, the single-track Spotify Web API call returned `429` repeatedly and exhausted three retries. This change **resolved metadata retrieval for the tested track**, but **did not resolve audio-key retrieval**.
+
+Keep `Settings → Services & Auth → Cache API Calls in Memory` enabled; the observed Spotify metadata TTL was 604800 seconds (7 days). Spotify API quotas still apply.
+
+### 8.3 Audio and tagging settings — saved/observed
+
+| Web UI setting | Value / decision | Why |
+| --- | --- | --- |
+| `Settings → Download Profiles` active default | `MP3 · 320 kbps` | Target file format (not proof of successful encoding) |
+| `Settings → Audio & Output → Audio Download Path` | `/root/Music/OnTheSpot` | Container path bind-mounted to `/mnt/data/Music/Spotify` |
+| **Track File Path Formatter** | `{artist}/{album}/{artist} - {name}` | Artist / Album / Artist - Title naming |
+| Use source format | Off | Do not override the MP3 target profile |
+| Prefer best source format | On | Select best available Spotify source before transcoding |
+| Raw Media Download — write directly | Off | Allow FFmpeg conversion / tagging |
+| Audio Sample Rate | `44100` | Existing setting retained |
+| Custom FFmpeg Arguments | Empty | No custom overrides |
+| Use Playlist Path Structure | Off | Keep normal artist/album layout |
+| Album Cover Format | `png` | Existing setting retained; separate artwork file disabled |
+| Download Lyrics, LRC | Off | No extra lyrics files requested |
+| Create M3U Playlist Files | Off | Not needed for the initial single-track test |
+| Metadata & ID3 → Track, Artist, Album, Album Artist, year, track/disc etc. | Enabled | ID3 fields selected |
+| Embed Album Artwork (APIC) | On | Desired embedded cover |
+| OnTheSpot Branding Marker | Off | No appended branding |
+
+**Critical placeholder distinction:** the file path formatter supports `{name}` for the song title, **not `{title}`**. Using `{title}` caused `KeyError: 'title'` in `format_item_path`. A second defect in `downloader.py` then raised `UnboundLocalError: temp_file_path` during cleanup and killed the download worker thread. Correct the formatter, save the config, and **restart only OnTheSpot** to restore the crashed worker. Source: [`format_item_path` in the pinned tag](https://github.com/ots-downloader/onthespot/blob/v2.0.2beta4/api/src/onthespot/utils.py). The corrected path was verified in logs:
+
+```text
+/root/Music/OnTheSpot/The Red Army Choir/The Definitive Anthology/
+  The Red Army Choir - L'hymne national Russe
+```
+
+That is a path *resolution*, not confirmation that the final `.mp3` exists.
+
+### 8.4 Audio acceptance BLOCKER: Spotify/librespot audio key
+
+Test Spotify track `2MnKRcdOmiUMtMGAckJRpr` (*L'hymne national Russe* — The Red Army Choir, *The Definitive Anthology*) reached metadata and resolved the intended output path, but the download failed repeatedly **before audio bytes were obtained**:
+
+```text
+Audio key error, code: 1
+Failed reading packet! [Errno 104] Connection reset by peer
+RuntimeError: Spotify session connection lost:
+  Failed fetching audio key!
+```
+
+The Python stack traces to `services_middleware.py:download_spotify` calling `librespot`'s `token.content_feeder().load(...)`. Spotify account status remained Premium/Authenticated and session re-initialization logged success, but this did **not** authorize/recover the failed audio-key request. **The Web API Client ID/Secret are for metadata; they are not a fix for audio-key denial.**
+
+Be careful interpreting download progress: `downloader.py` emits a **25% progress update after metadata is returned**, before starting the actual stream download. A brief 25% UI display does **not** establish 25% of audio downloaded.
+
+Related upstream reports: [librespot #1649 — audio key error](https://github.com/librespot-org/librespot/issues/1649) (still open when checked) and [#1735 — Premium-account-specific reproducibility](https://github.com/librespot-org/librespot/issues/1735). They establish plausible *upstream* causes, but do not prove precisely which Spotify-side rule affects this account.
+
+**Next diagnostic gate (optional, not yet performed):** one *different* track that plays in the official Spotify Desktop client, tested once, to distinguish a track-specific failure from a general account/streaming restriction. Avoid rapid or repeated retries. If the same audio-key failure recurs, keep the Spotify download acceptance marked **BLOCKED** until upstream support changes; do not downgrade the pinned image or disturb unrelated homelab services without a separate reviewed change.
+
+For troubleshooting, inspect the backend without exposing credentials:
+
+```bash
+cd /srv/docker/onthespot
+docker compose logs --since=15m --tail=300 onthespot 2>&1 \
+  | grep -A 35 -B 5 'Download failed for'
+```
+
+**Acceptance still pending:** a completed MP3 output file, its actual bitrate/codec, ID3 tags, embedded artwork, successful folder-layout verification and playback. Do not label this project end-to-end complete until those checks pass.
