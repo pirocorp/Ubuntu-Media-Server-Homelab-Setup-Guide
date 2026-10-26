@@ -19,7 +19,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - Nextcloud
 - qBittorrent
 - Bitmagnet
-- [OnTheSpot self-hosted music downloader](./docs/services/onthespot/README.md) — pinned local image, NPM/AdGuard integration and Homepage card; Spotify download acceptance pending
+- [OnTheSpot self-hosted music downloader](./docs/services/onthespot/README.md) — pinned local image, reproducible Docker/NPM/DNS/Homepage runbook; Spotify download acceptance pending
 - Host-native NUT safe shutdown with PeaNUT UPS visibility
 - ShadowBroker
 - Audiobookshelf
