@@ -19,6 +19,7 @@ The active service-publishing scheme uses `*.pirocorp.com` with Let's Encrypt ce
 - Nextcloud
 - qBittorrent
 - Bitmagnet
+- [OnTheSpot self-hosted music downloader](./docs/services/onthespot/README.md) — pinned local image, NPM/AdGuard integration and Homepage card; Spotify download acceptance pending
 - Host-native NUT safe shutdown with PeaNUT UPS visibility
 - ShadowBroker
 - Audiobookshelf
@@ -55,6 +56,7 @@ These names are intended for local DNS resolution and trusted Tailscale VPN clie
 | Nginx Proxy Manager admin | `http://npm.pirocorp.com:81` |
 | Nextcloud | `https://nextcloud.pirocorp.com` |
 | Bitmagnet | `https://bitmagnet.pirocorp.com` |
+| OnTheSpot | `https://onthespot.pirocorp.com` |
 | qBittorrent | `https://qbittorrent.pirocorp.com` |
 | Plex | `https://plex.pirocorp.com` |
 | Audiobookshelf | `https://audiobookshelf.pirocorp.com` |
@@ -145,6 +147,7 @@ Ubuntu Server host (192.168.0.10)
 - [Immich update and backup runbook](./docs/services/immich/update-runbook.md)
 - [qBittorrent seedbox runbook](./docs/services/qbittorrent/README.md)
 - [Bitmagnet runbook](./docs/services/bitmagnet/README.md)
+- [OnTheSpot infrastructure runbook](./docs/services/onthespot/README.md)
 - [ShadowBroker operations runbook](./docs/services/shadowbroker/README.md)
 - [NetAlertX deployment and operations runbook](./docs/services/netalertx/README.md)
 - [AIOStreams deployment and operations runbook](./docs/services/aiostreams/README.md)
@@ -160,6 +163,7 @@ Start with the infrastructure guide when rebuilding the base environment. Use th
 - [Nextcloud](./docs/services/nextcloud/README.md)
 - [qBittorrent](./docs/services/qbittorrent/README.md)
 - [Bitmagnet](./docs/services/bitmagnet/README.md)
+- [OnTheSpot](./docs/services/onthespot/README.md)
 - [Audiobookshelf](./docs/services/audiobookshelf/README.md)
 - [Immich](./docs/services/immich/README.md)
 - [Kavita](./docs/services/kavita/README.md)
