@@ -79,7 +79,7 @@ Observed on 2026-10-26:
 - `curl http://127.0.0.1:6767/` returned **HTTP 200**; browser showed **FastAPI Core Ready** through HTTPS.
 - Homepage displayed the new card in the intended group.
 
-Not yet accepted: Spotify account setup, a successful song download, metadata/folder-layout checks, and a WAN-origin access-list test.
+Not yet accepted: Spotify account setup, a successful song download, and metadata/folder-layout checks. The WAN-origin access-list test was intentionally skipped for this NAT-protected deployment.
 
 ### Operations
 
