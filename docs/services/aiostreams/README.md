@@ -1,6 +1,6 @@
 # AIOStreams Deployment And Operations Runbook
 
-Status: Implemented  
+Status: Implemented; language-priority sorting functionally validated 2026-11-12  
 Purpose: Document the deployed self-hosted AIOStreams control plane used to aggregate Stremio stream sources without paid debrid services.  
 Depends on: [Docker and Portainer](../../platform/docker-and-portainer.md), [Networking and reverse proxy](../../platform/networking-and-reverse-proxy.md)  
 Related docs: [Services index](../README.md), [Service inventory](../../overview/service-inventory.md), [Stremio + AIOStreams architecture roadmap](../../roadmaps/stremio-aiostreams/README.md), [Phase 4 completion](../../roadmaps/stremio-aiostreams/phase-4-completion.md), [stremio-libtorrent-server](../stremio-libtorrent-server/README.md)
@@ -383,6 +383,20 @@ attributes: resolution, quality
 Statistics output remains enabled for troubleshooting.
 
 The generated configuration URL contains private identifiers/tokens and must not be committed or copied into documentation.
+
+## Language-Priority Sorting — Deployed And Validated (2026-11-12)
+
+**Status: Implemented, saved in the live installed Stremio addon, and functionally validated.** The live sorting/ranking policy is documented separately in the [2026-11-12 acceptance record](./validation-2026-11-12.md).
+
+Configuration-of-record: [live updated export](./configs/aiostreams-config-2026-11-12-updated.json) (merged PR #34). Rollback reference: [pre-change snapshot](./backups/aiostreams-config-2026-11-12.19-15-28.json) (merged PR #33). The configuration of record is a saved export, **not** an automatically deployed file.
+
+The active global sorting is **expression score → language → subtitles → resolution → quality → seeders → visual tag → size** (descending). Four enabled additive ranked expressions score Bulgarian audio-like indicators (+1000), Bulgarian subtitles (+100), uncertain Bulgarian language (+50), and English (+10). Both preferred language and subtitle orders are Bulgarian before English. See the JSON and acceptance record for exact expression logic and its confidence limitations.
+
+**Live evidence:** *National Treasure: Book of Secrets* ranked a **1080p Bulgarian-audio** release above **2160p English/Russian** releases, with a confirmed `Български` audio track and successful playback on another client. *Disclosure Day* ranked several Bulgarian-labelled results first, and a **2160p REMUX** was delivered by the centralized torrent server and played on TV via VLC after a TV restart, with **Bulgarian subtitles but no Bulgarian audio**. Its statistics showed 5.27 GB downloaded, 116 peers and 11 MB/s at one point.
+
+**Known limitation:** the Torrentio/AIOStreams `Bulgarian` label does **not** guarantee Bulgarian audio; a release can contain only Bulgarian subtitles. The `+1000` rule still considers addon/indexer metadata. This is accepted for the current useful working baseline; **do not replace the expression or change runtime settings without a separate test**.
+
+The older Phase 4 source configuration section above records the historical initial baseline. In particular, the **current** accepted 2026-11-12 configuration **does include `seeders`** as a secondary sort key.
 
 ## Stremio Addon Baseline
 
